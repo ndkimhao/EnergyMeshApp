@@ -14,7 +14,7 @@ namespace EnergyMonitorApp
 		public static readonly string FTP_USER = "house_1";
 		public static readonly string FTP_PASS = "123456";
 
-		public static readonly string MASTER_SERVER_URI = "http://192.168.1.128/logs/";
+		public static readonly string HTTP_SERVER_URI = "http://192.168.1.128/logs/";
 
 	}
 }

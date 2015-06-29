@@ -16,7 +16,7 @@ namespace EnergyMonitorApp
 			int bytesRead = 0;
 			byte[] buffer = new byte[2048];
 
-			WebRequest request = WebRequest.Create(G.MASTER_SERVER_URI + uri);
+			WebRequest request = WebRequest.Create(G.HTTP_SERVER_URI + uri);
 			HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 			if (response.StatusCode == HttpStatusCode.OK)
 			{
@@ -61,6 +61,81 @@ namespace EnergyMonitorApp
 				fileStream.Write(buffer, 0, bytesRead);
 			}
 			fileStream.Close();
+		}
+
+		public static string[] ListLogsHTTP()
+		{
+			List<string> files = new List<string>();
+			WebRequest request = WebRequest.Create(G.HTTP_SERVER_URI);
+			HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+			if (response.StatusCode == HttpStatusCode.OK)
+			{
+				Stream dataStream = response.GetResponseStream();
+				StreamReader reader = new StreamReader(dataStream);
+				List<string> lines = reader.ReadToEnd().Split('\r', '\n').ToList();
+				reader.Close();
+				response.Close();
+
+				int state = 0;
+				for (int i = 0; i < lines.Count; )
+				{
+					if (String.IsNullOrEmpty(lines[i]))
+					{
+						lines.RemoveAt(i);
+					}
+					if (state == 0)
+					{
+						if (lines[i] == ">>BEGIN<<") state++;
+						lines.RemoveAt(i);
+					}
+					else if (state == 1)
+					{
+						if (lines[i] == ">>END<<")
+						{
+							state++;
+						}
+						else
+						{
+							i++;
+						}
+					}
+					else
+					{
+						lines.RemoveAt(i);
+					}
+				}
+				string y = null, m = null, d = null, h = null;
+				foreach (string str in lines)
+				{
+					if (str.StartsWith("\t\t\t"))
+					{
+						if (str.IndexOf(".LUP") != -1)
+						{
+							h = str.Trim().Substring(0, 2);
+							string uri = String.Format("{0}/{1}/{2}/{3}.log", y, m, d, h);
+							files.Add(uri);
+						}
+					}
+					else if (str.StartsWith("\t\t"))
+					{
+						d = str.Trim().Substring(0, 2);
+					}
+					else if (str.StartsWith("\t"))
+					{
+						m = str.Trim().Substring(0, 2);
+					}
+					else
+					{
+						y = str.Trim().Substring(0, 4);
+					}
+				}
+
+			}
+			else
+			{
+				response.Close();
+			}
+			return files.ToArray();
 		}
 
 		public static string[] ListLogsFTP()

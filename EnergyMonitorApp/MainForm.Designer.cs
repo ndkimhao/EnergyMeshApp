@@ -36,14 +36,14 @@
 			this.tabControlPanel3 = new DevComponents.DotNetBar.TabControlPanel();
 			this.superTabControl1 = new DevComponents.DotNetBar.SuperTabControl();
 			this.superTabControlPanel1 = new DevComponents.DotNetBar.SuperTabControlPanel();
-			this.txtDataDate = new DevComponents.DotNetBar.Controls.TextBoxX();
+			this.txtLog = new DevComponents.DotNetBar.Controls.TextBoxX();
+			this.lbFileList = new DevComponents.DotNetBar.ListBoxAdv();
+			this.txtLogUpdateTime = new DevComponents.DotNetBar.Controls.TextBoxX();
 			this.labelX1 = new DevComponents.DotNetBar.LabelX();
 			this.btnUpdateData = new DevComponents.DotNetBar.ButtonX();
 			this.superTabItem1 = new DevComponents.DotNetBar.SuperTabItem();
 			this.superTabControlPanel2 = new DevComponents.DotNetBar.SuperTabControlPanel();
 			this.superTabItem2 = new DevComponents.DotNetBar.SuperTabItem();
-			this.lbFileList = new DevComponents.DotNetBar.ListBoxAdv();
-			this.txtLog = new DevComponents.DotNetBar.Controls.TextBoxX();
 			((System.ComponentModel.ISupportInitialize)(this.superTabControl1)).BeginInit();
 			this.superTabControl1.SuspendLayout();
 			this.superTabControlPanel1.SuspendLayout();
@@ -141,7 +141,7 @@
 			// 
 			this.superTabControlPanel1.Controls.Add(this.txtLog);
 			this.superTabControlPanel1.Controls.Add(this.lbFileList);
-			this.superTabControlPanel1.Controls.Add(this.txtDataDate);
+			this.superTabControlPanel1.Controls.Add(this.txtLogUpdateTime);
 			this.superTabControlPanel1.Controls.Add(this.labelX1);
 			this.superTabControlPanel1.Controls.Add(this.btnUpdateData);
 			this.superTabControlPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -151,22 +151,54 @@
 			this.superTabControlPanel1.TabIndex = 1;
 			this.superTabControlPanel1.TabItem = this.superTabItem1;
 			// 
-			// txtDataDate
+			// txtLog
 			// 
-			this.txtDataDate.BackColor = System.Drawing.Color.White;
+			this.txtLog.BackColor = System.Drawing.Color.White;
 			// 
 			// 
 			// 
-			this.txtDataDate.Border.Class = "TextBoxBorder";
-			this.txtDataDate.Border.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-			this.txtDataDate.DisabledBackColor = System.Drawing.Color.White;
-			this.txtDataDate.ForeColor = System.Drawing.Color.Black;
-			this.txtDataDate.Location = new System.Drawing.Point(256, 48);
-			this.txtDataDate.Name = "txtDataDate";
-			this.txtDataDate.PreventEnterBeep = true;
-			this.txtDataDate.ReadOnly = true;
-			this.txtDataDate.Size = new System.Drawing.Size(190, 26);
-			this.txtDataDate.TabIndex = 2;
+			this.txtLog.Border.Class = "TextBoxBorder";
+			this.txtLog.Border.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.txtLog.DisabledBackColor = System.Drawing.Color.White;
+			this.txtLog.ForeColor = System.Drawing.Color.Black;
+			this.txtLog.Location = new System.Drawing.Point(471, 38);
+			this.txtLog.Multiline = true;
+			this.txtLog.Name = "txtLog";
+			this.txtLog.PreventEnterBeep = true;
+			this.txtLog.Size = new System.Drawing.Size(236, 373);
+			this.txtLog.TabIndex = 5;
+			// 
+			// lbFileList
+			// 
+			this.lbFileList.AutoScroll = true;
+			// 
+			// 
+			// 
+			this.lbFileList.BackgroundStyle.Class = "ListBoxAdv";
+			this.lbFileList.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.lbFileList.ContainerControlProcessDialogKey = true;
+			this.lbFileList.DragDropSupport = true;
+			this.lbFileList.Location = new System.Drawing.Point(12, 123);
+			this.lbFileList.Name = "lbFileList";
+			this.lbFileList.Size = new System.Drawing.Size(226, 315);
+			this.lbFileList.TabIndex = 4;
+			// 
+			// txtLogUpdateTime
+			// 
+			this.txtLogUpdateTime.BackColor = System.Drawing.Color.White;
+			// 
+			// 
+			// 
+			this.txtLogUpdateTime.Border.Class = "TextBoxBorder";
+			this.txtLogUpdateTime.Border.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.txtLogUpdateTime.DisabledBackColor = System.Drawing.Color.White;
+			this.txtLogUpdateTime.ForeColor = System.Drawing.Color.Black;
+			this.txtLogUpdateTime.Location = new System.Drawing.Point(256, 48);
+			this.txtLogUpdateTime.Name = "txtLogUpdateTime";
+			this.txtLogUpdateTime.PreventEnterBeep = true;
+			this.txtLogUpdateTime.ReadOnly = true;
+			this.txtLogUpdateTime.Size = new System.Drawing.Size(190, 26);
+			this.txtLogUpdateTime.TabIndex = 2;
 			// 
 			// labelX1
 			// 
@@ -219,39 +251,6 @@
 			this.superTabItem2.Name = "superTabItem2";
 			this.superTabItem2.Text = "Quản lý thiết bị";
 			// 
-			// lbFileList
-			// 
-			this.lbFileList.AutoScroll = true;
-			// 
-			// 
-			// 
-			this.lbFileList.BackgroundStyle.Class = "ListBoxAdv";
-			this.lbFileList.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-			this.lbFileList.CheckStateMember = null;
-			this.lbFileList.ContainerControlProcessDialogKey = true;
-			this.lbFileList.DragDropSupport = true;
-			this.lbFileList.Location = new System.Drawing.Point(12, 123);
-			this.lbFileList.Name = "lbFileList";
-			this.lbFileList.Size = new System.Drawing.Size(226, 315);
-			this.lbFileList.TabIndex = 4;
-			// 
-			// txtLog
-			// 
-			this.txtLog.BackColor = System.Drawing.Color.White;
-			// 
-			// 
-			// 
-			this.txtLog.Border.Class = "TextBoxBorder";
-			this.txtLog.Border.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-			this.txtLog.DisabledBackColor = System.Drawing.Color.White;
-			this.txtLog.ForeColor = System.Drawing.Color.Black;
-			this.txtLog.Location = new System.Drawing.Point(471, 38);
-			this.txtLog.Multiline = true;
-			this.txtLog.Name = "txtLog";
-			this.txtLog.PreventEnterBeep = true;
-			this.txtLog.Size = new System.Drawing.Size(236, 373);
-			this.txtLog.TabIndex = 5;
-			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -282,7 +281,7 @@
 		private DevComponents.DotNetBar.SuperTabItem superTabItem2;
 		private DevComponents.DotNetBar.ButtonX btnUpdateData;
 		private DevComponents.DotNetBar.LabelX labelX1;
-		private DevComponents.DotNetBar.Controls.TextBoxX txtDataDate;
+		private DevComponents.DotNetBar.Controls.TextBoxX txtLogUpdateTime;
 		private DevComponents.DotNetBar.ListBoxAdv lbFileList;
 		private DevComponents.DotNetBar.Controls.TextBoxX txtLog;
 	}
