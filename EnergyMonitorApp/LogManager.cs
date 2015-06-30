@@ -10,7 +10,7 @@ namespace EnergyMonitorApp
 	class LogManager
 	{
 
-		public static List<LogEntry> logEntries = new List<LogEntry>();
+		public static List<LogEntry> LogEntryList = new List<LogEntry>();
 
 		public static string[] GetAllLog()
 		{
@@ -19,7 +19,7 @@ namespace EnergyMonitorApp
 
 		public static void LoadLog()
 		{
-			logEntries.Clear();
+			LogEntryList.Clear();
 			string[] files = Directory.GetFiles(@"logs\", "*.*", SearchOption.AllDirectories);
 			foreach (string file in files)
 			{
@@ -92,7 +92,7 @@ namespace EnergyMonitorApp
 						{
 							logEntry.Type = (LogType)type;
 							logEntry.Time = realDT;
-							logEntries.Add(logEntry);
+							LogEntryList.Add(logEntry);
 						}
 					}
 				}
@@ -103,7 +103,7 @@ namespace EnergyMonitorApp
 		public static DateTime GetUpdatedLog()
 		{
 			DateTime result = new DateTime(0);
-			foreach (var logEntry in logEntries)
+			foreach (var logEntry in LogEntryList)
 			{
 				if (logEntry.Time > result)
 				{

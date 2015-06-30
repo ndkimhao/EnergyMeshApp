@@ -180,6 +180,7 @@
 			// 
 			// 
 			this.gridDevice.PrimaryGrid.AllowRowHeaderResize = true;
+			this.gridDevice.PrimaryGrid.AllowRowInsert = true;
 			this.gridDevice.PrimaryGrid.AllowRowResize = true;
 			this.gridDevice.PrimaryGrid.Columns.Add(this.colID);
 			this.gridDevice.PrimaryGrid.Columns.Add(this.colDeviceType);
@@ -193,11 +194,13 @@
 			this.gridDevice.TabIndex = 0;
 			this.gridDevice.CellDoubleClick += new System.EventHandler<DevComponents.DotNetBar.SuperGrid.GridCellDoubleClickEventArgs>(this.gridDevice_CellDoubleClick);
 			this.gridDevice.CloseEdit += new System.EventHandler<DevComponents.DotNetBar.SuperGrid.GridCloseEditEventArgs>(this.gridDevice_CloseEdit);
+			this.gridDevice.RowAdded += new System.EventHandler<DevComponents.DotNetBar.SuperGrid.GridRowAddedEventArgs>(this.gridDevice_RowAdded);
+			this.gridDevice.RowSetDefaultValues += new System.EventHandler<DevComponents.DotNetBar.SuperGrid.GridRowSetDefaultValuesEventArgs>(this.gridDevice_RowSetDefaultValues);
 			// 
 			// colID
 			// 
 			this.colID.EditorType = typeof(DevComponents.DotNetBar.SuperGrid.GridLabelXEditControl);
-			this.colID.Name = "STT";
+			this.colID.Name = "ID";
 			this.colID.Width = 50;
 			// 
 			// colDeviceType

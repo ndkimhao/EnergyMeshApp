@@ -23,30 +23,84 @@ namespace EnergyMonitorApp
 		{
 			InitializeComponent();
 			Control.CheckForIllegalCrossThreadCalls = false;
+			gridInit();
+		}
 
+		#region "Device list function"
+
+		private void gridInit()
+		{
 			colDeviceType.EditorType = typeof(MyGridImageEditControl);
 			colDeviceType.EditorParams = new object[] { deviceImageList, ImageSizeMode.Zoom };
 			colAction.EditorType = typeof(MyGridRadialMenuEditControl);
 			((MyGridRadialMenuEditControl)colAction.EditControl).ItemClick += RadialDevice_ItemClick;
 
 			GridPanel panel = gridDevice.PrimaryGrid;
-			for (int i = 0; i < 30; i++)
-				panel.Rows.Add(GetNewRow());
+			DeviceManager.LoadDeviceList();
+			foreach (Device dev in DeviceManager.DeviceList)
+			{
+				panel.Rows.Add(new GridRow(dev.ID, dev.ImageKey, dev.Name, null));
+			}
 		}
 
-		void RadialDevice_ItemClick(object sender, EventArgs e)
+		private void RadialDevice_ItemClick(object sender, EventArgs e)
 		{
 			if (((BaseItem)sender).Tag != null)
 			{
 				RadialAction action = (RadialAction)((BaseItem)sender).Tag;
-				if (action == RadialAction.Delete)
+				GridPanel panel = gridDevice.PrimaryGrid;
+				SelectedElementCollection selectedRows = gridDevice.GetSelectedRows();
+				if (selectedRows.Count != 0)
 				{
-					if (MessageBoxEx.Show(this, "<font size='18'><b>Bạn có thật sự muốn <font color='#B02B2C'>XÓA</font> thiết bị ?</b></font>",
-						"<font size='15'><b>Xác nhận</b></font>", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+					int rowIndex = ((GridRow)selectedRows[0]).RowIndex;
+					if (action == RadialAction.Delete)
 					{
-						GridPanel panel = gridDevice.PrimaryGrid;
-						int rowIndex = ((GridRow)gridDevice.GetSelectedRows()[0]).RowIndex;
-						panel.Rows.RemoveAt(rowIndex);
+						string act = isAddingRow ? "HỦY</font> thiết bị vừa tạo" : "XÓA</font> thiết bị";
+						if (MessageBoxEx.Show(this, "<font size='18'><b>Bạn có thật sự muốn <font color='#B02B2C'>" + act + " ?</b></font>",
+							"<font size='15'><b>Xác nhận</b></font>", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+						{
+							if (isAddingRow && rowIndex == (panel.Rows.Count - 1))
+							{
+								isAddingRow = false;
+								gridDevice.PrimaryGrid.ShowInsertRow = false;
+								gridDevice.PrimaryGrid.ShowInsertRow = true;
+							}
+							else
+							{
+								int ID = (int)((GridRow)panel.Rows[rowIndex]).Cells[0].Value;
+								DeviceManager.DeviceList.Remove(DeviceManager.DeviceList.Find(dev => dev.ID == ID));
+								DeviceManager.SaveDeviceList();
+							}
+							panel.Rows.RemoveAt(rowIndex);
+						}
+					}
+					else if (action == RadialAction.Accept)
+					{
+						GridRow row = (GridRow)panel.Rows[rowIndex];
+						if (isAddingRow && rowIndex == (panel.Rows.Count - 1))
+						{
+							Device dev = new Device()
+							{
+								ID = DeviceManager.GetNewId(),
+								ImageKey = (string)row.Cells[1].Value,
+								Name = (string)row.Cells[2].Value
+							};
+							row.Cells[0].Value = dev.ID;
+							DeviceManager.DeviceList.Add(dev);
+							DeviceManager.SaveDeviceList();
+							
+							isAddingRow = false;
+							gridDevice.PrimaryGrid.ShowInsertRow = true;
+						}
+						else
+						{
+							int ID = (int)row.Cells[0].Value;
+							Device dev = DeviceManager.DeviceList.Find(d => d.ID == ID);
+							dev.ImageKey = (string)row.Cells[1].Value;
+							dev.Name = (string)row.Cells[2].Value;
+							DeviceManager.SaveDeviceList();
+						}
+						row.RowDirty = false;
 					}
 				}
 			}
@@ -61,6 +115,54 @@ namespace EnergyMonitorApp
 			GridRow row = new GridRow(id, deviceImageListCombo.Images.Keys[0], name, null);
 			return row;
 		}
+
+		private void gridDevice_CloseEdit(object sender, GridCloseEditEventArgs e)
+		{
+			if (e.GridCell.ColumnIndex == 1)
+			{
+				e.GridCell.EditorType = typeof(MyGridImageEditControl);
+				e.GridCell.EditorParams = new object[] { deviceImageList, ImageSizeMode.Zoom };
+			}
+		}
+
+		private readonly Dictionary<string, string> deviceTypeDict = new Dictionary<string, string>()
+		{
+			{"air_conditioner.jpg", "Máy lạnh"},
+			{"electric_socket.jpg", "Ổ cắm"},
+			{"fan.jpg", "Quạt máy"},
+			{"washing_machine.jpg", "Máy giặt"},
+			{"water_heater.jpg", "Máy nước nóng"},
+		};
+		private void gridDevice_CellDoubleClick(object sender, GridCellDoubleClickEventArgs e)
+		{
+			if (e.GridCell.ColumnIndex == 1)
+			{
+				e.GridCell.EditorType = typeof(GridImageCombo);
+				e.GridCell.EditorParams = new object[] { deviceImageListCombo, deviceTypeDict, deviceImageListCombo.ImageSize.Width * 2 };
+			}
+		}
+
+		private void gridDevice_RowSetDefaultValues(object sender, GridRowSetDefaultValuesEventArgs e)
+		{
+			if (e.NewRowContext == NewRowContext.RowInit)
+			{
+				GridRow row = e.GridRow;
+				row.Cells[0].Value = "Mới";
+				row.Cells[1].Value = Device.DefaultImageKey;
+				row.Cells[2].Value = Device.DefaultName;
+				row.Cells[3].Value = null;
+			}
+		}
+
+		private bool isAddingRow = false;
+		private void gridDevice_RowAdded(object sender, GridRowAddedEventArgs e)
+		{
+			gridDevice.PrimaryGrid.ShowInsertRow = false;
+			isAddingRow = true;
+			GridPanel panel = gridDevice.PrimaryGrid;
+		}
+
+		#endregion
 
 		#region "Update Data"
 
@@ -193,32 +295,6 @@ namespace EnergyMonitorApp
 		}
 
 		#endregion
-
-		private void gridDevice_CloseEdit(object sender, GridCloseEditEventArgs e)
-		{
-			if (e.GridCell.ColumnIndex == 1)
-			{
-				e.GridCell.EditorType = typeof(MyGridImageEditControl);
-				e.GridCell.EditorParams = new object[] { deviceImageList, ImageSizeMode.Zoom };
-			}
-		}
-
-		private readonly Dictionary<string, string> deviceTypeDict = new Dictionary<string, string>()
-		{
-			{"air_conditioner.jpg", "Máy lạnh"},
-			{"electric_socket.jpg", "Ổ cắm"},
-			{"fan.jpg", "Quạt máy"},
-			{"washing_machine.jpg", "Máy giặt"},
-			{"water_heater.jpg", "Máy nước nóng"},
-		};
-		private void gridDevice_CellDoubleClick(object sender, GridCellDoubleClickEventArgs e)
-		{
-			if (e.GridCell.ColumnIndex == 1)
-			{
-				e.GridCell.EditorType = typeof(GridImageCombo);
-				e.GridCell.EditorParams = new object[] { deviceImageListCombo, deviceTypeDict, deviceImageListCombo.ImageSize.Width * 2 };
-			}
-		}
 
 	}
 }
