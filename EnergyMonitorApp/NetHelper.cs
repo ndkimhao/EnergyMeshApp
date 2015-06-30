@@ -17,6 +17,7 @@ namespace EnergyMonitorApp
 			byte[] buffer = new byte[2048];
 
 			WebRequest request = WebRequest.Create(G.HTTP_SERVER_URI + uri);
+			request.Timeout = G.CONNECT_TIMEOUT;
 			HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 			if (response.StatusCode == HttpStatusCode.OK)
 			{
@@ -42,6 +43,7 @@ namespace EnergyMonitorApp
 			byte[] buffer = new byte[2048];
 
 			FtpWebRequest request = (FtpWebRequest)FtpWebRequest.Create(uri);
+			request.Timeout = G.CONNECT_TIMEOUT;
 			request.Proxy = null;
 			request.UsePassive = true;
 			request.UseBinary = true;
@@ -67,6 +69,7 @@ namespace EnergyMonitorApp
 		{
 			List<string> files = new List<string>();
 			WebRequest request = WebRequest.Create(G.HTTP_SERVER_URI);
+			request.Timeout = G.CONNECT_TIMEOUT;
 			HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 			if (response.StatusCode == HttpStatusCode.OK)
 			{
@@ -151,6 +154,7 @@ namespace EnergyMonitorApp
 				List<string> newFiles = new List<string>();
 
 				FtpWebRequest ftp = (FtpWebRequest)FtpWebRequest.Create(fld);
+				ftp.Timeout = G.CONNECT_TIMEOUT;
 				ftp.Credentials = new NetworkCredential(G.FTP_USER, G.FTP_PASS);
 				ftp.UsePassive = false;
 				ftp.Method = WebRequestMethods.Ftp.ListDirectory;

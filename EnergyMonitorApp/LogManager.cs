@@ -19,6 +19,7 @@ namespace EnergyMonitorApp
 
 		public static void LoadLog()
 		{
+			logEntries.Clear();
 			string[] files = Directory.GetFiles(@"logs\", "*.*", SearchOption.AllDirectories);
 			foreach (string file in files)
 			{
