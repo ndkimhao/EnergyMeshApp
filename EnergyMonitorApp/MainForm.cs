@@ -11,16 +11,58 @@ using DevComponents.DotNetBar.Metro;
 using EnergyMonitorApp.Properties;
 using System.IO;
 using System.Threading;
+using DevComponents.DotNetBar.SuperGrid;
+using DevComponents.DotNetBar;
 
 namespace EnergyMonitorApp
 {
 	public partial class MainForm : MetroForm
 	{
+
 		public MainForm()
 		{
 			InitializeComponent();
 			Control.CheckForIllegalCrossThreadCalls = false;
+
+			colDeviceType.EditorType = typeof(MyGridImageEditControl);
+			colDeviceType.EditorParams = new object[] { deviceImageList, ImageSizeMode.Zoom };
+			colAction.EditorType = typeof(MyGridRadialMenuEditControl);
+			((MyGridRadialMenuEditControl)colAction.EditControl).ItemClick += RadialDevice_ItemClick;
+
+			GridPanel panel = gridDevice.PrimaryGrid;
+			for (int i = 0; i < 30; i++)
+				panel.Rows.Add(GetNewRow());
 		}
+
+		void RadialDevice_ItemClick(object sender, EventArgs e)
+		{
+			if (((BaseItem)sender).Tag != null)
+			{
+				RadialAction action = (RadialAction)((BaseItem)sender).Tag;
+				if (action == RadialAction.Delete)
+				{
+					if (MessageBoxEx.Show(this, "<font size='18'><b>Bạn có thật sự muốn <font color='#B02B2C'>XÓA</font> thiết bị ?</b></font>",
+						"<font size='15'><b>Xác nhận</b></font>", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+					{
+						GridPanel panel = gridDevice.PrimaryGrid;
+						int rowIndex = ((GridRow)gridDevice.GetSelectedRows()[0]).RowIndex;
+						panel.Rows.RemoveAt(rowIndex);
+					}
+				}
+			}
+		}
+
+		Random ran = new Random();
+		private GridRow GetNewRow()
+		{
+			string id = ran.Next(50).ToString();
+			string name = "Test device id " + id;
+
+			GridRow row = new GridRow(id, deviceImageListCombo.Images.Keys[0], name, null);
+			return row;
+		}
+
+		#region "Update Data"
 
 		Thread updateDataThread;
 		private void btnUpdateData_Click(object sender, EventArgs e)
@@ -148,6 +190,34 @@ namespace EnergyMonitorApp
 		private void btnAuthor_Click(object sender, EventArgs e)
 		{
 			new AboutForm().ShowDialog(this);
+		}
+
+		#endregion
+
+		private void gridDevice_CloseEdit(object sender, GridCloseEditEventArgs e)
+		{
+			if (e.GridCell.ColumnIndex == 1)
+			{
+				e.GridCell.EditorType = typeof(MyGridImageEditControl);
+				e.GridCell.EditorParams = new object[] { deviceImageList, ImageSizeMode.Zoom };
+			}
+		}
+
+		private readonly Dictionary<string, string> deviceTypeDict = new Dictionary<string, string>()
+		{
+			{"air_conditioner.jpg", "Máy lạnh"},
+			{"electric_socket.jpg", "Ổ cắm"},
+			{"fan.jpg", "Quạt máy"},
+			{"washing_machine.jpg", "Máy giặt"},
+			{"water_heater.jpg", "Máy nước nóng"},
+		};
+		private void gridDevice_CellDoubleClick(object sender, GridCellDoubleClickEventArgs e)
+		{
+			if (e.GridCell.ColumnIndex == 1)
+			{
+				e.GridCell.EditorType = typeof(GridImageCombo);
+				e.GridCell.EditorParams = new object[] { deviceImageListCombo, deviceTypeDict, deviceImageListCombo.ImageSize.Width * 2 };
+			}
 		}
 
 	}

@@ -29,13 +29,22 @@
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
 			this.styleManager = new DevComponents.DotNetBar.StyleManager(this.components);
 			this.tabItem1 = new DevComponents.DotNetBar.TabItem(this.components);
 			this.tabControlPanel1 = new DevComponents.DotNetBar.TabControlPanel();
 			this.tabItem3 = new DevComponents.DotNetBar.TabItem(this.components);
 			this.tabControlPanel3 = new DevComponents.DotNetBar.TabControlPanel();
 			this.superTabControl1 = new DevComponents.DotNetBar.SuperTabControl();
+			this.superTabControlPanel2 = new DevComponents.DotNetBar.SuperTabControlPanel();
+			this.gridDevice = new DevComponents.DotNetBar.SuperGrid.SuperGridControl();
+			this.colID = new DevComponents.DotNetBar.SuperGrid.GridColumn();
+			this.colDeviceType = new DevComponents.DotNetBar.SuperGrid.GridColumn();
+			this.colName = new DevComponents.DotNetBar.SuperGrid.GridColumn();
+			this.colAction = new DevComponents.DotNetBar.SuperGrid.GridColumn();
+			this.superTabItem2 = new DevComponents.DotNetBar.SuperTabItem();
 			this.superTabControlPanel1 = new DevComponents.DotNetBar.SuperTabControlPanel();
+			this.progUpdateData = new DevComponents.DotNetBar.Controls.CircularProgress();
 			this.txtDiffTime = new DevComponents.DotNetBar.Controls.TextBoxX();
 			this.labelX2 = new DevComponents.DotNetBar.LabelX();
 			this.txtLog = new DevComponents.DotNetBar.Controls.TextBoxX();
@@ -44,16 +53,18 @@
 			this.labelX1 = new DevComponents.DotNetBar.LabelX();
 			this.btnUpdateData = new DevComponents.DotNetBar.ButtonX();
 			this.superTabItem1 = new DevComponents.DotNetBar.SuperTabItem();
-			this.superTabControlPanel2 = new DevComponents.DotNetBar.SuperTabControlPanel();
-			this.superTabItem2 = new DevComponents.DotNetBar.SuperTabItem();
+			this.gridColumn1 = new DevComponents.DotNetBar.SuperGrid.GridColumn();
+			this.gridColumn2 = new DevComponents.DotNetBar.SuperGrid.GridColumn();
+			this.gridColumn3 = new DevComponents.DotNetBar.SuperGrid.GridColumn();
 			this.statusBar = new DevComponents.DotNetBar.Bar();
 			this.lblStatus = new DevComponents.DotNetBar.LabelItem();
 			this.btnAuthor = new DevComponents.DotNetBar.ButtonItem();
-			this.progUpdateData = new DevComponents.DotNetBar.Controls.CircularProgress();
+			this.deviceImageList = new System.Windows.Forms.ImageList(this.components);
+			this.deviceImageListCombo = new System.Windows.Forms.ImageList(this.components);
 			((System.ComponentModel.ISupportInitialize)(this.superTabControl1)).BeginInit();
 			this.superTabControl1.SuspendLayout();
-			this.superTabControlPanel1.SuspendLayout();
 			this.superTabControlPanel2.SuspendLayout();
+			this.superTabControlPanel1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.statusBar)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -140,10 +151,79 @@
 			this.superTabControl1.TabFont = new System.Drawing.Font("Times New Roman", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
 			this.superTabControl1.TabIndex = 0;
 			this.superTabControl1.Tabs.AddRange(new DevComponents.DotNetBar.BaseItem[] {
-            this.superTabItem1,
-            this.superTabItem2});
+            this.superTabItem2,
+            this.superTabItem1});
 			this.superTabControl1.TabStyle = DevComponents.DotNetBar.eSuperTabStyle.Office2010BackstageBlue;
 			this.superTabControl1.Text = "superTabControl1";
+			// 
+			// superTabControlPanel2
+			// 
+			this.superTabControlPanel2.Controls.Add(this.gridDevice);
+			this.superTabControlPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.superTabControlPanel2.Location = new System.Drawing.Point(0, 36);
+			this.superTabControlPanel2.Name = "superTabControlPanel2";
+			this.superTabControlPanel2.Size = new System.Drawing.Size(764, 425);
+			this.superTabControlPanel2.TabIndex = 0;
+			this.superTabControlPanel2.TabItem = this.superTabItem2;
+			// 
+			// gridDevice
+			// 
+			this.gridDevice.BackColor = System.Drawing.Color.WhiteSmoke;
+			this.gridDevice.DefaultVisualStyles.CellStyles.Default.Alignment = DevComponents.DotNetBar.SuperGrid.Style.Alignment.MiddleCenter;
+			this.gridDevice.DefaultVisualStyles.CellStyles.Default.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
+			this.gridDevice.DefaultVisualStyles.ColumnHeaderStyles.Default.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
+			this.gridDevice.FilterExprColors.SysFunction = System.Drawing.Color.DarkRed;
+			this.gridDevice.ForeColor = System.Drawing.Color.Black;
+			this.gridDevice.Location = new System.Drawing.Point(0, 3);
+			this.gridDevice.Name = "gridDevice";
+			// 
+			// 
+			// 
+			this.gridDevice.PrimaryGrid.AllowRowHeaderResize = true;
+			this.gridDevice.PrimaryGrid.AllowRowResize = true;
+			this.gridDevice.PrimaryGrid.Columns.Add(this.colID);
+			this.gridDevice.PrimaryGrid.Columns.Add(this.colDeviceType);
+			this.gridDevice.PrimaryGrid.Columns.Add(this.colName);
+			this.gridDevice.PrimaryGrid.Columns.Add(this.colAction);
+			this.gridDevice.PrimaryGrid.DefaultRowHeight = 75;
+			this.gridDevice.PrimaryGrid.MultiSelect = false;
+			this.gridDevice.PrimaryGrid.SelectionGranularity = DevComponents.DotNetBar.SuperGrid.SelectionGranularity.RowWithCellHighlight;
+			this.gridDevice.PrimaryGrid.ShowInsertRow = true;
+			this.gridDevice.Size = new System.Drawing.Size(761, 422);
+			this.gridDevice.TabIndex = 0;
+			this.gridDevice.CellDoubleClick += new System.EventHandler<DevComponents.DotNetBar.SuperGrid.GridCellDoubleClickEventArgs>(this.gridDevice_CellDoubleClick);
+			this.gridDevice.CloseEdit += new System.EventHandler<DevComponents.DotNetBar.SuperGrid.GridCloseEditEventArgs>(this.gridDevice_CloseEdit);
+			// 
+			// colID
+			// 
+			this.colID.EditorType = typeof(DevComponents.DotNetBar.SuperGrid.GridLabelXEditControl);
+			this.colID.Name = "STT";
+			this.colID.Width = 50;
+			// 
+			// colDeviceType
+			// 
+			this.colDeviceType.Name = "Loại";
+			this.colDeviceType.Width = 150;
+			// 
+			// colName
+			// 
+			this.colName.AutoSizeMode = DevComponents.DotNetBar.SuperGrid.ColumnAutoSizeMode.Fill;
+			this.colName.Name = "Tên thiết bị";
+			// 
+			// colAction
+			// 
+			this.colAction.ColumnSortMode = DevComponents.DotNetBar.SuperGrid.ColumnSortMode.None;
+			this.colAction.EditorType = typeof(DevComponents.DotNetBar.SuperGrid.GridRadialMenuEditControl);
+			this.colAction.FillWeight = 75;
+			this.colAction.Name = "H.Đ";
+			this.colAction.SortIndicator = DevComponents.DotNetBar.SuperGrid.SortIndicator.None;
+			// 
+			// superTabItem2
+			// 
+			this.superTabItem2.AttachedControl = this.superTabControlPanel2;
+			this.superTabItem2.GlobalItem = false;
+			this.superTabItem2.Name = "superTabItem2";
+			this.superTabItem2.Text = "Quản lý thiết bị";
 			// 
 			// superTabControlPanel1
 			// 
@@ -161,6 +241,20 @@
 			this.superTabControlPanel1.Size = new System.Drawing.Size(764, 425);
 			this.superTabControlPanel1.TabIndex = 1;
 			this.superTabControlPanel1.TabItem = this.superTabItem1;
+			// 
+			// progUpdateData
+			// 
+			this.progUpdateData.BackColor = System.Drawing.Color.WhiteSmoke;
+			// 
+			// 
+			// 
+			this.progUpdateData.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.progUpdateData.Location = new System.Drawing.Point(256, 142);
+			this.progUpdateData.Name = "progUpdateData";
+			this.progUpdateData.ProgressBarType = DevComponents.DotNetBar.eCircularProgressType.Spoke;
+			this.progUpdateData.Size = new System.Drawing.Size(209, 209);
+			this.progUpdateData.Style = DevComponents.DotNetBar.eDotNetBarStyle.OfficeXP;
+			this.progUpdateData.TabIndex = 9;
 			// 
 			// txtDiffTime
 			// 
@@ -181,10 +275,12 @@
 			// 
 			// labelX2
 			// 
+			this.labelX2.BackColor = System.Drawing.Color.WhiteSmoke;
 			// 
 			// 
 			// 
 			this.labelX2.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.labelX2.ForeColor = System.Drawing.Color.Black;
 			this.labelX2.Location = new System.Drawing.Point(256, 80);
 			this.labelX2.Name = "labelX2";
 			this.labelX2.SingleLineColor = System.Drawing.SystemColors.ControlLight;
@@ -212,13 +308,16 @@
 			// lbFileList
 			// 
 			this.lbFileList.AutoScroll = true;
+			this.lbFileList.BackColor = System.Drawing.Color.WhiteSmoke;
 			// 
 			// 
 			// 
 			this.lbFileList.BackgroundStyle.Class = "ListBoxAdv";
 			this.lbFileList.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.lbFileList.CheckStateMember = null;
 			this.lbFileList.ContainerControlProcessDialogKey = true;
 			this.lbFileList.DragDropSupport = true;
+			this.lbFileList.ForeColor = System.Drawing.Color.Black;
 			this.lbFileList.Location = new System.Drawing.Point(12, 122);
 			this.lbFileList.Name = "lbFileList";
 			this.lbFileList.Size = new System.Drawing.Size(226, 289);
@@ -243,10 +342,12 @@
 			// 
 			// labelX1
 			// 
+			this.labelX1.BackColor = System.Drawing.Color.WhiteSmoke;
 			// 
 			// 
 			// 
 			this.labelX1.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.labelX1.ForeColor = System.Drawing.Color.Black;
 			this.labelX1.Location = new System.Drawing.Point(256, 18);
 			this.labelX1.Name = "labelX1";
 			this.labelX1.SingleLineColor = System.Drawing.SystemColors.ControlLight;
@@ -276,21 +377,19 @@
 			this.superTabItem1.Name = "superTabItem1";
 			this.superTabItem1.Text = "Cập nhật dữ liệu";
 			// 
-			// superTabControlPanel2
-			//
-			this.superTabControlPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.superTabControlPanel2.Location = new System.Drawing.Point(0, 36);
-			this.superTabControlPanel2.Name = "superTabControlPanel2";
-			this.superTabControlPanel2.Size = new System.Drawing.Size(764, 425);
-			this.superTabControlPanel2.TabIndex = 0;
-			this.superTabControlPanel2.TabItem = this.superTabItem2;
+			// gridColumn1
 			// 
-			// superTabItem2
+			this.gridColumn1.EditorType = typeof(DevComponents.DotNetBar.SuperGrid.GridLabelXEditControl);
+			this.gridColumn1.Name = "ID";
 			// 
-			this.superTabItem2.AttachedControl = this.superTabControlPanel2;
-			this.superTabItem2.GlobalItem = false;
-			this.superTabItem2.Name = "superTabItem2";
-			this.superTabItem2.Text = "Quản lý thiết bị";
+			// gridColumn2
+			// 
+			this.gridColumn2.Name = "Tên";
+			// 
+			// gridColumn3
+			// 
+			this.gridColumn3.EditorType = typeof(DevComponents.DotNetBar.SuperGrid.GridImageEditControl);
+			this.gridColumn3.Name = "Ảnh";
 			// 
 			// statusBar
 			// 
@@ -323,15 +422,25 @@
 			this.btnAuthor.Text = "Kim Hảo @ 2015";
 			this.btnAuthor.Click += new System.EventHandler(this.btnAuthor_Click);
 			// 
-			// progUpdateData
+			// deviceImageList
 			// 
-			this.progUpdateData.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-			this.progUpdateData.Location = new System.Drawing.Point(256, 142);
-			this.progUpdateData.Name = "progUpdateData";
-			this.progUpdateData.ProgressBarType = DevComponents.DotNetBar.eCircularProgressType.Spoke;
-			this.progUpdateData.Size = new System.Drawing.Size(209, 209);
-			this.progUpdateData.Style = DevComponents.DotNetBar.eDotNetBarStyle.OfficeXP;
-			this.progUpdateData.TabIndex = 9;
+			this.deviceImageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("deviceImageList.ImageStream")));
+			this.deviceImageList.TransparentColor = System.Drawing.Color.Transparent;
+			this.deviceImageList.Images.SetKeyName(0, "air_conditioner.jpg");
+			this.deviceImageList.Images.SetKeyName(1, "electric_socket.jpg");
+			this.deviceImageList.Images.SetKeyName(2, "fan.jpg");
+			this.deviceImageList.Images.SetKeyName(3, "washing_machine.jpg");
+			this.deviceImageList.Images.SetKeyName(4, "water_heater.jpg");
+			// 
+			// deviceImageListCombo
+			// 
+			this.deviceImageListCombo.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("deviceImageListCombo.ImageStream")));
+			this.deviceImageListCombo.TransparentColor = System.Drawing.Color.Transparent;
+			this.deviceImageListCombo.Images.SetKeyName(0, "air_conditioner.jpg");
+			this.deviceImageListCombo.Images.SetKeyName(1, "electric_socket.jpg");
+			this.deviceImageListCombo.Images.SetKeyName(2, "fan.jpg");
+			this.deviceImageListCombo.Images.SetKeyName(3, "washing_machine.jpg");
+			this.deviceImageListCombo.Images.SetKeyName(4, "water_heater.jpg");
 			// 
 			// MainForm
 			// 
@@ -346,8 +455,8 @@
 			this.Text = "Energy Monitor @ KH - 2015";
 			((System.ComponentModel.ISupportInitialize)(this.superTabControl1)).EndInit();
 			this.superTabControl1.ResumeLayout(false);
-			this.superTabControlPanel1.ResumeLayout(false);
 			this.superTabControlPanel2.ResumeLayout(false);
+			this.superTabControlPanel1.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.statusBar)).EndInit();
 			this.ResumeLayout(false);
 
@@ -376,5 +485,15 @@
 		private DevComponents.DotNetBar.Controls.TextBoxX txtDiffTime;
 		private DevComponents.DotNetBar.LabelX labelX2;
 		private DevComponents.DotNetBar.Controls.CircularProgress progUpdateData;
+		private DevComponents.DotNetBar.SuperGrid.GridColumn gridColumn1;
+		private DevComponents.DotNetBar.SuperGrid.GridColumn gridColumn2;
+		private DevComponents.DotNetBar.SuperGrid.GridColumn gridColumn3;
+		private DevComponents.DotNetBar.SuperGrid.SuperGridControl gridDevice;
+		private DevComponents.DotNetBar.SuperGrid.GridColumn colID;
+		private DevComponents.DotNetBar.SuperGrid.GridColumn colDeviceType;
+		private DevComponents.DotNetBar.SuperGrid.GridColumn colName;
+		private DevComponents.DotNetBar.SuperGrid.GridColumn colAction;
+		private System.Windows.Forms.ImageList deviceImageList;
+		private System.Windows.Forms.ImageList deviceImageListCombo;
 	}
 }
