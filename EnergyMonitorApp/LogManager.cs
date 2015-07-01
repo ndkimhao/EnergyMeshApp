@@ -22,6 +22,9 @@ namespace EnergyMonitorApp
 		{
 			LogEntryList.Clear();
 			string[] files = Directory.GetFiles(@"logs\", "*.*", SearchOption.AllDirectories);
+			List<string> listFiles = files.ToList();
+			listFiles.Sort();
+			files = listFiles.ToArray();
 			foreach (string file in files)
 			{
 				try
@@ -41,7 +44,7 @@ namespace EnergyMonitorApp
 							case (int)LogType.MasterHeartbeat:
 								{
 									Log_MasterHeartbeat log = new Log_MasterHeartbeat();
-									log.From = 1;
+									log.ClientID = 1;
 									log.VCC = float.Parse(data[2]);
 									log.Uptime = uint.Parse(data[3]);
 									log.FreeRam = uint.Parse(data[4]);
@@ -52,7 +55,7 @@ namespace EnergyMonitorApp
 							case (int)LogType.ClientHeartbeat:
 								{
 									Log_ClientHeartbeat log = new Log_ClientHeartbeat();
-									log.From = byte.Parse(data[2]);
+									log.ClientID = byte.Parse(data[2]);
 									log.VCC = float.Parse(data[3]);
 									log.Uptime = uint.Parse(data[4]);
 									log.FreeRam = uint.Parse(data[5]);
@@ -62,7 +65,7 @@ namespace EnergyMonitorApp
 							case (int)LogType.ClientTemperature:
 								{
 									Log_ClientTemperature log = new Log_ClientTemperature();
-									log.From = byte.Parse(data[2]);
+									log.ClientID = byte.Parse(data[2]);
 									log.Temperature = float.Parse(data[3]);
 									logEntry = log;
 								}
@@ -70,7 +73,7 @@ namespace EnergyMonitorApp
 							case (int)LogType.ClientRealPower:
 								{
 									Log_ClientRealPower log = new Log_ClientRealPower();
-									log.From = byte.Parse(data[2]);
+									log.ClientID = byte.Parse(data[2]);
 									log.SensorID = byte.Parse(data[3]);
 									log.SessionID = uint.Parse(data[4]);
 									log.RealPower = float.Parse(data[5]);
@@ -80,7 +83,7 @@ namespace EnergyMonitorApp
 							case (int)LogType.ClientDetailPower:
 								{
 									Log_ClientDetailPower log = new Log_ClientDetailPower();
-									log.From = byte.Parse(data[2]);
+									log.ClientID = byte.Parse(data[2]);
 									log.SensorID = byte.Parse(data[3]);
 									log.SessionID = uint.Parse(data[4]);
 									log.V = float.Parse(data[5]);
@@ -103,10 +106,11 @@ namespace EnergyMonitorApp
 								{
 									block = new PowerBlock()
 									{
-										BlockID = blockID,
-										From = rec.From,
+										ID = blockID,
+										ClientID = rec.ClientID,
 										SensorID = rec.SensorID,
 										SessionID = rec.SessionID,
+										IsDeleted = false,
 										RealPowerList = new List<Log_ClientRealPower>(),
 										DetailPowerList = new List<Log_ClientDetailPower>()
 									};

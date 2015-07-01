@@ -15,7 +15,7 @@ namespace EnergyMonitorApp
 	{
 		public LogType Type { get; set; }
 		public DateTime Time { get; set; }
-		public byte From { get; set; }
+		public byte ClientID { get; set; }
 	}
 
 	class Log_MasterHeartbeat : LogRecord
@@ -40,7 +40,7 @@ namespace EnergyMonitorApp
 
 	interface IPowerRecord
 	{
-		byte From { get; set; }
+		byte ClientID { get; set; }
 		byte SensorID { get; set; }
 		uint SessionID { get; set; }
 		long BlockID { get; }
@@ -55,7 +55,7 @@ namespace EnergyMonitorApp
 		{
 			get
 			{
-				return (long)From << 48 | (long)SensorID << 40 | (long)SessionID;
+				return (long)ClientID << 40 | (long)SensorID << 32 | (long)SessionID;
 			}
 		}
 	}
@@ -70,25 +70,9 @@ namespace EnergyMonitorApp
 		{
 			get
 			{
-				return (long)From << 48 | (long)SensorID << 40 | (long)SessionID;
+				return (long)ClientID << 40 | (long)SensorID << 32 | (long)SessionID;
 			}
 		}
 	}
 
-	class PowerBlock
-	{
-		public byte From { get; set; }
-		public byte SensorID { get; set; }
-		public uint SessionID { get; set; }
-		public long BlockID { get; set; }
-		public ushort GlobalSensorID
-		{
-			get
-			{
-				return (ushort)(From << 8 | SensorID);
-			}
-		}
-		public List<Log_ClientRealPower> RealPowerList { get; set; }
-		public List<Log_ClientDetailPower> DetailPowerList { get; set; }
-	}
 }

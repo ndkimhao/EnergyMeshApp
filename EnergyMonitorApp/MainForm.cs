@@ -23,17 +23,55 @@ namespace EnergyMonitorApp
 		{
 			InitializeComponent();
 			Control.CheckForIllegalCrossThreadCalls = false;
-			gridInit();
+			gridDeviceInit();
+			gridBlockInit();
 		}
+
+		#region "Block list function"
+
+
+		private readonly Dictionary<int, Color> sensorColorDict = new Dictionary<int, Color>()
+		{
+			{2 << 8 | 0, Color.Red}
+		};
+		private void updateBlockList()
+		{
+			GridPanel panel = gridBlocks.PrimaryGrid;
+			panel.Rows.Clear();
+			foreach (PowerBlock block in LogManager.PowerBlockList.Values)
+			{
+				string id = string.Format("{0}.{1}.{2}", block.ClientID, block.SensorID, block.SessionID);
+				GridRow row = new GridRow(id, block.WH.ToString("F2") + " WH", "(Chưa chọn)", "Nhập");
+				Color c = sensorColorDict[block.ClientID << 8 | block.SensorID];
+
+				row.Cells[0].CellStyles.Default.Background.Color1 = c;
+				row.Cells[0].CellStyles.Selected.Background.Color1 = c;
+				row.Cells[0].CellStyles.SelectedMouseOver.Background.Color1 = c;
+
+				panel.Rows.Add(row);
+			}
+
+			//((GridRow)panel.Rows[0]).Cells[0].CellStyles.Default.Background.Color1 = Color.Red;
+			//((GridRow)panel.Rows[0]).Cells[0].CellStyles.Selected.Background.Color1 = Color.Red;
+			//((GridRow)panel.Rows[0]).Cells[0].CellStyles.SelectedMouseOver.Background.Color1 = Color.Red;
+		}
+
+		private void gridBlockInit()
+		{
+			colBlockDevice.EditorType = typeof(GridImageCombo);
+			colBlockDevice.EditorParams = new object[] { deviceImageListCombo, deviceTypeDict, deviceImageListCombo.ImageSize.Width * 2 };
+		}
+
+		#endregion
 
 		#region "Device list function"
 
-		private void gridInit()
+		private void gridDeviceInit()
 		{
 			colDeviceType.EditorType = typeof(MyGridImageEditControl);
 			colDeviceType.EditorParams = new object[] { deviceImageList, ImageSizeMode.Zoom };
-			colAction.EditorType = typeof(MyGridRadialMenuEditControl);
-			((MyGridRadialMenuEditControl)colAction.EditControl).ItemClick += RadialDevice_ItemClick;
+			colDeviceAction.EditorType = typeof(MyGridRadialMenuEditControl);
+			((MyGridRadialMenuEditControl)colDeviceAction.EditControl).ItemClick += RadialDevice_ItemClick;
 
 			GridPanel panel = gridDevice.PrimaryGrid;
 			DeviceManager.LoadDeviceList();
@@ -109,16 +147,6 @@ namespace EnergyMonitorApp
 			}
 		}
 
-		Random ran = new Random();
-		private GridRow GetNewRow()
-		{
-			string id = ran.Next(50).ToString();
-			string name = "Test device id " + id;
-
-			GridRow row = new GridRow(id, deviceImageListCombo.Images.Keys[0], name, null);
-			return row;
-		}
-
 		private void gridDevice_CloseEdit(object sender, GridCloseEditEventArgs e)
 		{
 			if (e.GridCell.ColumnIndex == 1)
@@ -176,7 +204,7 @@ namespace EnergyMonitorApp
 			{
 				updateDataThread = new Thread(doUpdateDate);
 				updateDataThread.IsBackground = true;
-				//updateDataThread.Priority = ThreadPriority.Highest;
+				updateDataThread.Priority = ThreadPriority.Highest;
 				updateDataThread.Start();
 			}
 		}
@@ -191,7 +219,7 @@ namespace EnergyMonitorApp
 			List<string> curLog = LogManager.GetAllLog().Select(str => str.Replace('\\', '/')).ToList();
 			List<string> listBoxItems = new List<string>();
 
-			// Get data from ftp server
+			/*// Get data from ftp server
 			try
 			{
 				string[] ftpList = NetHelper.ListLogsFTP();
@@ -252,7 +280,7 @@ namespace EnergyMonitorApp
 			catch
 			{
 				lblStatus.Text = "Kết nối máy chủ HTTP lỗi";
-			}
+			}*/
 
 			// Local file
 			foreach (string path in curLog)
@@ -290,6 +318,8 @@ namespace EnergyMonitorApp
 
 			lbFileList.Visible = true;
 			progUpdateData.IsRunning = false;
+
+			updateBlockList();
 		}
 
 		private void btnAuthor_Click(object sender, EventArgs e)

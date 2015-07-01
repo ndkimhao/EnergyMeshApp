@@ -36,12 +36,19 @@
 			this.tabItem3 = new DevComponents.DotNetBar.TabItem(this.components);
 			this.tabControlPanel3 = new DevComponents.DotNetBar.TabControlPanel();
 			this.superTabControl1 = new DevComponents.DotNetBar.SuperTabControl();
+			this.superTabControlPanel2 = new DevComponents.DotNetBar.SuperTabControlPanel();
+			this.gridBlocks = new DevComponents.DotNetBar.SuperGrid.SuperGridControl();
+			this.colBlockID = new DevComponents.DotNetBar.SuperGrid.GridColumn();
+			this.colBlockKwh = new DevComponents.DotNetBar.SuperGrid.GridColumn();
+			this.colBlockDevice = new DevComponents.DotNetBar.SuperGrid.GridColumn();
+			this.colBlockImport = new DevComponents.DotNetBar.SuperGrid.GridColumn();
+			this.superTabItem2 = new DevComponents.DotNetBar.SuperTabItem();
 			this.superTabControlPanel1 = new DevComponents.DotNetBar.SuperTabControlPanel();
 			this.gridDevice = new DevComponents.DotNetBar.SuperGrid.SuperGridControl();
-			this.colID = new DevComponents.DotNetBar.SuperGrid.GridColumn();
+			this.colDeviceID = new DevComponents.DotNetBar.SuperGrid.GridColumn();
 			this.colDeviceType = new DevComponents.DotNetBar.SuperGrid.GridColumn();
-			this.colName = new DevComponents.DotNetBar.SuperGrid.GridColumn();
-			this.colAction = new DevComponents.DotNetBar.SuperGrid.GridColumn();
+			this.colDeviceName = new DevComponents.DotNetBar.SuperGrid.GridColumn();
+			this.colDeviceAction = new DevComponents.DotNetBar.SuperGrid.GridColumn();
 			this.progUpdateData = new DevComponents.DotNetBar.Controls.CircularProgress();
 			this.txtDiffTime = new DevComponents.DotNetBar.Controls.TextBoxX();
 			this.labelX2 = new DevComponents.DotNetBar.LabelX();
@@ -50,8 +57,6 @@
 			this.labelX1 = new DevComponents.DotNetBar.LabelX();
 			this.btnUpdateData = new DevComponents.DotNetBar.ButtonX();
 			this.superTabItem1 = new DevComponents.DotNetBar.SuperTabItem();
-			this.superTabControlPanel2 = new DevComponents.DotNetBar.SuperTabControlPanel();
-			this.superTabItem2 = new DevComponents.DotNetBar.SuperTabItem();
 			this.statusBar = new DevComponents.DotNetBar.Bar();
 			this.lblStatus = new DevComponents.DotNetBar.LabelItem();
 			this.btnAuthor = new DevComponents.DotNetBar.ButtonItem();
@@ -59,6 +64,7 @@
 			this.deviceImageListCombo = new System.Windows.Forms.ImageList(this.components);
 			((System.ComponentModel.ISupportInitialize)(this.superTabControl1)).BeginInit();
 			this.superTabControl1.SuspendLayout();
+			this.superTabControlPanel2.SuspendLayout();
 			this.superTabControlPanel1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.statusBar)).BeginInit();
 			this.SuspendLayout();
@@ -144,7 +150,7 @@
 			this.superTabControl1.ReorderTabsEnabled = true;
 			this.superTabControl1.SelectedTabFont = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
 			this.superTabControl1.SelectedTabIndex = 0;
-			this.superTabControl1.Size = new System.Drawing.Size(1016, 432);
+			this.superTabControl1.Size = new System.Drawing.Size(1090, 432);
 			this.superTabControl1.TabFont = new System.Drawing.Font("Times New Roman", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
 			this.superTabControl1.TabIndex = 0;
 			this.superTabControl1.Tabs.AddRange(new DevComponents.DotNetBar.BaseItem[] {
@@ -152,6 +158,70 @@
             this.superTabItem2});
 			this.superTabControl1.TabStyle = DevComponents.DotNetBar.eSuperTabStyle.Office2010BackstageBlue;
 			this.superTabControl1.Text = "superTabControl1";
+			// 
+			// superTabControlPanel2
+			// 
+			this.superTabControlPanel2.Controls.Add(this.gridBlocks);
+			this.superTabControlPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.superTabControlPanel2.Location = new System.Drawing.Point(0, 36);
+			this.superTabControlPanel2.Name = "superTabControlPanel2";
+			this.superTabControlPanel2.Size = new System.Drawing.Size(1090, 396);
+			this.superTabControlPanel2.TabIndex = 0;
+			this.superTabControlPanel2.TabItem = this.superTabItem2;
+			// 
+			// gridBlocks
+			// 
+			this.gridBlocks.BackColor = System.Drawing.Color.WhiteSmoke;
+			this.gridBlocks.DefaultVisualStyles.CellStyles.Default.Alignment = DevComponents.DotNetBar.SuperGrid.Style.Alignment.MiddleCenter;
+			this.gridBlocks.DefaultVisualStyles.CellStyles.Default.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
+			this.gridBlocks.DefaultVisualStyles.ColumnHeaderStyles.Default.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
+			this.gridBlocks.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.gridBlocks.FilterExprColors.SysFunction = System.Drawing.Color.DarkRed;
+			this.gridBlocks.ForeColor = System.Drawing.Color.Black;
+			this.gridBlocks.Location = new System.Drawing.Point(0, 0);
+			this.gridBlocks.Name = "gridBlocks";
+			// 
+			// 
+			// 
+			this.gridBlocks.PrimaryGrid.Columns.Add(this.colBlockID);
+			this.gridBlocks.PrimaryGrid.Columns.Add(this.colBlockKwh);
+			this.gridBlocks.PrimaryGrid.Columns.Add(this.colBlockDevice);
+			this.gridBlocks.PrimaryGrid.Columns.Add(this.colBlockImport);
+			this.gridBlocks.PrimaryGrid.DefaultRowHeight = 75;
+			this.gridBlocks.PrimaryGrid.SelectionGranularity = DevComponents.DotNetBar.SuperGrid.SelectionGranularity.RowWithCellHighlight;
+			this.gridBlocks.Size = new System.Drawing.Size(1090, 396);
+			this.gridBlocks.TabIndex = 0;
+			// 
+			// colBlockID
+			// 
+			this.colBlockID.EditorType = typeof(DevComponents.DotNetBar.SuperGrid.GridLabelXEditControl);
+			this.colBlockID.Name = "ID";
+			this.colBlockID.Width = 200;
+			// 
+			// colBlockKwh
+			// 
+			this.colBlockKwh.EditorType = typeof(DevComponents.DotNetBar.SuperGrid.GridLabelXEditControl);
+			this.colBlockKwh.Name = "Tiêu hao";
+			this.colBlockKwh.Width = 200;
+			// 
+			// colBlockDevice
+			// 
+			this.colBlockDevice.EditorType = typeof(DevComponents.DotNetBar.SuperGrid.GridComboBoxExEditControl);
+			this.colBlockDevice.Name = "Thiết bị";
+			this.colBlockDevice.Width = 200;
+			// 
+			// colBlockImport
+			// 
+			this.colBlockImport.EditorType = typeof(DevComponents.DotNetBar.SuperGrid.GridButtonXEditControl);
+			this.colBlockImport.Name = "Nhập vào T.B";
+			this.colBlockImport.Width = 175;
+			// 
+			// superTabItem2
+			// 
+			this.superTabItem2.AttachedControl = this.superTabControlPanel2;
+			this.superTabItem2.GlobalItem = false;
+			this.superTabItem2.Name = "superTabItem2";
+			this.superTabItem2.Text = "Quản lý dữ liệu";
 			// 
 			// superTabControlPanel1
 			// 
@@ -166,7 +236,7 @@
 			this.superTabControlPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.superTabControlPanel1.Location = new System.Drawing.Point(0, 36);
 			this.superTabControlPanel1.Name = "superTabControlPanel1";
-			this.superTabControlPanel1.Size = new System.Drawing.Size(1016, 396);
+			this.superTabControlPanel1.Size = new System.Drawing.Size(1090, 396);
 			this.superTabControlPanel1.TabIndex = 1;
 			this.superTabControlPanel1.TabItem = this.superTabItem1;
 			// 
@@ -189,40 +259,44 @@
 			this.gridDevice.PrimaryGrid.AllowRowHeaderResize = true;
 			this.gridDevice.PrimaryGrid.AllowRowInsert = true;
 			this.gridDevice.PrimaryGrid.AllowRowResize = true;
-			this.gridDevice.PrimaryGrid.Columns.Add(this.colID);
+			this.gridDevice.PrimaryGrid.Columns.Add(this.colDeviceID);
 			this.gridDevice.PrimaryGrid.Columns.Add(this.colDeviceType);
-			this.gridDevice.PrimaryGrid.Columns.Add(this.colName);
-			this.gridDevice.PrimaryGrid.Columns.Add(this.colAction);
+			this.gridDevice.PrimaryGrid.Columns.Add(this.colDeviceName);
+			this.gridDevice.PrimaryGrid.Columns.Add(this.colDeviceAction);
 			this.gridDevice.PrimaryGrid.DefaultRowHeight = 75;
 			this.gridDevice.PrimaryGrid.MultiSelect = false;
 			this.gridDevice.PrimaryGrid.SelectionGranularity = DevComponents.DotNetBar.SuperGrid.SelectionGranularity.RowWithCellHighlight;
 			this.gridDevice.PrimaryGrid.ShowInsertRow = true;
-			this.gridDevice.Size = new System.Drawing.Size(525, 396);
+			this.gridDevice.Size = new System.Drawing.Size(599, 396);
 			this.gridDevice.TabIndex = 10;
+			this.gridDevice.CellDoubleClick += new System.EventHandler<DevComponents.DotNetBar.SuperGrid.GridCellDoubleClickEventArgs>(this.gridDevice_CellDoubleClick);
+			this.gridDevice.CloseEdit += new System.EventHandler<DevComponents.DotNetBar.SuperGrid.GridCloseEditEventArgs>(this.gridDevice_CloseEdit);
+			this.gridDevice.RowAdded += new System.EventHandler<DevComponents.DotNetBar.SuperGrid.GridRowAddedEventArgs>(this.gridDevice_RowAdded);
+			this.gridDevice.RowSetDefaultValues += new System.EventHandler<DevComponents.DotNetBar.SuperGrid.GridRowSetDefaultValuesEventArgs>(this.gridDevice_RowSetDefaultValues);
 			// 
-			// colID
+			// colDeviceID
 			// 
-			this.colID.EditorType = typeof(DevComponents.DotNetBar.SuperGrid.GridLabelXEditControl);
-			this.colID.Name = "ID";
-			this.colID.Width = 50;
+			this.colDeviceID.EditorType = typeof(DevComponents.DotNetBar.SuperGrid.GridLabelXEditControl);
+			this.colDeviceID.Name = "ID";
+			this.colDeviceID.Width = 50;
 			// 
 			// colDeviceType
 			// 
 			this.colDeviceType.Name = "Loại";
 			this.colDeviceType.Width = 150;
 			// 
-			// colName
+			// colDeviceName
 			// 
-			this.colName.AutoSizeMode = DevComponents.DotNetBar.SuperGrid.ColumnAutoSizeMode.Fill;
-			this.colName.Name = "Tên thiết bị";
+			this.colDeviceName.AutoSizeMode = DevComponents.DotNetBar.SuperGrid.ColumnAutoSizeMode.Fill;
+			this.colDeviceName.Name = "Tên thiết bị";
 			// 
-			// colAction
+			// colDeviceAction
 			// 
-			this.colAction.ColumnSortMode = DevComponents.DotNetBar.SuperGrid.ColumnSortMode.None;
-			this.colAction.EditorType = typeof(DevComponents.DotNetBar.SuperGrid.GridRadialMenuEditControl);
-			this.colAction.FillWeight = 75;
-			this.colAction.Name = "H.Đ";
-			this.colAction.SortIndicator = DevComponents.DotNetBar.SuperGrid.SortIndicator.None;
+			this.colDeviceAction.ColumnSortMode = DevComponents.DotNetBar.SuperGrid.ColumnSortMode.None;
+			this.colDeviceAction.EditorType = typeof(DevComponents.DotNetBar.SuperGrid.GridRadialMenuEditControl);
+			this.colDeviceAction.FillWeight = 75;
+			this.colDeviceAction.Name = "H.Đ";
+			this.colDeviceAction.SortIndicator = DevComponents.DotNetBar.SuperGrid.SortIndicator.None;
 			// 
 			// progUpdateData
 			// 
@@ -281,7 +355,6 @@
 			// 
 			this.lbFileList.BackgroundStyle.Class = "ListBoxAdv";
 			this.lbFileList.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-			this.lbFileList.CheckStateMember = null;
 			this.lbFileList.ContainerControlProcessDialogKey = true;
 			this.lbFileList.DragDropSupport = true;
 			this.lbFileList.ForeColor = System.Drawing.Color.Black;
@@ -344,22 +417,6 @@
 			this.superTabItem1.Name = "superTabItem1";
 			this.superTabItem1.Text = "Cập nhật dữ liệu";
 			// 
-			// superTabControlPanel2
-			// 
-			this.superTabControlPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.superTabControlPanel2.Location = new System.Drawing.Point(0, 36);
-			this.superTabControlPanel2.Name = "superTabControlPanel2";
-			this.superTabControlPanel2.Size = new System.Drawing.Size(1016, 396);
-			this.superTabControlPanel2.TabIndex = 0;
-			this.superTabControlPanel2.TabItem = this.superTabItem2;
-			// 
-			// superTabItem2
-			// 
-			this.superTabItem2.AttachedControl = this.superTabControlPanel2;
-			this.superTabItem2.GlobalItem = false;
-			this.superTabItem2.Name = "superTabItem2";
-			this.superTabItem2.Text = "Quản lý thiết bị";
-			// 
 			// statusBar
 			// 
 			this.statusBar.AntiAlias = true;
@@ -371,7 +428,7 @@
             this.btnAuthor});
 			this.statusBar.Location = new System.Drawing.Point(0, 431);
 			this.statusBar.Name = "statusBar";
-			this.statusBar.Size = new System.Drawing.Size(1016, 26);
+			this.statusBar.Size = new System.Drawing.Size(1090, 26);
 			this.statusBar.Stretch = true;
 			this.statusBar.Style = DevComponents.DotNetBar.eDotNetBarStyle.StyleManagerControlled;
 			this.statusBar.TabIndex = 7;
@@ -415,7 +472,7 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(1016, 457);
+			this.ClientSize = new System.Drawing.Size(1090, 457);
 			this.Controls.Add(this.statusBar);
 			this.Controls.Add(this.superTabControl1);
 			this.DoubleBuffered = true;
@@ -426,6 +483,7 @@
 			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
 			((System.ComponentModel.ISupportInitialize)(this.superTabControl1)).EndInit();
 			this.superTabControl1.ResumeLayout(false);
+			this.superTabControlPanel2.ResumeLayout(false);
 			this.superTabControlPanel1.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.statusBar)).EndInit();
 			this.ResumeLayout(false);
@@ -454,12 +512,17 @@
 		private DevComponents.DotNetBar.Controls.TextBoxX txtDiffTime;
 		private DevComponents.DotNetBar.LabelX labelX2;
 		private DevComponents.DotNetBar.Controls.CircularProgress progUpdateData;
-		private DevComponents.DotNetBar.SuperGrid.GridColumn colID;
+		private DevComponents.DotNetBar.SuperGrid.GridColumn colDeviceID;
 		private DevComponents.DotNetBar.SuperGrid.GridColumn colDeviceType;
-		private DevComponents.DotNetBar.SuperGrid.GridColumn colName;
-		private DevComponents.DotNetBar.SuperGrid.GridColumn colAction;
+		private DevComponents.DotNetBar.SuperGrid.GridColumn colDeviceName;
+		private DevComponents.DotNetBar.SuperGrid.GridColumn colDeviceAction;
 		private System.Windows.Forms.ImageList deviceImageList;
 		private System.Windows.Forms.ImageList deviceImageListCombo;
 		private DevComponents.DotNetBar.SuperGrid.SuperGridControl gridDevice;
+		private DevComponents.DotNetBar.SuperGrid.SuperGridControl gridBlocks;
+		private DevComponents.DotNetBar.SuperGrid.GridColumn colBlockID;
+		private DevComponents.DotNetBar.SuperGrid.GridColumn colBlockKwh;
+		private DevComponents.DotNetBar.SuperGrid.GridColumn colBlockDevice;
+		private DevComponents.DotNetBar.SuperGrid.GridColumn colBlockImport;
 	}
 }

@@ -18,6 +18,8 @@ namespace EnergyMonitorApp
 		public const int CONNECT_TIMEOUT = 500;
 		public static readonly string HTTP_SERVER_URI = "http://192.168.1.128/logs/";
 
+		public const double POWER_MIN = 1.5;
+
 		public static string SerializeBase64(object o)
 		{
 			byte[] bytes;

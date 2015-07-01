@@ -20,6 +20,73 @@ namespace EnergyMonitorApp
 		}
 	}
 
+	public class GridImageComboEx : GridComboBoxExEditControl
+	{
+		private ImageList _ImageList;
+		private Dictionary<string, string> _NameDict;
+
+		public GridImageComboEx(ImageList imageList, Dictionary<string, string> nameDict, int itemHeight)
+		{
+			_ImageList = imageList;
+			_NameDict = nameDict;
+
+			DisableInternalDrawing = true;
+			DropDownStyle = ComboBoxStyle.DropDownList;
+			ItemHeight = itemHeight;
+
+			for (int i = 0; i < imageList.Images.Count; i++)
+				Items.Add(imageList.Images.Keys[i]);
+
+			DrawItem += GridImageComboDrawItem;
+		}
+
+		public override void CellRender(Graphics g)
+		{
+			Rectangle r = EditorCell.Bounds;
+			r.X += 4;
+			r.Width -= 4;
+
+			RenderItem(g, r, Text);
+		}
+
+		void GridImageComboDrawItem(object sender, DrawItemEventArgs e)
+		{
+			if (e.Index >= 0)
+			{
+				e.DrawBackground();
+
+				RenderItem(e.Graphics, e.Bounds,
+					_ImageList.Images.Keys[e.Index]);
+			}
+		}
+
+		private void RenderItem(Graphics g, Rectangle bounds, string key)
+		{
+			Image image = _ImageList.Images[key];
+
+			if (image != null)
+			{
+				Rectangle r = bounds;
+				r.Size = image.Size;
+				r.X += 2;
+				r.Y += (bounds.Height - r.Height) / 2;
+
+				g.DrawImageUnscaled(image, r);
+
+				r = bounds;
+				r.X += image.Width + 2;
+				r.Width -= image.Width + 2;
+
+				using (StringFormat sf = new StringFormat())
+				{
+					sf.LineAlignment = StringAlignment.Center;
+
+					g.DrawString(_NameDict[key], Font, Brushes.Black, r, sf);
+				}
+			}
+		}
+	}
+
 	public class GridImageCombo : GridComboBoxExEditControl
 	{
 		private ImageList _ImageList;
