@@ -6,50 +6,89 @@ using System.Threading.Tasks;
 
 namespace EnergyMonitorApp
 {
-	enum LogType:int
+	enum LogType : int
 	{
 		MasterHeartbeat = 1, ClientHeartbeat, ClientTemperature, ClientRealPower, ClientDetailPower
 	}
 
-	class LogEntry
+	class LogRecord
 	{
 		public LogType Type { get; set; }
 		public DateTime Time { get; set; }
 		public byte From { get; set; }
 	}
 
-	class Log_MasterHeartbeat : LogEntry
+	class Log_MasterHeartbeat : LogRecord
 	{
 		public float VCC { get; set; }
-		public int Uptime { get; set; }
-		public int FreeRam { get; set; }
+		public uint Uptime { get; set; }
+		public uint FreeRam { get; set; }
 		public float Temperature { get; set; }
 	}
 
-	class Log_ClientHeartbeat : LogEntry
+	class Log_ClientHeartbeat : LogRecord
 	{
 		public float VCC { get; set; }
-		public int Uptime { get; set; }
-		public int FreeRam { get; set; }
+		public uint Uptime { get; set; }
+		public uint FreeRam { get; set; }
 	}
 
-	class Log_ClientTemperature : LogEntry
+	class Log_ClientTemperature : LogRecord
 	{
 		public float Temperature { get; set; }
 	}
 
-	class Log_ClientRealPower : LogEntry
+	interface IPowerRecord
+	{
+		byte From { get; set; }
+		byte SensorID { get; set; }
+		uint SessionID { get; set; }
+		long BlockID { get; }
+	}
+
+	class Log_ClientRealPower : LogRecord, IPowerRecord
 	{
 		public byte SensorID { get; set; }
-		public int Session { get; set; }
+		public uint SessionID { get; set; }
 		public float RealPower { get; set; }
+		public long BlockID
+		{
+			get
+			{
+				return (long)From << 48 | (long)SensorID << 40 | (long)SessionID;
+			}
+		}
 	}
 
-	class Log_ClientDetailPower : LogEntry
+	class Log_ClientDetailPower : LogRecord, IPowerRecord
 	{
 		public byte SensorID { get; set; }
-		public int Session { get; set; }
+		public uint SessionID { get; set; }
 		public float V { get; set; }
 		public float I { get; set; }
+		public long BlockID
+		{
+			get
+			{
+				return (long)From << 48 | (long)SensorID << 40 | (long)SessionID;
+			}
+		}
+	}
+
+	class PowerBlock
+	{
+		public byte From { get; set; }
+		public byte SensorID { get; set; }
+		public uint SessionID { get; set; }
+		public long BlockID { get; set; }
+		public ushort GlobalSensorID
+		{
+			get
+			{
+				return (ushort)(From << 8 | SensorID);
+			}
+		}
+		public List<Log_ClientRealPower> RealPowerList { get; set; }
+		public List<Log_ClientDetailPower> DetailPowerList { get; set; }
 	}
 }

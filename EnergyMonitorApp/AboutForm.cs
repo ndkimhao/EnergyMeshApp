@@ -21,5 +21,12 @@ namespace EnergyMonitorApp
 			this.Close();
 			this.Dispose();
 		}
+
+		private void btnDelDevice_Click(object sender, EventArgs e)
+		{
+			DeviceManager.DeviceList = new List<Device>();
+			DeviceManager.SaveDeviceList();
+			Application.Exit();
+		}
 	}
 }

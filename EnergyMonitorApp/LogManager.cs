@@ -10,7 +10,8 @@ namespace EnergyMonitorApp
 	class LogManager
 	{
 
-		public static List<LogEntry> LogEntryList = new List<LogEntry>();
+		public static List<LogRecord> LogEntryList = new List<LogRecord>();
+		public static Dictionary<long, PowerBlock> PowerBlockList = new Dictionary<long, PowerBlock>();
 
 		public static string[] GetAllLog()
 		{
@@ -33,7 +34,7 @@ namespace EnergyMonitorApp
 						string[] data = lines[i].Split(',');
 						string[] timeData = data[0].Split(':');
 						DateTime realDT = new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, int.Parse(timeData[0]), int.Parse(timeData[1]));
-						LogEntry logEntry = null;
+						LogRecord logEntry = null;
 						int type = -1;
 						switch (type = int.Parse(data[1]))
 						{
@@ -42,8 +43,8 @@ namespace EnergyMonitorApp
 									Log_MasterHeartbeat log = new Log_MasterHeartbeat();
 									log.From = 1;
 									log.VCC = float.Parse(data[2]);
-									log.Uptime = int.Parse(data[3]);
-									log.FreeRam = int.Parse(data[4]);
+									log.Uptime = uint.Parse(data[3]);
+									log.FreeRam = uint.Parse(data[4]);
 									log.Temperature = float.Parse(data[5]);
 									logEntry = log;
 								}
@@ -53,8 +54,8 @@ namespace EnergyMonitorApp
 									Log_ClientHeartbeat log = new Log_ClientHeartbeat();
 									log.From = byte.Parse(data[2]);
 									log.VCC = float.Parse(data[3]);
-									log.Uptime = int.Parse(data[4]);
-									log.FreeRam = int.Parse(data[5]);
+									log.Uptime = uint.Parse(data[4]);
+									log.FreeRam = uint.Parse(data[5]);
 									logEntry = log;
 								}
 								break;
@@ -71,7 +72,7 @@ namespace EnergyMonitorApp
 									Log_ClientRealPower log = new Log_ClientRealPower();
 									log.From = byte.Parse(data[2]);
 									log.SensorID = byte.Parse(data[3]);
-									log.Session = int.Parse(data[4]);
+									log.SessionID = uint.Parse(data[4]);
 									log.RealPower = float.Parse(data[5]);
 									logEntry = log;
 								}
@@ -81,7 +82,7 @@ namespace EnergyMonitorApp
 									Log_ClientDetailPower log = new Log_ClientDetailPower();
 									log.From = byte.Parse(data[2]);
 									log.SensorID = byte.Parse(data[3]);
-									log.Session = int.Parse(data[4]);
+									log.SessionID = uint.Parse(data[4]);
 									log.V = float.Parse(data[5]);
 									log.I = float.Parse(data[6]);
 									logEntry = log;
@@ -93,6 +94,33 @@ namespace EnergyMonitorApp
 							logEntry.Type = (LogType)type;
 							logEntry.Time = realDT;
 							LogEntryList.Add(logEntry);
+							if (logEntry is IPowerRecord)
+							{
+								IPowerRecord rec = (IPowerRecord)logEntry;
+								long blockID = rec.BlockID;
+								PowerBlock block;
+								if (!PowerBlockList.TryGetValue(blockID, out block))
+								{
+									block = new PowerBlock()
+									{
+										BlockID = blockID,
+										From = rec.From,
+										SensorID = rec.SensorID,
+										SessionID = rec.SessionID,
+										RealPowerList = new List<Log_ClientRealPower>(),
+										DetailPowerList = new List<Log_ClientDetailPower>()
+									};
+									PowerBlockList.Add(blockID, block);
+								}
+								if (rec is Log_ClientRealPower)
+								{
+									block.RealPowerList.Add((Log_ClientRealPower)rec);
+								}
+								else
+								{
+									block.DetailPowerList.Add((Log_ClientDetailPower)rec);
+								}
+							}
 						}
 					}
 				}

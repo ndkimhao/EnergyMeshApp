@@ -39,7 +39,10 @@ namespace EnergyMonitorApp
 			DeviceManager.LoadDeviceList();
 			foreach (Device dev in DeviceManager.DeviceList)
 			{
-				panel.Rows.Add(new GridRow(dev.ID, dev.ImageKey, dev.Name, null));
+				if (!dev.IsDeleted)
+				{
+					panel.Rows.Add(new GridRow(dev.ID, dev.ImageKey, dev.Name, null));
+				}
 			}
 		}
 
@@ -68,8 +71,7 @@ namespace EnergyMonitorApp
 							else
 							{
 								int ID = (int)((GridRow)panel.Rows[rowIndex]).Cells[0].Value;
-								DeviceManager.DeviceList.Remove(DeviceManager.DeviceList.Find(dev => dev.ID == ID));
-								DeviceManager.SaveDeviceList();
+								DeviceManager.DeviceList.Find(dev => dev.ID == ID).IsDeleted = true;
 							}
 							panel.Rows.RemoveAt(rowIndex);
 						}
@@ -83,12 +85,13 @@ namespace EnergyMonitorApp
 							{
 								ID = DeviceManager.GetNewId(),
 								ImageKey = (string)row.Cells[1].Value,
-								Name = (string)row.Cells[2].Value
+								Name = (string)row.Cells[2].Value,
+								IsDeleted = false
 							};
 							row.Cells[0].Value = dev.ID;
 							DeviceManager.DeviceList.Add(dev);
 							DeviceManager.SaveDeviceList();
-							
+
 							isAddingRow = false;
 							gridDevice.PrimaryGrid.ShowInsertRow = true;
 						}
