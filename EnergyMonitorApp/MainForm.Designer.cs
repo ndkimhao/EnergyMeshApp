@@ -29,23 +29,25 @@
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			DevComponents.DotNetBar.SuperGrid.Style.Background background1 = new DevComponents.DotNetBar.SuperGrid.Style.Background();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
+			DevComponents.DotNetBar.SuperGrid.Style.Padding padding2 = new DevComponents.DotNetBar.SuperGrid.Style.Padding();
+			DevComponents.DotNetBar.SuperGrid.Style.Background background2 = new DevComponents.DotNetBar.SuperGrid.Style.Background();
 			this.styleManager = new DevComponents.DotNetBar.StyleManager(this.components);
 			this.tabItem1 = new DevComponents.DotNetBar.TabItem(this.components);
 			this.tabControlPanel1 = new DevComponents.DotNetBar.TabControlPanel();
 			this.tabItem3 = new DevComponents.DotNetBar.TabItem(this.components);
 			this.tabControlPanel3 = new DevComponents.DotNetBar.TabControlPanel();
 			this.superTabControl1 = new DevComponents.DotNetBar.SuperTabControl();
-			this.superTabControlPanel2 = new DevComponents.DotNetBar.SuperTabControlPanel();
-			this.gridBlocks = new DevComponents.DotNetBar.SuperGrid.SuperGridControl();
-			this.colBlockID = new DevComponents.DotNetBar.SuperGrid.GridColumn();
-			this.colBlockKwh = new DevComponents.DotNetBar.SuperGrid.GridColumn();
-			this.colBlockDate = new DevComponents.DotNetBar.SuperGrid.GridColumn();
-			this.colBlockChart = new DevComponents.DotNetBar.SuperGrid.GridColumn();
-			this.colBlockDevice = new DevComponents.DotNetBar.SuperGrid.GridColumn();
-			this.colBlockImport = new DevComponents.DotNetBar.SuperGrid.GridColumn();
-			this.superTabItem2 = new DevComponents.DotNetBar.SuperTabItem();
+			this.superTabControlPanel3 = new DevComponents.DotNetBar.SuperTabControlPanel();
+			this.graphHistory = new ZedGraph.ZedGraphControl();
+			this.btnUpdateHistory = new DevComponents.DotNetBar.ButtonX();
+			this.labelX4 = new DevComponents.DotNetBar.LabelX();
+			this.dtHistoryEnd = new DevComponents.Editors.DateTimeAdv.DateTimeInput();
+			this.labelX3 = new DevComponents.DotNetBar.LabelX();
+			this.dtHistoryBegin = new DevComponents.Editors.DateTimeAdv.DateTimeInput();
+			this.cbDeviceHistory = new EnergyMonitorApp.DeviceComboBox();
+			this.deviceImageList = new System.Windows.Forms.ImageList(this.components);
+			this.superTabItem3 = new DevComponents.DotNetBar.SuperTabItem();
 			this.superTabControlPanel1 = new DevComponents.DotNetBar.SuperTabControlPanel();
 			this.gridDevice = new DevComponents.DotNetBar.SuperGrid.SuperGridControl();
 			this.colDeviceID = new DevComponents.DotNetBar.SuperGrid.GridColumn();
@@ -60,15 +62,29 @@
 			this.labelX1 = new DevComponents.DotNetBar.LabelX();
 			this.btnUpdateData = new DevComponents.DotNetBar.ButtonX();
 			this.superTabItem1 = new DevComponents.DotNetBar.SuperTabItem();
+			this.superTabControlPanel2 = new DevComponents.DotNetBar.SuperTabControlPanel();
+			this.gridBlocks = new DevComponents.DotNetBar.SuperGrid.SuperGridControl();
+			this.colBlockID = new DevComponents.DotNetBar.SuperGrid.GridColumn();
+			this.colBlockKwh = new DevComponents.DotNetBar.SuperGrid.GridColumn();
+			this.colBlockDate = new DevComponents.DotNetBar.SuperGrid.GridColumn();
+			this.colBlockChart = new DevComponents.DotNetBar.SuperGrid.GridColumn();
+			this.colBlockDevice = new DevComponents.DotNetBar.SuperGrid.GridColumn();
+			this.colBlockImport = new DevComponents.DotNetBar.SuperGrid.GridColumn();
+			this.superTabItem2 = new DevComponents.DotNetBar.SuperTabItem();
 			this.statusBar = new DevComponents.DotNetBar.Bar();
 			this.lblStatus = new DevComponents.DotNetBar.LabelItem();
 			this.btnAuthor = new DevComponents.DotNetBar.ButtonItem();
-			this.deviceImageList = new System.Windows.Forms.ImageList(this.components);
+			this.cbTheme = new DevComponents.DotNetBar.ComboBoxItem();
+			this.cpCanvasColor = new DevComponents.DotNetBar.ColorPickerDropDown();
+			this.cpBaseColor = new DevComponents.DotNetBar.ColorPickerDropDown();
 			this.deviceImageListCombo = new System.Windows.Forms.ImageList(this.components);
 			((System.ComponentModel.ISupportInitialize)(this.superTabControl1)).BeginInit();
 			this.superTabControl1.SuspendLayout();
-			this.superTabControlPanel2.SuspendLayout();
+			this.superTabControlPanel3.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.dtHistoryEnd)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.dtHistoryBegin)).BeginInit();
 			this.superTabControlPanel1.SuspendLayout();
+			this.superTabControlPanel2.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.statusBar)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -144,8 +160,9 @@
 			this.superTabControl1.ControlBox.SubItems.AddRange(new DevComponents.DotNetBar.BaseItem[] {
             this.superTabControl1.ControlBox.MenuBox,
             this.superTabControl1.ControlBox.CloseBox});
-			this.superTabControl1.Controls.Add(this.superTabControlPanel2);
+			this.superTabControl1.Controls.Add(this.superTabControlPanel3);
 			this.superTabControl1.Controls.Add(this.superTabControlPanel1);
+			this.superTabControl1.Controls.Add(this.superTabControlPanel2);
 			this.superTabControl1.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
 			this.superTabControl1.ForeColor = System.Drawing.Color.Black;
 			this.superTabControl1.Location = new System.Drawing.Point(0, 0);
@@ -153,14 +170,433 @@
 			this.superTabControl1.ReorderTabsEnabled = true;
 			this.superTabControl1.SelectedTabFont = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
 			this.superTabControl1.SelectedTabIndex = 0;
-			this.superTabControl1.Size = new System.Drawing.Size(1090, 432);
+			this.superTabControl1.Size = new System.Drawing.Size(1090, 635);
 			this.superTabControl1.TabFont = new System.Drawing.Font("Times New Roman", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
 			this.superTabControl1.TabIndex = 0;
 			this.superTabControl1.Tabs.AddRange(new DevComponents.DotNetBar.BaseItem[] {
             this.superTabItem1,
-            this.superTabItem2});
+            this.superTabItem2,
+            this.superTabItem3});
 			this.superTabControl1.TabStyle = DevComponents.DotNetBar.eSuperTabStyle.Office2010BackstageBlue;
 			this.superTabControl1.Text = "superTabControl1";
+			// 
+			// superTabControlPanel3
+			// 
+			this.superTabControlPanel3.Controls.Add(this.graphHistory);
+			this.superTabControlPanel3.Controls.Add(this.btnUpdateHistory);
+			this.superTabControlPanel3.Controls.Add(this.labelX4);
+			this.superTabControlPanel3.Controls.Add(this.dtHistoryEnd);
+			this.superTabControlPanel3.Controls.Add(this.labelX3);
+			this.superTabControlPanel3.Controls.Add(this.dtHistoryBegin);
+			this.superTabControlPanel3.Controls.Add(this.cbDeviceHistory);
+			this.superTabControlPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.superTabControlPanel3.Location = new System.Drawing.Point(0, 36);
+			this.superTabControlPanel3.Name = "superTabControlPanel3";
+			this.superTabControlPanel3.Size = new System.Drawing.Size(1090, 599);
+			this.superTabControlPanel3.TabIndex = 0;
+			this.superTabControlPanel3.TabItem = this.superTabItem3;
+			// 
+			// graphHistory
+			// 
+			this.graphHistory.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.graphHistory.Location = new System.Drawing.Point(228, 0);
+			this.graphHistory.Margin = new System.Windows.Forms.Padding(4);
+			this.graphHistory.Name = "graphHistory";
+			this.graphHistory.ScrollGrace = 0D;
+			this.graphHistory.ScrollMaxX = 0D;
+			this.graphHistory.ScrollMaxY = 0D;
+			this.graphHistory.ScrollMaxY2 = 0D;
+			this.graphHistory.ScrollMinX = 0D;
+			this.graphHistory.ScrollMinY = 0D;
+			this.graphHistory.ScrollMinY2 = 0D;
+			this.graphHistory.Size = new System.Drawing.Size(862, 599);
+			this.graphHistory.TabIndex = 9;
+			// 
+			// btnUpdateHistory
+			// 
+			this.btnUpdateHistory.AccessibleRole = System.Windows.Forms.AccessibleRole.PushButton;
+			this.btnUpdateHistory.ColorTable = DevComponents.DotNetBar.eButtonColor.OrangeWithBackground;
+			this.btnUpdateHistory.Font = new System.Drawing.Font("Segoe UI Black", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
+			this.btnUpdateHistory.Location = new System.Drawing.Point(13, 292);
+			this.btnUpdateHistory.Name = "btnUpdateHistory";
+			this.btnUpdateHistory.Size = new System.Drawing.Size(208, 98);
+			this.btnUpdateHistory.Style = DevComponents.DotNetBar.eDotNetBarStyle.StyleManagerControlled;
+			this.btnUpdateHistory.Symbol = "";
+			this.btnUpdateHistory.SymbolSize = 35F;
+			this.btnUpdateHistory.TabIndex = 8;
+			this.btnUpdateHistory.Text = " Thống kê";
+			this.btnUpdateHistory.Click += new System.EventHandler(this.btnUpdateHistory_Click);
+			// 
+			// labelX4
+			// 
+			this.labelX4.BackColor = System.Drawing.Color.Transparent;
+			// 
+			// 
+			// 
+			this.labelX4.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.labelX4.ForeColor = System.Drawing.Color.Black;
+			this.labelX4.Location = new System.Drawing.Point(13, 188);
+			this.labelX4.Name = "labelX4";
+			this.labelX4.Size = new System.Drawing.Size(208, 23);
+			this.labelX4.TabIndex = 7;
+			this.labelX4.Text = "Thời gian kết thúc:";
+			// 
+			// dtHistoryEnd
+			// 
+			this.dtHistoryEnd.AutoOffFreeTextEntry = true;
+			this.dtHistoryEnd.BackColor = System.Drawing.Color.White;
+			// 
+			// 
+			// 
+			this.dtHistoryEnd.BackgroundStyle.Class = "DateTimeInputBackground";
+			this.dtHistoryEnd.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.dtHistoryEnd.ButtonDropDown.Shortcut = DevComponents.DotNetBar.eShortcut.AltDown;
+			this.dtHistoryEnd.ButtonDropDown.Visible = true;
+			this.dtHistoryEnd.CustomFormat = "HH:mm dd/MM/yyyy";
+			this.dtHistoryEnd.DateTimeSelectorVisibility = DevComponents.Editors.DateTimeAdv.eDateTimeSelectorVisibility.Both;
+			this.dtHistoryEnd.ForeColor = System.Drawing.Color.Black;
+			this.dtHistoryEnd.Format = DevComponents.Editors.eDateTimePickerFormat.Custom;
+			this.dtHistoryEnd.InputHorizontalAlignment = DevComponents.Editors.eHorizontalAlignment.Center;
+			this.dtHistoryEnd.IsPopupCalendarOpen = false;
+			this.dtHistoryEnd.Location = new System.Drawing.Point(12, 217);
+			// 
+			// 
+			// 
+			this.dtHistoryEnd.MonthCalendar.AnnuallyMarkedDates = new System.DateTime[0];
+			// 
+			// 
+			// 
+			this.dtHistoryEnd.MonthCalendar.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.dtHistoryEnd.MonthCalendar.CalendarDimensions = new System.Drawing.Size(1, 1);
+			// 
+			// 
+			// 
+			this.dtHistoryEnd.MonthCalendar.CommandsBackgroundStyle.BackColor2SchemePart = DevComponents.DotNetBar.eColorSchemePart.BarBackground2;
+			this.dtHistoryEnd.MonthCalendar.CommandsBackgroundStyle.BackColorGradientAngle = 90;
+			this.dtHistoryEnd.MonthCalendar.CommandsBackgroundStyle.BackColorSchemePart = DevComponents.DotNetBar.eColorSchemePart.BarBackground;
+			this.dtHistoryEnd.MonthCalendar.CommandsBackgroundStyle.BorderTop = DevComponents.DotNetBar.eStyleBorderType.Solid;
+			this.dtHistoryEnd.MonthCalendar.CommandsBackgroundStyle.BorderTopColorSchemePart = DevComponents.DotNetBar.eColorSchemePart.BarDockedBorder;
+			this.dtHistoryEnd.MonthCalendar.CommandsBackgroundStyle.BorderTopWidth = 1;
+			this.dtHistoryEnd.MonthCalendar.CommandsBackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.dtHistoryEnd.MonthCalendar.DayClickAutoClosePopup = false;
+			this.dtHistoryEnd.MonthCalendar.DisplayMonth = new System.DateTime(2015, 7, 1, 0, 0, 0, 0);
+			this.dtHistoryEnd.MonthCalendar.FirstDayOfWeek = System.DayOfWeek.Monday;
+			this.dtHistoryEnd.MonthCalendar.MarkedDates = new System.DateTime[0];
+			this.dtHistoryEnd.MonthCalendar.MonthlyMarkedDates = new System.DateTime[0];
+			// 
+			// 
+			// 
+			this.dtHistoryEnd.MonthCalendar.NavigationBackgroundStyle.BackColor2SchemePart = DevComponents.DotNetBar.eColorSchemePart.PanelBackground2;
+			this.dtHistoryEnd.MonthCalendar.NavigationBackgroundStyle.BackColorGradientAngle = 90;
+			this.dtHistoryEnd.MonthCalendar.NavigationBackgroundStyle.BackColorSchemePart = DevComponents.DotNetBar.eColorSchemePart.PanelBackground;
+			this.dtHistoryEnd.MonthCalendar.NavigationBackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.dtHistoryEnd.MonthCalendar.WeeklyMarkedDays = new System.DayOfWeek[0];
+			this.dtHistoryEnd.Name = "dtHistoryEnd";
+			this.dtHistoryEnd.Size = new System.Drawing.Size(209, 26);
+			this.dtHistoryEnd.Style = DevComponents.DotNetBar.eDotNetBarStyle.StyleManagerControlled;
+			this.dtHistoryEnd.TabIndex = 6;
+			this.dtHistoryEnd.TimeSelectorTimeFormat = DevComponents.Editors.DateTimeAdv.eTimeSelectorFormat.Time24H;
+			this.dtHistoryEnd.TimeSelectorType = DevComponents.Editors.DateTimeAdv.eTimeSelectorType.TouchStyle;
+			// 
+			// labelX3
+			// 
+			this.labelX3.BackColor = System.Drawing.Color.Transparent;
+			// 
+			// 
+			// 
+			this.labelX3.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.labelX3.ForeColor = System.Drawing.Color.Black;
+			this.labelX3.Location = new System.Drawing.Point(13, 105);
+			this.labelX3.Name = "labelX3";
+			this.labelX3.Size = new System.Drawing.Size(208, 23);
+			this.labelX3.TabIndex = 5;
+			this.labelX3.Text = "Thời gian bắt đầu:";
+			// 
+			// dtHistoryBegin
+			// 
+			this.dtHistoryBegin.AutoOffFreeTextEntry = true;
+			this.dtHistoryBegin.BackColor = System.Drawing.Color.White;
+			// 
+			// 
+			// 
+			this.dtHistoryBegin.BackgroundStyle.Class = "DateTimeInputBackground";
+			this.dtHistoryBegin.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.dtHistoryBegin.ButtonDropDown.Shortcut = DevComponents.DotNetBar.eShortcut.AltDown;
+			this.dtHistoryBegin.ButtonDropDown.Visible = true;
+			this.dtHistoryBegin.CustomFormat = "HH:mm dd/MM/yyyy";
+			this.dtHistoryBegin.DateTimeSelectorVisibility = DevComponents.Editors.DateTimeAdv.eDateTimeSelectorVisibility.Both;
+			this.dtHistoryBegin.ForeColor = System.Drawing.Color.Black;
+			this.dtHistoryBegin.Format = DevComponents.Editors.eDateTimePickerFormat.Custom;
+			this.dtHistoryBegin.InputHorizontalAlignment = DevComponents.Editors.eHorizontalAlignment.Center;
+			this.dtHistoryBegin.IsPopupCalendarOpen = false;
+			this.dtHistoryBegin.Location = new System.Drawing.Point(12, 134);
+			// 
+			// 
+			// 
+			this.dtHistoryBegin.MonthCalendar.AnnuallyMarkedDates = new System.DateTime[0];
+			// 
+			// 
+			// 
+			this.dtHistoryBegin.MonthCalendar.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.dtHistoryBegin.MonthCalendar.CalendarDimensions = new System.Drawing.Size(1, 1);
+			// 
+			// 
+			// 
+			this.dtHistoryBegin.MonthCalendar.CommandsBackgroundStyle.BackColor2SchemePart = DevComponents.DotNetBar.eColorSchemePart.BarBackground2;
+			this.dtHistoryBegin.MonthCalendar.CommandsBackgroundStyle.BackColorGradientAngle = 90;
+			this.dtHistoryBegin.MonthCalendar.CommandsBackgroundStyle.BackColorSchemePart = DevComponents.DotNetBar.eColorSchemePart.BarBackground;
+			this.dtHistoryBegin.MonthCalendar.CommandsBackgroundStyle.BorderTop = DevComponents.DotNetBar.eStyleBorderType.Solid;
+			this.dtHistoryBegin.MonthCalendar.CommandsBackgroundStyle.BorderTopColorSchemePart = DevComponents.DotNetBar.eColorSchemePart.BarDockedBorder;
+			this.dtHistoryBegin.MonthCalendar.CommandsBackgroundStyle.BorderTopWidth = 1;
+			this.dtHistoryBegin.MonthCalendar.CommandsBackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.dtHistoryBegin.MonthCalendar.DayClickAutoClosePopup = false;
+			this.dtHistoryBegin.MonthCalendar.DisplayMonth = new System.DateTime(2015, 7, 1, 0, 0, 0, 0);
+			this.dtHistoryBegin.MonthCalendar.FirstDayOfWeek = System.DayOfWeek.Monday;
+			this.dtHistoryBegin.MonthCalendar.MarkedDates = new System.DateTime[0];
+			this.dtHistoryBegin.MonthCalendar.MonthlyMarkedDates = new System.DateTime[0];
+			// 
+			// 
+			// 
+			this.dtHistoryBegin.MonthCalendar.NavigationBackgroundStyle.BackColor2SchemePart = DevComponents.DotNetBar.eColorSchemePart.PanelBackground2;
+			this.dtHistoryBegin.MonthCalendar.NavigationBackgroundStyle.BackColorGradientAngle = 90;
+			this.dtHistoryBegin.MonthCalendar.NavigationBackgroundStyle.BackColorSchemePart = DevComponents.DotNetBar.eColorSchemePart.PanelBackground;
+			this.dtHistoryBegin.MonthCalendar.NavigationBackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.dtHistoryBegin.MonthCalendar.WeeklyMarkedDays = new System.DayOfWeek[0];
+			this.dtHistoryBegin.Name = "dtHistoryBegin";
+			this.dtHistoryBegin.Size = new System.Drawing.Size(209, 26);
+			this.dtHistoryBegin.Style = DevComponents.DotNetBar.eDotNetBarStyle.StyleManagerControlled;
+			this.dtHistoryBegin.TabIndex = 4;
+			this.dtHistoryBegin.TimeSelectorTimeFormat = DevComponents.Editors.DateTimeAdv.eTimeSelectorFormat.Time24H;
+			this.dtHistoryBegin.TimeSelectorType = DevComponents.Editors.DateTimeAdv.eTimeSelectorType.TouchStyle;
+			// 
+			// cbDeviceHistory
+			// 
+			this.cbDeviceHistory.BackColor = System.Drawing.Color.WhiteSmoke;
+			this.cbDeviceHistory.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+			this.cbDeviceHistory.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cbDeviceHistory.ForeColor = System.Drawing.Color.Black;
+			this.cbDeviceHistory.FormattingEnabled = true;
+			this.cbDeviceHistory.ImageList = this.deviceImageList;
+			this.cbDeviceHistory.ItemHeight = 64;
+			this.cbDeviceHistory.Location = new System.Drawing.Point(12, 15);
+			this.cbDeviceHistory.Name = "cbDeviceHistory";
+			this.cbDeviceHistory.Size = new System.Drawing.Size(209, 70);
+			this.cbDeviceHistory.TabIndex = 1;
+			this.cbDeviceHistory.SelectedIndexChanged += new System.EventHandler(this.cbDeviceHistory_SelectedIndexChanged);
+			// 
+			// deviceImageList
+			// 
+			this.deviceImageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("deviceImageList.ImageStream")));
+			this.deviceImageList.TransparentColor = System.Drawing.Color.Transparent;
+			this.deviceImageList.Images.SetKeyName(0, "air_conditioner.jpg");
+			this.deviceImageList.Images.SetKeyName(1, "electric_socket.jpg");
+			this.deviceImageList.Images.SetKeyName(2, "fan.jpg");
+			this.deviceImageList.Images.SetKeyName(3, "washing_machine.jpg");
+			this.deviceImageList.Images.SetKeyName(4, "water_heater.jpg");
+			// 
+			// superTabItem3
+			// 
+			this.superTabItem3.AttachedControl = this.superTabControlPanel3;
+			this.superTabItem3.GlobalItem = false;
+			this.superTabItem3.Name = "superTabItem3";
+			this.superTabItem3.Text = "Lịch sử thiết bị";
+			// 
+			// superTabControlPanel1
+			// 
+			this.superTabControlPanel1.Controls.Add(this.gridDevice);
+			this.superTabControlPanel1.Controls.Add(this.progUpdateData);
+			this.superTabControlPanel1.Controls.Add(this.txtDiffTime);
+			this.superTabControlPanel1.Controls.Add(this.labelX2);
+			this.superTabControlPanel1.Controls.Add(this.lbFileList);
+			this.superTabControlPanel1.Controls.Add(this.txtLogUpdateTime);
+			this.superTabControlPanel1.Controls.Add(this.labelX1);
+			this.superTabControlPanel1.Controls.Add(this.btnUpdateData);
+			this.superTabControlPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.superTabControlPanel1.Location = new System.Drawing.Point(0, 36);
+			this.superTabControlPanel1.Name = "superTabControlPanel1";
+			this.superTabControlPanel1.Size = new System.Drawing.Size(1090, 599);
+			this.superTabControlPanel1.TabIndex = 1;
+			this.superTabControlPanel1.TabItem = this.superTabItem1;
+			// 
+			// gridDevice
+			// 
+			this.gridDevice.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.gridDevice.BackColor = System.Drawing.Color.WhiteSmoke;
+			this.gridDevice.DefaultVisualStyles.CellStyles.Default.Alignment = DevComponents.DotNetBar.SuperGrid.Style.Alignment.MiddleCenter;
+			this.gridDevice.DefaultVisualStyles.CellStyles.Default.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
+			this.gridDevice.DefaultVisualStyles.ColumnHeaderStyles.Default.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
+			this.gridDevice.FilterExprColors.SysFunction = System.Drawing.Color.DarkRed;
+			this.gridDevice.ForeColor = System.Drawing.Color.Black;
+			this.gridDevice.Location = new System.Drawing.Point(488, 0);
+			this.gridDevice.Name = "gridDevice";
+			// 
+			// 
+			// 
+			this.gridDevice.PrimaryGrid.AllowRowHeaderResize = true;
+			this.gridDevice.PrimaryGrid.AllowRowInsert = true;
+			this.gridDevice.PrimaryGrid.AllowRowResize = true;
+			this.gridDevice.PrimaryGrid.Columns.Add(this.colDeviceID);
+			this.gridDevice.PrimaryGrid.Columns.Add(this.colDeviceType);
+			this.gridDevice.PrimaryGrid.Columns.Add(this.colDeviceName);
+			this.gridDevice.PrimaryGrid.Columns.Add(this.colDeviceAction);
+			this.gridDevice.PrimaryGrid.DefaultRowHeight = 75;
+			this.gridDevice.PrimaryGrid.MultiSelect = false;
+			this.gridDevice.PrimaryGrid.SelectionGranularity = DevComponents.DotNetBar.SuperGrid.SelectionGranularity.RowWithCellHighlight;
+			this.gridDevice.PrimaryGrid.ShowInsertRow = true;
+			this.gridDevice.Size = new System.Drawing.Size(599, 599);
+			this.gridDevice.TabIndex = 10;
+			this.gridDevice.CellDoubleClick += new System.EventHandler<DevComponents.DotNetBar.SuperGrid.GridCellDoubleClickEventArgs>(this.gridDevice_CellDoubleClick);
+			this.gridDevice.CloseEdit += new System.EventHandler<DevComponents.DotNetBar.SuperGrid.GridCloseEditEventArgs>(this.gridDevice_CloseEdit);
+			this.gridDevice.RowAdded += new System.EventHandler<DevComponents.DotNetBar.SuperGrid.GridRowAddedEventArgs>(this.gridDevice_RowAdded);
+			this.gridDevice.RowSetDefaultValues += new System.EventHandler<DevComponents.DotNetBar.SuperGrid.GridRowSetDefaultValuesEventArgs>(this.gridDevice_RowSetDefaultValues);
+			// 
+			// colDeviceID
+			// 
+			this.colDeviceID.EditorType = typeof(DevComponents.DotNetBar.SuperGrid.GridLabelXEditControl);
+			this.colDeviceID.Name = "ID";
+			this.colDeviceID.Width = 50;
+			// 
+			// colDeviceType
+			// 
+			this.colDeviceType.Name = "Loại";
+			this.colDeviceType.Width = 150;
+			// 
+			// colDeviceName
+			// 
+			this.colDeviceName.AutoSizeMode = DevComponents.DotNetBar.SuperGrid.ColumnAutoSizeMode.Fill;
+			this.colDeviceName.Name = "Tên thiết bị";
+			// 
+			// colDeviceAction
+			// 
+			this.colDeviceAction.ColumnSortMode = DevComponents.DotNetBar.SuperGrid.ColumnSortMode.None;
+			this.colDeviceAction.EditorType = typeof(DevComponents.DotNetBar.SuperGrid.GridRadialMenuEditControl);
+			this.colDeviceAction.FillWeight = 75;
+			this.colDeviceAction.Name = "H.Đ";
+			this.colDeviceAction.SortIndicator = DevComponents.DotNetBar.SuperGrid.SortIndicator.None;
+			// 
+			// progUpdateData
+			// 
+			this.progUpdateData.BackColor = System.Drawing.Color.Transparent;
+			// 
+			// 
+			// 
+			this.progUpdateData.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.progUpdateData.Location = new System.Drawing.Point(256, 142);
+			this.progUpdateData.Name = "progUpdateData";
+			this.progUpdateData.ProgressBarType = DevComponents.DotNetBar.eCircularProgressType.Spoke;
+			this.progUpdateData.Size = new System.Drawing.Size(209, 209);
+			this.progUpdateData.Style = DevComponents.DotNetBar.eDotNetBarStyle.OfficeXP;
+			this.progUpdateData.TabIndex = 9;
+			// 
+			// txtDiffTime
+			// 
+			this.txtDiffTime.BackColor = System.Drawing.Color.White;
+			// 
+			// 
+			// 
+			this.txtDiffTime.Border.Class = "TextBoxBorder";
+			this.txtDiffTime.Border.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.txtDiffTime.DisabledBackColor = System.Drawing.Color.White;
+			this.txtDiffTime.ForeColor = System.Drawing.Color.Black;
+			this.txtDiffTime.Location = new System.Drawing.Point(256, 110);
+			this.txtDiffTime.Name = "txtDiffTime";
+			this.txtDiffTime.PreventEnterBeep = true;
+			this.txtDiffTime.ReadOnly = true;
+			this.txtDiffTime.Size = new System.Drawing.Size(209, 26);
+			this.txtDiffTime.TabIndex = 8;
+			// 
+			// labelX2
+			// 
+			this.labelX2.BackColor = System.Drawing.Color.Transparent;
+			// 
+			// 
+			// 
+			this.labelX2.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.labelX2.ForeColor = System.Drawing.Color.Black;
+			this.labelX2.Location = new System.Drawing.Point(256, 80);
+			this.labelX2.Name = "labelX2";
+			this.labelX2.SingleLineColor = System.Drawing.SystemColors.ControlLight;
+			this.labelX2.Size = new System.Drawing.Size(209, 23);
+			this.labelX2.TabIndex = 7;
+			this.labelX2.Text = "Thời gian trễ:";
+			// 
+			// lbFileList
+			// 
+			this.lbFileList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+			this.lbFileList.AutoScroll = true;
+			this.lbFileList.BackColor = System.Drawing.Color.WhiteSmoke;
+			// 
+			// 
+			// 
+			this.lbFileList.BackgroundStyle.Class = "ListBoxAdv";
+			this.lbFileList.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.lbFileList.CheckStateMember = null;
+			this.lbFileList.ContainerControlProcessDialogKey = true;
+			this.lbFileList.DragDropSupport = true;
+			this.lbFileList.ForeColor = System.Drawing.Color.Black;
+			this.lbFileList.Location = new System.Drawing.Point(12, 122);
+			this.lbFileList.Name = "lbFileList";
+			this.lbFileList.Size = new System.Drawing.Size(226, 463);
+			this.lbFileList.TabIndex = 4;
+			// 
+			// txtLogUpdateTime
+			// 
+			this.txtLogUpdateTime.BackColor = System.Drawing.Color.White;
+			// 
+			// 
+			// 
+			this.txtLogUpdateTime.Border.Class = "TextBoxBorder";
+			this.txtLogUpdateTime.Border.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.txtLogUpdateTime.DisabledBackColor = System.Drawing.Color.White;
+			this.txtLogUpdateTime.ForeColor = System.Drawing.Color.Black;
+			this.txtLogUpdateTime.Location = new System.Drawing.Point(256, 48);
+			this.txtLogUpdateTime.Name = "txtLogUpdateTime";
+			this.txtLogUpdateTime.PreventEnterBeep = true;
+			this.txtLogUpdateTime.ReadOnly = true;
+			this.txtLogUpdateTime.Size = new System.Drawing.Size(209, 26);
+			this.txtLogUpdateTime.TabIndex = 2;
+			// 
+			// labelX1
+			// 
+			this.labelX1.BackColor = System.Drawing.Color.Transparent;
+			// 
+			// 
+			// 
+			this.labelX1.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.labelX1.ForeColor = System.Drawing.Color.Black;
+			this.labelX1.Location = new System.Drawing.Point(256, 18);
+			this.labelX1.Name = "labelX1";
+			this.labelX1.SingleLineColor = System.Drawing.SystemColors.ControlLight;
+			this.labelX1.Size = new System.Drawing.Size(209, 23);
+			this.labelX1.TabIndex = 1;
+			this.labelX1.Text = "Dữ liệu được cập nhật đến:";
+			// 
+			// btnUpdateData
+			// 
+			this.btnUpdateData.AccessibleRole = System.Windows.Forms.AccessibleRole.PushButton;
+			this.btnUpdateData.ColorTable = DevComponents.DotNetBar.eButtonColor.OrangeWithBackground;
+			this.btnUpdateData.Font = new System.Drawing.Font("Segoe UI Black", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
+			this.btnUpdateData.Location = new System.Drawing.Point(12, 18);
+			this.btnUpdateData.Name = "btnUpdateData";
+			this.btnUpdateData.Size = new System.Drawing.Size(226, 98);
+			this.btnUpdateData.Style = DevComponents.DotNetBar.eDotNetBarStyle.StyleManagerControlled;
+			this.btnUpdateData.Symbol = "";
+			this.btnUpdateData.SymbolSize = 40F;
+			this.btnUpdateData.TabIndex = 0;
+			this.btnUpdateData.Text = " Cập nhật";
+			this.btnUpdateData.Click += new System.EventHandler(this.btnUpdateData_Click);
+			// 
+			// superTabItem1
+			// 
+			this.superTabItem1.AttachedControl = this.superTabControlPanel1;
+			this.superTabItem1.GlobalItem = false;
+			this.superTabItem1.Name = "superTabItem1";
+			this.superTabItem1.Text = "Cập nhật dữ liệu";
 			// 
 			// superTabControlPanel2
 			// 
@@ -168,7 +604,7 @@
 			this.superTabControlPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.superTabControlPanel2.Location = new System.Drawing.Point(0, 36);
 			this.superTabControlPanel2.Name = "superTabControlPanel2";
-			this.superTabControlPanel2.Size = new System.Drawing.Size(1090, 396);
+			this.superTabControlPanel2.Size = new System.Drawing.Size(1090, 599);
 			this.superTabControlPanel2.TabIndex = 0;
 			this.superTabControlPanel2.TabItem = this.superTabItem2;
 			// 
@@ -193,8 +629,12 @@
 			this.gridBlocks.PrimaryGrid.Columns.Add(this.colBlockDevice);
 			this.gridBlocks.PrimaryGrid.Columns.Add(this.colBlockImport);
 			this.gridBlocks.PrimaryGrid.DefaultRowHeight = 75;
+			padding2.Bottom = 4;
+			padding2.Top = 4;
+			this.gridBlocks.PrimaryGrid.DefaultVisualStyles.ColumnHeaderStyles.Default.Padding = padding2;
 			this.gridBlocks.PrimaryGrid.SelectionGranularity = DevComponents.DotNetBar.SuperGrid.SelectionGranularity.RowWithCellHighlight;
-			this.gridBlocks.Size = new System.Drawing.Size(1090, 396);
+			this.gridBlocks.PrimaryGrid.SortLevel = DevComponents.DotNetBar.SuperGrid.SortLevel.None;
+			this.gridBlocks.Size = new System.Drawing.Size(1090, 599);
 			this.gridBlocks.TabIndex = 0;
 			this.gridBlocks.CellClick += new System.EventHandler<DevComponents.DotNetBar.SuperGrid.GridCellClickEventArgs>(this.gridBlocks_CellClick);
 			// 
@@ -230,8 +670,8 @@
 			// 
 			// colBlockImport
 			// 
-			background1.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-			this.colBlockImport.CellStyles.MouseOver.Background = background1;
+			background2.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+			this.colBlockImport.CellStyles.MouseOver.Background = background2;
 			this.colBlockImport.EditorType = typeof(DevComponents.DotNetBar.SuperGrid.GridLabelXEditControl);
 			this.colBlockImport.MarkRowDirtyOnCellValueChange = false;
 			this.colBlockImport.Name = "Nhập";
@@ -244,200 +684,6 @@
 			this.superTabItem2.Name = "superTabItem2";
 			this.superTabItem2.Text = "Quản lý dữ liệu";
 			// 
-			// superTabControlPanel1
-			// 
-			this.superTabControlPanel1.Controls.Add(this.gridDevice);
-			this.superTabControlPanel1.Controls.Add(this.progUpdateData);
-			this.superTabControlPanel1.Controls.Add(this.txtDiffTime);
-			this.superTabControlPanel1.Controls.Add(this.labelX2);
-			this.superTabControlPanel1.Controls.Add(this.lbFileList);
-			this.superTabControlPanel1.Controls.Add(this.txtLogUpdateTime);
-			this.superTabControlPanel1.Controls.Add(this.labelX1);
-			this.superTabControlPanel1.Controls.Add(this.btnUpdateData);
-			this.superTabControlPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.superTabControlPanel1.Location = new System.Drawing.Point(0, 36);
-			this.superTabControlPanel1.Name = "superTabControlPanel1";
-			this.superTabControlPanel1.Size = new System.Drawing.Size(1090, 396);
-			this.superTabControlPanel1.TabIndex = 1;
-			this.superTabControlPanel1.TabItem = this.superTabItem1;
-			// 
-			// gridDevice
-			// 
-			this.gridDevice.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.gridDevice.BackColor = System.Drawing.Color.WhiteSmoke;
-			this.gridDevice.DefaultVisualStyles.CellStyles.Default.Alignment = DevComponents.DotNetBar.SuperGrid.Style.Alignment.MiddleCenter;
-			this.gridDevice.DefaultVisualStyles.CellStyles.Default.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
-			this.gridDevice.DefaultVisualStyles.ColumnHeaderStyles.Default.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
-			this.gridDevice.FilterExprColors.SysFunction = System.Drawing.Color.DarkRed;
-			this.gridDevice.ForeColor = System.Drawing.Color.Black;
-			this.gridDevice.Location = new System.Drawing.Point(488, 0);
-			this.gridDevice.Name = "gridDevice";
-			// 
-			// 
-			// 
-			this.gridDevice.PrimaryGrid.AllowRowHeaderResize = true;
-			this.gridDevice.PrimaryGrid.AllowRowInsert = true;
-			this.gridDevice.PrimaryGrid.AllowRowResize = true;
-			this.gridDevice.PrimaryGrid.Columns.Add(this.colDeviceID);
-			this.gridDevice.PrimaryGrid.Columns.Add(this.colDeviceType);
-			this.gridDevice.PrimaryGrid.Columns.Add(this.colDeviceName);
-			this.gridDevice.PrimaryGrid.Columns.Add(this.colDeviceAction);
-			this.gridDevice.PrimaryGrid.DefaultRowHeight = 75;
-			this.gridDevice.PrimaryGrid.MultiSelect = false;
-			this.gridDevice.PrimaryGrid.SelectionGranularity = DevComponents.DotNetBar.SuperGrid.SelectionGranularity.RowWithCellHighlight;
-			this.gridDevice.PrimaryGrid.ShowInsertRow = true;
-			this.gridDevice.Size = new System.Drawing.Size(599, 396);
-			this.gridDevice.TabIndex = 10;
-			this.gridDevice.CellDoubleClick += new System.EventHandler<DevComponents.DotNetBar.SuperGrid.GridCellDoubleClickEventArgs>(this.gridDevice_CellDoubleClick);
-			this.gridDevice.CloseEdit += new System.EventHandler<DevComponents.DotNetBar.SuperGrid.GridCloseEditEventArgs>(this.gridDevice_CloseEdit);
-			this.gridDevice.RowAdded += new System.EventHandler<DevComponents.DotNetBar.SuperGrid.GridRowAddedEventArgs>(this.gridDevice_RowAdded);
-			this.gridDevice.RowSetDefaultValues += new System.EventHandler<DevComponents.DotNetBar.SuperGrid.GridRowSetDefaultValuesEventArgs>(this.gridDevice_RowSetDefaultValues);
-			// 
-			// colDeviceID
-			// 
-			this.colDeviceID.EditorType = typeof(DevComponents.DotNetBar.SuperGrid.GridLabelXEditControl);
-			this.colDeviceID.Name = "ID";
-			this.colDeviceID.Width = 50;
-			// 
-			// colDeviceType
-			// 
-			this.colDeviceType.Name = "Loại";
-			this.colDeviceType.Width = 150;
-			// 
-			// colDeviceName
-			// 
-			this.colDeviceName.AutoSizeMode = DevComponents.DotNetBar.SuperGrid.ColumnAutoSizeMode.Fill;
-			this.colDeviceName.Name = "Tên thiết bị";
-			// 
-			// colDeviceAction
-			// 
-			this.colDeviceAction.ColumnSortMode = DevComponents.DotNetBar.SuperGrid.ColumnSortMode.None;
-			this.colDeviceAction.EditorType = typeof(DevComponents.DotNetBar.SuperGrid.GridRadialMenuEditControl);
-			this.colDeviceAction.FillWeight = 75;
-			this.colDeviceAction.Name = "H.Đ";
-			this.colDeviceAction.SortIndicator = DevComponents.DotNetBar.SuperGrid.SortIndicator.None;
-			// 
-			// progUpdateData
-			// 
-			this.progUpdateData.BackColor = System.Drawing.Color.WhiteSmoke;
-			// 
-			// 
-			// 
-			this.progUpdateData.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-			this.progUpdateData.Location = new System.Drawing.Point(256, 142);
-			this.progUpdateData.Name = "progUpdateData";
-			this.progUpdateData.ProgressBarType = DevComponents.DotNetBar.eCircularProgressType.Spoke;
-			this.progUpdateData.Size = new System.Drawing.Size(209, 209);
-			this.progUpdateData.Style = DevComponents.DotNetBar.eDotNetBarStyle.OfficeXP;
-			this.progUpdateData.TabIndex = 9;
-			// 
-			// txtDiffTime
-			// 
-			this.txtDiffTime.BackColor = System.Drawing.Color.White;
-			// 
-			// 
-			// 
-			this.txtDiffTime.Border.Class = "TextBoxBorder";
-			this.txtDiffTime.Border.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-			this.txtDiffTime.DisabledBackColor = System.Drawing.Color.White;
-			this.txtDiffTime.ForeColor = System.Drawing.Color.Black;
-			this.txtDiffTime.Location = new System.Drawing.Point(256, 110);
-			this.txtDiffTime.Name = "txtDiffTime";
-			this.txtDiffTime.PreventEnterBeep = true;
-			this.txtDiffTime.ReadOnly = true;
-			this.txtDiffTime.Size = new System.Drawing.Size(209, 26);
-			this.txtDiffTime.TabIndex = 8;
-			// 
-			// labelX2
-			// 
-			this.labelX2.BackColor = System.Drawing.Color.WhiteSmoke;
-			// 
-			// 
-			// 
-			this.labelX2.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-			this.labelX2.ForeColor = System.Drawing.Color.Black;
-			this.labelX2.Location = new System.Drawing.Point(256, 80);
-			this.labelX2.Name = "labelX2";
-			this.labelX2.SingleLineColor = System.Drawing.SystemColors.ControlLight;
-			this.labelX2.Size = new System.Drawing.Size(209, 23);
-			this.labelX2.TabIndex = 7;
-			this.labelX2.Text = "Thời gian trễ:";
-			// 
-			// lbFileList
-			// 
-			this.lbFileList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-			this.lbFileList.AutoScroll = true;
-			this.lbFileList.BackColor = System.Drawing.Color.WhiteSmoke;
-			// 
-			// 
-			// 
-			this.lbFileList.BackgroundStyle.Class = "ListBoxAdv";
-			this.lbFileList.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-			this.lbFileList.ContainerControlProcessDialogKey = true;
-			this.lbFileList.DragDropSupport = true;
-			this.lbFileList.ForeColor = System.Drawing.Color.Black;
-			this.lbFileList.Location = new System.Drawing.Point(12, 122);
-			this.lbFileList.Name = "lbFileList";
-			this.lbFileList.Size = new System.Drawing.Size(226, 260);
-			this.lbFileList.TabIndex = 4;
-			// 
-			// txtLogUpdateTime
-			// 
-			this.txtLogUpdateTime.BackColor = System.Drawing.Color.White;
-			// 
-			// 
-			// 
-			this.txtLogUpdateTime.Border.Class = "TextBoxBorder";
-			this.txtLogUpdateTime.Border.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-			this.txtLogUpdateTime.DisabledBackColor = System.Drawing.Color.White;
-			this.txtLogUpdateTime.ForeColor = System.Drawing.Color.Black;
-			this.txtLogUpdateTime.Location = new System.Drawing.Point(256, 48);
-			this.txtLogUpdateTime.Name = "txtLogUpdateTime";
-			this.txtLogUpdateTime.PreventEnterBeep = true;
-			this.txtLogUpdateTime.ReadOnly = true;
-			this.txtLogUpdateTime.Size = new System.Drawing.Size(209, 26);
-			this.txtLogUpdateTime.TabIndex = 2;
-			// 
-			// labelX1
-			// 
-			this.labelX1.BackColor = System.Drawing.Color.WhiteSmoke;
-			// 
-			// 
-			// 
-			this.labelX1.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-			this.labelX1.ForeColor = System.Drawing.Color.Black;
-			this.labelX1.Location = new System.Drawing.Point(256, 18);
-			this.labelX1.Name = "labelX1";
-			this.labelX1.SingleLineColor = System.Drawing.SystemColors.ControlLight;
-			this.labelX1.Size = new System.Drawing.Size(209, 23);
-			this.labelX1.TabIndex = 1;
-			this.labelX1.Text = "Dữ liệu được cập nhật đến:";
-			// 
-			// btnUpdateData
-			// 
-			this.btnUpdateData.AccessibleRole = System.Windows.Forms.AccessibleRole.PushButton;
-			this.btnUpdateData.ColorTable = DevComponents.DotNetBar.eButtonColor.OrangeWithBackground;
-			this.btnUpdateData.Font = new System.Drawing.Font("Segoe UI Black", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
-			this.btnUpdateData.Location = new System.Drawing.Point(12, 18);
-			this.btnUpdateData.Name = "btnUpdateData";
-			this.btnUpdateData.Size = new System.Drawing.Size(226, 98);
-			this.btnUpdateData.Style = DevComponents.DotNetBar.eDotNetBarStyle.StyleManagerControlled;
-			this.btnUpdateData.Symbol = "";
-			this.btnUpdateData.SymbolSize = 40F;
-			this.btnUpdateData.TabIndex = 0;
-			this.btnUpdateData.Text = " Cập nhật";
-			this.btnUpdateData.Click += new System.EventHandler(this.btnUpdateData_Click);
-			// 
-			// superTabItem1
-			// 
-			this.superTabItem1.AttachedControl = this.superTabControlPanel1;
-			this.superTabItem1.GlobalItem = false;
-			this.superTabItem1.Name = "superTabItem1";
-			this.superTabItem1.Text = "Cập nhật dữ liệu";
-			// 
 			// statusBar
 			// 
 			this.statusBar.AntiAlias = true;
@@ -447,7 +693,7 @@
 			this.statusBar.Items.AddRange(new DevComponents.DotNetBar.BaseItem[] {
             this.lblStatus,
             this.btnAuthor});
-			this.statusBar.Location = new System.Drawing.Point(0, 431);
+			this.statusBar.Location = new System.Drawing.Point(0, 634);
 			this.statusBar.Name = "statusBar";
 			this.statusBar.Size = new System.Drawing.Size(1090, 26);
 			this.statusBar.Stretch = true;
@@ -466,18 +712,35 @@
 			// btnAuthor
 			// 
 			this.btnAuthor.Name = "btnAuthor";
+			this.btnAuthor.SubItems.AddRange(new DevComponents.DotNetBar.BaseItem[] {
+            this.cbTheme,
+            this.cpCanvasColor,
+            this.cpBaseColor});
 			this.btnAuthor.Text = "Kim Hảo @ 2015";
 			this.btnAuthor.Click += new System.EventHandler(this.btnAuthor_Click);
 			// 
-			// deviceImageList
+			// cbTheme
 			// 
-			this.deviceImageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("deviceImageList.ImageStream")));
-			this.deviceImageList.TransparentColor = System.Drawing.Color.Transparent;
-			this.deviceImageList.Images.SetKeyName(0, "air_conditioner.jpg");
-			this.deviceImageList.Images.SetKeyName(1, "electric_socket.jpg");
-			this.deviceImageList.Images.SetKeyName(2, "fan.jpg");
-			this.deviceImageList.Images.SetKeyName(3, "washing_machine.jpg");
-			this.deviceImageList.Images.SetKeyName(4, "water_heater.jpg");
+			this.cbTheme.Caption = "Giao diện";
+			this.cbTheme.ComboWidth = 125;
+			this.cbTheme.DropDownHeight = 106;
+			this.cbTheme.ItemHeight = 14;
+			this.cbTheme.Name = "cbTheme";
+			this.cbTheme.SelectedIndexChanged += new System.EventHandler(this.cbTheme_SelectedIndexChanged);
+			// 
+			// cpCanvasColor
+			// 
+			this.cpCanvasColor.Name = "cpCanvasColor";
+			this.cpCanvasColor.Symbol = "";
+			this.cpCanvasColor.Text = "Màu nền";
+			this.cpCanvasColor.SelectedColorChanged += new System.EventHandler(this.cpCanvasColor_SelectedColorChanged);
+			// 
+			// cpBaseColor
+			// 
+			this.cpBaseColor.Name = "cpBaseColor";
+			this.cpBaseColor.Symbol = "";
+			this.cpBaseColor.Text = "Màu giao diện";
+			this.cpBaseColor.SelectedColorChanged += new System.EventHandler(this.cpBaseColor_SelectedColorChanged);
 			// 
 			// deviceImageListCombo
 			// 
@@ -493,11 +756,10 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(1090, 457);
+			this.ClientSize = new System.Drawing.Size(1090, 660);
 			this.Controls.Add(this.statusBar);
 			this.Controls.Add(this.superTabControl1);
 			this.DoubleBuffered = true;
-			this.ForeColor = System.Drawing.Color.Black;
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
 			this.Name = "MainForm";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
@@ -505,8 +767,11 @@
 			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
 			((System.ComponentModel.ISupportInitialize)(this.superTabControl1)).EndInit();
 			this.superTabControl1.ResumeLayout(false);
-			this.superTabControlPanel2.ResumeLayout(false);
+			this.superTabControlPanel3.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.dtHistoryEnd)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.dtHistoryBegin)).EndInit();
 			this.superTabControlPanel1.ResumeLayout(false);
+			this.superTabControlPanel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.statusBar)).EndInit();
 			this.ResumeLayout(false);
 
@@ -548,5 +813,17 @@
 		private DevComponents.DotNetBar.SuperGrid.GridColumn colBlockImport;
 		private DevComponents.DotNetBar.SuperGrid.GridColumn colBlockChart;
 		private DevComponents.DotNetBar.SuperGrid.GridColumn colBlockDate;
+		private DevComponents.DotNetBar.SuperTabControlPanel superTabControlPanel3;
+		private DevComponents.DotNetBar.SuperTabItem superTabItem3;
+		private DevComponents.DotNetBar.ComboBoxItem cbTheme;
+		private DevComponents.DotNetBar.ColorPickerDropDown cpCanvasColor;
+		private DevComponents.DotNetBar.ColorPickerDropDown cpBaseColor;
+		private DeviceComboBox cbDeviceHistory;
+		private DevComponents.Editors.DateTimeAdv.DateTimeInput dtHistoryBegin;
+		private DevComponents.DotNetBar.LabelX labelX3;
+		private DevComponents.DotNetBar.LabelX labelX4;
+		private DevComponents.Editors.DateTimeAdv.DateTimeInput dtHistoryEnd;
+		private DevComponents.DotNetBar.ButtonX btnUpdateHistory;
+		private ZedGraph.ZedGraphControl graphHistory;
 	}
 }

@@ -4,6 +4,8 @@ using DevComponents.DotNetBar.SuperGrid.Style;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +13,71 @@ using System.Windows.Forms;
 
 namespace EnergyMonitorApp
 {
+
+	public sealed class DeviceComboBox : ComboBox
+	{
+		public ImageList ImageList { get; set; }
+
+		public DeviceComboBox()
+		{
+			DrawMode = DrawMode.OwnerDrawFixed;
+			DropDownStyle = ComboBoxStyle.DropDownList;
+		}
+
+		protected override void OnDrawItem(DrawItemEventArgs e)
+		{
+			e.DrawBackground();
+			e.DrawFocusRectangle();
+			if (e.Index >= 0 && e.Index < Items.Count)
+			{
+				Device dev = (Device)Items[e.Index];
+				Image image = ImageList.Images[dev.ImageKey];
+				image = ResizeImage(image, 48, 48);
+
+				Rectangle r = e.Bounds;
+				r.Size = image.Size;
+				r.X += 2;
+				r.Y += (e.Bounds.Height - r.Height) / 2;
+				e.Graphics.DrawImageUnscaled(image, r);
+
+				r = e.Bounds;
+				r.X += image.Width + 2;
+				r.Width -= image.Width + 2;
+				using (StringFormat sf = new StringFormat())
+				{
+					sf.LineAlignment = StringAlignment.Center;
+					e.Graphics.DrawString(dev.Name, Font, new SolidBrush(ForeColor), r, sf);
+				}
+			}
+			base.OnDrawItem(e);
+		}
+
+		private static Bitmap ResizeImage(Image image, int width, int height)
+		{
+			var destRect = new Rectangle(0, 0, width, height);
+			var destImage = new Bitmap(width, height);
+
+			destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+
+			using (var graphics = Graphics.FromImage(destImage))
+			{
+				graphics.CompositingMode = CompositingMode.SourceCopy;
+				graphics.CompositingQuality = CompositingQuality.HighQuality;
+				graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+				graphics.SmoothingMode = SmoothingMode.HighQuality;
+				graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+				using (var wrapMode = new ImageAttributes())
+				{
+					wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+					graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
+				}
+			}
+
+			return destImage;
+		}
+	}
+
 	class MyGridImageEditControl : GridImageEditControl
 	{
 		public MyGridImageEditControl(ImageList imageList, ImageSizeMode sizeMode)
@@ -117,17 +184,16 @@ namespace EnergyMonitorApp
 			r = bounds;
 			r.X += image.Width + 2;
 			r.Width -= image.Width + 2;
-
 			using (StringFormat sf = new StringFormat())
 			{
 				sf.LineAlignment = StringAlignment.Center;
 				if (dev == null)
 				{
-					g.DrawString(deviceID == -1 ? "(Chưa chọn)" : "(Trống)", Font, Brushes.Black, r, sf);
+					g.DrawString(deviceID == -1 ? "(Chưa chọn)" : "(Trống)", Font, new SolidBrush(ForeColor), r, sf);
 				}
 				else
 				{
-					g.DrawString(dev.Name, dev.IsDeleted ? StrikeoutFont : Font, Brushes.Black, r, sf);
+					g.DrawString(dev.Name, dev.IsDeleted ? StrikeoutFont : Font, new SolidBrush(ForeColor), r, sf);
 				}
 			}
 		}
@@ -190,7 +256,7 @@ namespace EnergyMonitorApp
 				using (StringFormat sf = new StringFormat())
 				{
 					sf.LineAlignment = StringAlignment.Center;
-					g.DrawString(_NameDict[key], Font, Brushes.Black, r, sf);
+					g.DrawString(_NameDict[key], Font, new SolidBrush(ForeColor), r, sf);
 				}
 			}
 		}

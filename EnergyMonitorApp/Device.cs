@@ -41,6 +41,43 @@ namespace EnergyMonitorApp
 			}
 		}
 
+		public DateTime BeginTime
+		{
+			get
+			{
+				DateTime result = DateTime.MaxValue;
+				foreach (PowerBlock block in LogManager.PowerBlockList.Values)
+				{
+					if (BlockList.Exists(l => l == block.ID) && block.BeginTime < result)
+					{
+						result = block.BeginTime;
+					}
+				}
+				return result;
+			}
+		}
+
+		public DateTime EndTime
+		{
+			get
+			{
+				DateTime result = DateTime.MinValue;
+				foreach (PowerBlock block in LogManager.PowerBlockList.Values)
+				{
+					if (BlockList.Exists(l => l == block.ID) && block.EndTime > result)
+					{
+						result = block.EndTime;
+					}
+				}
+				return result;
+			}
+		}
+
+		public override string ToString()
+		{
+			return this.Name;
+		}
+
 		public static readonly string DefaultImageKey = _DeviceTypeImageBinding.First().Value;
 		public static readonly string DefaultName = "Thiết bị mới";
 	}

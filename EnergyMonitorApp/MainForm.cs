@@ -13,6 +13,9 @@ using System.IO;
 using System.Threading;
 using DevComponents.DotNetBar.SuperGrid;
 using DevComponents.DotNetBar;
+using DevComponents.DotNetBar.Controls;
+using DevComponents.DotNetBar.Metro.ColorTables;
+using ZedGraph;
 
 namespace EnergyMonitorApp
 {
@@ -25,7 +28,144 @@ namespace EnergyMonitorApp
 			Control.CheckForIllegalCrossThreadCalls = false;
 			gridDeviceInit();
 			gridBlockInit();
+			deviceHistoryInit();
+			cbThemeInit();
 		}
+
+		#region "Device history function"
+
+		private void deviceHistoryInit()
+		{
+			foreach (Device dev in DeviceManager.DeviceList)
+			{
+				if (!dev.IsDeleted)
+				{
+					cbDeviceHistory.Items.Add(dev);
+				}
+			}
+			cbDeviceHistory.SelectedIndex = 0;
+		}
+
+		private void GenerateHistoryGraph()
+		{
+			Device dev = (Device)cbDeviceHistory.SelectedItem;
+			if (dev != null)
+			{
+				GraphPane pane = graphHistory.GraphPane;
+
+				pane.Title.Text = "Lịch sử tiêu thụ: " + dev.Name;
+				pane.YAxis.Title.Text = "Lượng điện tiêu thụ (WH)";
+				pane.Y2Axis.Title.Text = "Dòng điện tiêu thụ (A)";
+				pane.Y2Axis.IsVisible = true;
+				pane.Fill = new Fill(Color.White, Color.LightGray, 45.0f);
+
+				pane.XAxis.Type = AxisType.Date;
+				pane.XAxis.Title.Text = "Thời gian";
+				pane.XAxis.Scale.Format = "HH:mm dd/MM/yy";
+				pane.XAxis.Scale.FontSpec.Size = 8;
+
+				List<double> powerList_X = new List<double>();
+				List<double> powerList_Y = new List<double>();
+				List<double> currentList_X = new List<double>();
+				List<double> currentList_Y = new List<double>();
+				foreach (long blockID in dev.BlockList)
+				{
+					PowerBlock block = LogManager.PowerBlockList[blockID];
+					bool isFirst = true;
+					foreach (Log_ClientRealPower rec in block.RealPowerList)
+					{
+						if (isFirst)
+						{
+							isFirst = false;
+							powerList_X.Add((double)new XDate(rec.Time));
+							powerList_Y.Add(0);
+						}
+						powerList_X.Add((double)new XDate(rec.Time));
+						powerList_Y.Add(rec.RealPower);
+					}
+					powerList_X.Add(powerList_X.Last());
+					powerList_Y.Add(0);
+
+					isFirst = true;
+					foreach (Log_ClientDetailPower rec in block.DetailPowerList)
+					{
+						if (isFirst)
+						{
+							isFirst = false;
+							currentList_X.Add((double)new XDate(rec.Time));
+							currentList_Y.Add(0);
+						}
+						currentList_X.Add((double)new XDate(rec.Time));
+						currentList_Y.Add(rec.I);
+					}
+					currentList_X.Add(currentList_X.Last());
+					currentList_Y.Add(0);
+				}
+
+				pane.CurveList.Clear();
+				CurveItem curve;
+
+				//powerList_X = CleanData(powerList_X.ToArray(), 5, 0.8);
+				curve = pane.AddCurve("Công suất (P-WH)", powerList_X.ToArray(), powerList_Y.ToArray(), Color.Red, SymbolType.None);
+
+				curve = pane.AddCurve("Dòng điện (I-A)", currentList_X.ToArray(), currentList_Y.ToArray(), Color.Blue, SymbolType.None);
+				curve.IsY2Axis = true;
+
+				graphHistory.AxisChange();
+				graphHistory.Refresh();
+			}
+		}
+
+		private double[] Coefficients(int range, double decay)
+		{
+			double[] coefficients = new double[range + 1];
+			for (int i = 0; i <= range; i++)
+				coefficients[i] = Math.Pow(decay, i);
+			return coefficients;
+		}
+
+		private void cbDeviceHistory_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			Device dev = (Device)cbDeviceHistory.SelectedItem;
+			if (dev != null)
+			{
+				DateTime beginTime = dev.BeginTime;
+				DateTime endTime = dev.EndTime;
+				dtHistoryBegin.Value = dtHistoryBegin.MinDate = dtHistoryEnd.MinDate = beginTime;
+				dtHistoryEnd.Value = dtHistoryBegin.MaxDate = dtHistoryEnd.MaxDate = endTime;
+			}
+		}
+		private void btnUpdateHistory_Click(object sender, EventArgs e)
+		{
+			Device dev = (Device)cbDeviceHistory.SelectedItem;
+			if (dev != null)
+			{
+				DateTime beginTime = dev.BeginTime;
+				DateTime endTime = dev.EndTime;
+				if (dtHistoryBegin.Value >= dtHistoryEnd.Value)
+				{
+					MessageBoxEx.Show(this, "<font size='18'><b>Ngày bắt đầu phải trước ngày kết thúc !</b></font>",
+							"<font size='15'><b>Thông báo</b></font>", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+					dtHistoryBegin.Value = beginTime;
+					dtHistoryEnd.Value = endTime;
+				}
+				else
+				{
+					if (dtHistoryBegin.Value < beginTime)
+					{
+						dtHistoryBegin.Value = beginTime;
+					}
+					if (dtHistoryEnd.Value < endTime)
+					{
+						dtHistoryEnd.Value = endTime;
+					}
+				}
+			}
+			GenerateHistoryGraph();
+		}
+
+
+		#endregion
 
 		#region "Block list function"
 
@@ -64,10 +204,6 @@ namespace EnergyMonitorApp
 				row.Tag = block;
 				panel.Rows.Add(row);
 			}
-
-			//((GridRow)panel.Rows[0]).Cells[0].CellStyles.Default.Background.Color1 = Color.Red;
-			//((GridRow)panel.Rows[0]).Cells[0].CellStyles.Selected.Background.Color1 = Color.Red;
-			//((GridRow)panel.Rows[0]).Cells[0].CellStyles.SelectedMouseOver.Background.Color1 = Color.Red;
 		}
 
 		private void gridBlockInit()
@@ -109,7 +245,7 @@ namespace EnergyMonitorApp
 					{
 						dev.BlockList.Add(block.ID);
 					}
-					if (newDevID == -2 || (owner.ID != newDevID)) SetCellColor(row.Cells[0], Color.Gray);
+					if (newDevID == -2 || owner == null || owner.ID != newDevID) SetCellColor(row.Cells[0], Color.Gray);
 				}
 				DeviceManager.SaveDeviceList();
 			}
@@ -183,6 +319,7 @@ namespace EnergyMonitorApp
 								DeviceManager.getByID(ID).IsDeleted = true;
 							}
 							panel.Rows.RemoveAt(rowIndex);
+							gridBlockInit();
 						}
 					}
 					else if (action == RadialAction.Accept)
@@ -214,6 +351,7 @@ namespace EnergyMonitorApp
 							DeviceManager.SaveDeviceList();
 						}
 						row.RowDirty = false;
+						gridBlockInit();
 					}
 				}
 			}
@@ -400,6 +538,48 @@ namespace EnergyMonitorApp
 		}
 
 		#endregion
+
+		#region "Theme function"
+
+		private void cbThemeInit()
+		{
+			foreach (string name in Enum.GetNames(typeof(eStyle)))
+			{
+				ComboBoxItem item = new ComboBoxItem();
+				item.Text = name;
+				cbTheme.Items.Add(item);
+			}
+			cbTheme.Text = styleManager.ManagerStyle.ToString();
+			cpBaseColor.SymbolColor = cpBaseColor.SelectedColor = styleManager.MetroColorParameters.BaseColor;
+			cpCanvasColor.SymbolColor = cpCanvasColor.SelectedColor = styleManager.MetroColorParameters.CanvasColor;
+		}
+
+		private void cbTheme_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			styleManager.ManagerStyle = (eStyle)Enum.Parse(typeof(eStyle), cbTheme.Text);
+			cpBaseColor.SymbolColor = cpBaseColor.SelectedColor = styleManager.MetroColorParameters.BaseColor;
+			cpCanvasColor.SymbolColor = cpCanvasColor.SelectedColor = styleManager.MetroColorParameters.CanvasColor;
+			this.WindowState = FormWindowState.Normal;
+			this.WindowState = FormWindowState.Maximized;
+		}
+
+		private void cpCanvasColor_SelectedColorChanged(object sender, EventArgs e)
+		{
+			MetroColorGeneratorParameters param = new MetroColorGeneratorParameters();
+			cpCanvasColor.SymbolColor = param.CanvasColor = cpCanvasColor.SelectedColor;
+			cpBaseColor.SymbolColor = param.BaseColor = styleManager.MetroColorParameters.BaseColor;
+			styleManager.MetroColorParameters = param;
+		}
+
+		private void cpBaseColor_SelectedColorChanged(object sender, EventArgs e)
+		{
+			MetroColorGeneratorParameters param = new MetroColorGeneratorParameters();
+			cpCanvasColor.SymbolColor = param.CanvasColor = styleManager.MetroColorParameters.CanvasColor;
+			cpBaseColor.SymbolColor = param.BaseColor = cpBaseColor.SelectedColor;
+			styleManager.MetroColorParameters = param;
+		}
+
+		#endregion\
 
 	}
 }
