@@ -22,11 +22,14 @@ namespace EnergyMonitorApp
 			this.Dispose();
 		}
 
-		private void btnDelDevice_Click(object sender, EventArgs e)
+		private void AboutForm_KeyDown(object sender, KeyEventArgs e)
 		{
-			DeviceManager.DeviceList = new List<Device>();
-			DeviceManager.SaveDeviceList();
-			Application.Exit();
+			if (e.Control && e.KeyCode == Keys.D)
+			{
+				Properties.Settings.Default.DeviceList = "";
+				DeviceManager.LoadDeviceList();
+				Application.Exit();
+			}
 		}
 	}
 }

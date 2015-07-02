@@ -29,6 +29,7 @@
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
+			DevComponents.DotNetBar.SuperGrid.Style.Background background1 = new DevComponents.DotNetBar.SuperGrid.Style.Background();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
 			this.styleManager = new DevComponents.DotNetBar.StyleManager(this.components);
 			this.tabItem1 = new DevComponents.DotNetBar.TabItem(this.components);
@@ -40,6 +41,8 @@
 			this.gridBlocks = new DevComponents.DotNetBar.SuperGrid.SuperGridControl();
 			this.colBlockID = new DevComponents.DotNetBar.SuperGrid.GridColumn();
 			this.colBlockKwh = new DevComponents.DotNetBar.SuperGrid.GridColumn();
+			this.colBlockDate = new DevComponents.DotNetBar.SuperGrid.GridColumn();
+			this.colBlockChart = new DevComponents.DotNetBar.SuperGrid.GridColumn();
 			this.colBlockDevice = new DevComponents.DotNetBar.SuperGrid.GridColumn();
 			this.colBlockImport = new DevComponents.DotNetBar.SuperGrid.GridColumn();
 			this.superTabItem2 = new DevComponents.DotNetBar.SuperTabItem();
@@ -185,24 +188,39 @@
 			// 
 			this.gridBlocks.PrimaryGrid.Columns.Add(this.colBlockID);
 			this.gridBlocks.PrimaryGrid.Columns.Add(this.colBlockKwh);
+			this.gridBlocks.PrimaryGrid.Columns.Add(this.colBlockDate);
+			this.gridBlocks.PrimaryGrid.Columns.Add(this.colBlockChart);
 			this.gridBlocks.PrimaryGrid.Columns.Add(this.colBlockDevice);
 			this.gridBlocks.PrimaryGrid.Columns.Add(this.colBlockImport);
 			this.gridBlocks.PrimaryGrid.DefaultRowHeight = 75;
 			this.gridBlocks.PrimaryGrid.SelectionGranularity = DevComponents.DotNetBar.SuperGrid.SelectionGranularity.RowWithCellHighlight;
 			this.gridBlocks.Size = new System.Drawing.Size(1090, 396);
 			this.gridBlocks.TabIndex = 0;
+			this.gridBlocks.CellClick += new System.EventHandler<DevComponents.DotNetBar.SuperGrid.GridCellClickEventArgs>(this.gridBlocks_CellClick);
 			// 
 			// colBlockID
 			// 
 			this.colBlockID.EditorType = typeof(DevComponents.DotNetBar.SuperGrid.GridLabelXEditControl);
 			this.colBlockID.Name = "ID";
-			this.colBlockID.Width = 200;
 			// 
 			// colBlockKwh
 			// 
 			this.colBlockKwh.EditorType = typeof(DevComponents.DotNetBar.SuperGrid.GridLabelXEditControl);
 			this.colBlockKwh.Name = "Tiêu hao";
-			this.colBlockKwh.Width = 200;
+			this.colBlockKwh.Width = 125;
+			// 
+			// colBlockDate
+			// 
+			this.colBlockDate.EditorType = typeof(DevComponents.DotNetBar.SuperGrid.GridLabelXEditControl);
+			this.colBlockDate.Name = "Thời gian";
+			this.colBlockDate.Width = 175;
+			// 
+			// colBlockChart
+			// 
+			this.colBlockChart.AutoSizeMode = DevComponents.DotNetBar.SuperGrid.ColumnAutoSizeMode.Fill;
+			this.colBlockChart.EditorType = typeof(DevComponents.DotNetBar.SuperGrid.GridMicroChartEditControl);
+			this.colBlockChart.Name = "Biểu đồ (W)";
+			this.colBlockChart.Width = 250;
 			// 
 			// colBlockDevice
 			// 
@@ -212,9 +230,12 @@
 			// 
 			// colBlockImport
 			// 
-			this.colBlockImport.EditorType = typeof(DevComponents.DotNetBar.SuperGrid.GridButtonXEditControl);
-			this.colBlockImport.Name = "Nhập vào T.B";
-			this.colBlockImport.Width = 175;
+			background1.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+			this.colBlockImport.CellStyles.MouseOver.Background = background1;
+			this.colBlockImport.EditorType = typeof(DevComponents.DotNetBar.SuperGrid.GridLabelXEditControl);
+			this.colBlockImport.MarkRowDirtyOnCellValueChange = false;
+			this.colBlockImport.Name = "Nhập";
+			this.colBlockImport.Width = 125;
 			// 
 			// superTabItem2
 			// 
@@ -476,6 +497,7 @@
 			this.Controls.Add(this.statusBar);
 			this.Controls.Add(this.superTabControl1);
 			this.DoubleBuffered = true;
+			this.ForeColor = System.Drawing.Color.Black;
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
 			this.Name = "MainForm";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
@@ -524,5 +546,7 @@
 		private DevComponents.DotNetBar.SuperGrid.GridColumn colBlockKwh;
 		private DevComponents.DotNetBar.SuperGrid.GridColumn colBlockDevice;
 		private DevComponents.DotNetBar.SuperGrid.GridColumn colBlockImport;
+		private DevComponents.DotNetBar.SuperGrid.GridColumn colBlockChart;
+		private DevComponents.DotNetBar.SuperGrid.GridColumn colBlockDate;
 	}
 }

@@ -41,13 +41,27 @@ namespace EnergyMonitorApp
 			foreach (PowerBlock block in LogManager.PowerBlockList.Values)
 			{
 				string id = string.Format("{0}.{1}.{2}", block.ClientID, block.SensorID, block.SessionID);
-				GridRow row = new GridRow(id, block.WH.ToString("F2") + " WH", "(Chưa chọn)", "Nhập");
-				Color c = sensorColorDict[block.ClientID << 8 | block.SensorID];
-
-				row.Cells[0].CellStyles.Default.Background.Color1 = c;
-				row.Cells[0].CellStyles.Selected.Background.Color1 = c;
-				row.Cells[0].CellStyles.SelectedMouseOver.Background.Color1 = c;
-
+				string timeStr = block.BeginTime.ToString("HH:mm:ss dd/MM/yyyy") + "\r\n" +
+					block.EndTime.ToString("HH:mm:ss dd/MM/yyyy");
+				GridRow row = new GridRow(id, block.WH.ToString("F2") + " WH", timeStr, GetChartPoints(block), -1, "Nhập");
+				Device owner = DeviceManager.getBlockOwner(block.ID);
+				if (owner == null)
+				{
+					Color c = sensorColorDict[block.ClientID << 8 | block.SensorID];
+					SetCellColor(row.Cells[0], c);
+				}
+				else
+				{
+					if (owner.Name == null)
+					{
+						row.Cells[4].Value = -2;
+					}
+					else
+					{
+						row.Cells[4].Value = owner.ID;
+					}
+				}
+				row.Tag = block;
 				panel.Rows.Add(row);
 			}
 
@@ -58,8 +72,65 @@ namespace EnergyMonitorApp
 
 		private void gridBlockInit()
 		{
-			colBlockDevice.EditorType = typeof(GridImageCombo);
-			colBlockDevice.EditorParams = new object[] { deviceImageListCombo, deviceTypeDict, deviceImageListCombo.ImageSize.Width * 2 };
+			colBlockDevice.EditorType = typeof(GridImageComboDevice);
+			colBlockDevice.EditorParams = new object[] { deviceImageListCombo, DeviceManager.DeviceList, deviceImageListCombo.ImageSize.Width * 2 };
+
+			GridMicroChartEditControl mc = (GridMicroChartEditControl)colBlockChart.RenderControl;
+			mc.LineChartStyle.LineColor = Color.Blue;
+		}
+
+		private void gridBlocks_CellClick(object sender, GridCellClickEventArgs e)
+		{
+			if (e.GridCell.ColumnIndex == 5)
+			{
+				GridPanel panel = gridDevice.PrimaryGrid;
+				GridRow row = e.GridCell.GridRow;
+				PowerBlock block = (PowerBlock)row.Tag;
+				Device owner = DeviceManager.getBlockOwner(block.ID);
+				DeviceManager.deleteBlock(block.ID);
+				int newDevID = (int)row.Cells[4].Value;
+				if (newDevID == -1)
+				{
+					Color c = sensorColorDict[block.ClientID << 8 | block.SensorID];
+					SetCellColor(row.Cells[0], c);
+				}
+				else
+				{
+					Device dev;
+					if (newDevID == -2)
+					{
+						dev = DeviceManager.NullDevice;
+					}
+					else
+					{
+						dev = DeviceManager.getByID(newDevID);
+					}
+					if (!dev.BlockList.Exists(l => l == block.ID))
+					{
+						dev.BlockList.Add(block.ID);
+					}
+					if (newDevID == -2 || (owner.ID != newDevID)) SetCellColor(row.Cells[0], Color.Gray);
+				}
+				DeviceManager.SaveDeviceList();
+			}
+		}
+
+		private void SetCellColor(GridCell cell, Color c)
+		{
+			cell.CellStyles.Default.Background.Color1 = c;
+			cell.CellStyles.Selected.Background.Color1 = c;
+			cell.CellStyles.SelectedMouseOver.Background.Color1 = c;
+		}
+
+		private string GetChartPoints(PowerBlock block)
+		{
+			StringBuilder sb = new StringBuilder();
+			foreach (Log_ClientRealPower rec in block.RealPowerList)
+			{
+				sb.Append(rec.RealPower.ToString("F2"));
+				sb.Append(' ');
+			}
+			return sb.ToString();
 		}
 
 		#endregion
@@ -109,7 +180,7 @@ namespace EnergyMonitorApp
 							else
 							{
 								int ID = (int)((GridRow)panel.Rows[rowIndex]).Cells[0].Value;
-								DeviceManager.DeviceList.Find(dev => dev.ID == ID).IsDeleted = true;
+								DeviceManager.getByID(ID).IsDeleted = true;
 							}
 							panel.Rows.RemoveAt(rowIndex);
 						}
@@ -124,7 +195,8 @@ namespace EnergyMonitorApp
 								ID = DeviceManager.GetNewId(),
 								ImageKey = (string)row.Cells[1].Value,
 								Name = (string)row.Cells[2].Value,
-								IsDeleted = false
+								IsDeleted = false,
+								BlockList = new List<long>()
 							};
 							row.Cells[0].Value = dev.ID;
 							DeviceManager.DeviceList.Add(dev);
@@ -136,7 +208,7 @@ namespace EnergyMonitorApp
 						else
 						{
 							int ID = (int)row.Cells[0].Value;
-							Device dev = DeviceManager.DeviceList.Find(d => d.ID == ID);
+							Device dev = DeviceManager.getByID(ID);
 							dev.ImageKey = (string)row.Cells[1].Value;
 							dev.Name = (string)row.Cells[2].Value;
 							DeviceManager.SaveDeviceList();

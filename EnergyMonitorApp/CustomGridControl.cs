@@ -20,23 +20,38 @@ namespace EnergyMonitorApp
 		}
 	}
 
-	public class GridImageComboEx : GridComboBoxExEditControl
+	class GridImageComboDevice : GridComboBoxExEditControl
 	{
 		private ImageList _ImageList;
-		private Dictionary<string, string> _NameDict;
+		private List<Device> _DeviceList;
+		private Font StrikeoutFont;
 
-		public GridImageComboEx(ImageList imageList, Dictionary<string, string> nameDict, int itemHeight)
+		public GridImageComboDevice(ImageList imageList, List<Device> deviceList, int itemHeight)
 		{
 			_ImageList = imageList;
-			_NameDict = nameDict;
+			_DeviceList = deviceList;
 
 			DisableInternalDrawing = true;
 			DropDownStyle = ComboBoxStyle.DropDownList;
 			ItemHeight = itemHeight;
 
-			for (int i = 0; i < imageList.Images.Count; i++)
-				Items.Add(imageList.Images.Keys[i]);
-
+			Items.Add(-1);
+			Items.Add(-2);
+			foreach (Device dev in _DeviceList)
+			{
+				if (!dev.IsDeleted)
+				{
+					Items.Add(dev.ID);
+				}
+			}
+			foreach (Device dev in _DeviceList)
+			{
+				if (dev.IsDeleted)
+				{
+					Items.Add(dev.ID);
+				}
+			}
+			StrikeoutFont = new Font(Font, FontStyle.Strikeout | FontStyle.Italic);
 			DrawItem += GridImageComboDrawItem;
 		}
 
@@ -45,8 +60,7 @@ namespace EnergyMonitorApp
 			Rectangle r = EditorCell.Bounds;
 			r.X += 4;
 			r.Width -= 4;
-
-			RenderItem(g, r, Text);
+			RenderItem(g, r, int.Parse(Text));
 		}
 
 		void GridImageComboDrawItem(object sender, DrawItemEventArgs e)
@@ -54,40 +68,72 @@ namespace EnergyMonitorApp
 			if (e.Index >= 0)
 			{
 				e.DrawBackground();
-
-				RenderItem(e.Graphics, e.Bounds,
-					_ImageList.Images.Keys[e.Index]);
+				RenderItem(e.Graphics, e.Bounds, e.Index == 0 ? -1 : e.Index == 1 ? -2 : getDevice(e.Index - 2).ID);
 			}
 		}
 
-		private void RenderItem(Graphics g, Rectangle bounds, string key)
+		private Device getDevice(int index)
 		{
-			Image image = _ImageList.Images[key];
-
-			if (image != null)
+			int count = -1;
+			foreach (Device dev in _DeviceList)
 			{
-				Rectangle r = bounds;
+				if (!dev.IsDeleted)
+				{
+					count++;
+					if (count == index)
+					{
+						return dev;
+					}
+				}
+			}
+			foreach (Device dev in _DeviceList)
+			{
+				if (dev.IsDeleted)
+				{
+					count++;
+					if (count == index)
+					{
+						return dev;
+					}
+				}
+			}
+			return null;
+		}
+
+		private void RenderItem(Graphics g, Rectangle bounds, int deviceID)
+		{
+			Device dev = _DeviceList.Find(d => d.ID == deviceID);
+			Image image = dev == null ? _ImageList.Images[0] : _ImageList.Images[dev.ImageKey];
+
+			Rectangle r = bounds;
+			if (dev != null)
+			{
 				r.Size = image.Size;
 				r.X += 2;
 				r.Y += (bounds.Height - r.Height) / 2;
-
 				g.DrawImageUnscaled(image, r);
+			}
 
-				r = bounds;
-				r.X += image.Width + 2;
-				r.Width -= image.Width + 2;
+			r = bounds;
+			r.X += image.Width + 2;
+			r.Width -= image.Width + 2;
 
-				using (StringFormat sf = new StringFormat())
+			using (StringFormat sf = new StringFormat())
+			{
+				sf.LineAlignment = StringAlignment.Center;
+				if (dev == null)
 				{
-					sf.LineAlignment = StringAlignment.Center;
-
-					g.DrawString(_NameDict[key], Font, Brushes.Black, r, sf);
+					g.DrawString(deviceID == -1 ? "(Chưa chọn)" : "(Trống)", Font, Brushes.Black, r, sf);
+				}
+				else
+				{
+					g.DrawString(dev.Name, dev.IsDeleted ? StrikeoutFont : Font, Brushes.Black, r, sf);
 				}
 			}
 		}
 	}
 
-	public class GridImageCombo : GridComboBoxExEditControl
+	class GridImageCombo : GridComboBoxExEditControl
 	{
 		private ImageList _ImageList;
 		private Dictionary<string, string> _NameDict;
@@ -112,7 +158,6 @@ namespace EnergyMonitorApp
 			Rectangle r = EditorCell.Bounds;
 			r.X += 4;
 			r.Width -= 4;
-
 			RenderItem(g, r, Text);
 		}
 
@@ -121,9 +166,7 @@ namespace EnergyMonitorApp
 			if (e.Index >= 0)
 			{
 				e.DrawBackground();
-
-				RenderItem(e.Graphics, e.Bounds,
-					_ImageList.Images.Keys[e.Index]);
+				RenderItem(e.Graphics, e.Bounds, _ImageList.Images.Keys[e.Index]);
 			}
 		}
 
@@ -147,7 +190,6 @@ namespace EnergyMonitorApp
 				using (StringFormat sf = new StringFormat())
 				{
 					sf.LineAlignment = StringAlignment.Center;
-
 					g.DrawString(_NameDict[key], Font, Brushes.Black, r, sf);
 				}
 			}

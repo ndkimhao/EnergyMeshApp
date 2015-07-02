@@ -69,11 +69,13 @@
 			this.DoubleBuffered = true;
 			this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+			this.KeyPreview = true;
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "AboutForm";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Tác giả";
+			this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.AboutForm_KeyDown);
 			this.ResumeLayout(false);
 
 		}

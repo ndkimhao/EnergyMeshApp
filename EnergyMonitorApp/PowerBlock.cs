@@ -13,6 +13,8 @@ namespace EnergyMonitorApp
 		public uint SessionID { get; set; }
 		public long ID { get; set; }
 		public bool IsDeleted { get; set; }
+		public DateTime BeginTime { get; set; }
+		public DateTime EndTime { get; set; }
 		public ushort GlobalSensorID
 		{
 			get

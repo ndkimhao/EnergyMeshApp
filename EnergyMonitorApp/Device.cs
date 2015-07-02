@@ -19,6 +19,7 @@ namespace EnergyMonitorApp
 		public DeviceType Type { get; set; }
 		public string Name { get; set; }
 		public bool IsDeleted { get; set; }
+		public List<long> BlockList { get; set; }
 
 		private static readonly Dictionary<DeviceType, string> _DeviceTypeImageBinding = new Dictionary<DeviceType, string>
 		{
