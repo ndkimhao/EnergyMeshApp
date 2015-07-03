@@ -39,7 +39,7 @@
 			this.tabControlPanel3 = new DevComponents.DotNetBar.TabControlPanel();
 			this.superTabControl1 = new DevComponents.DotNetBar.SuperTabControl();
 			this.superTabControlPanel3 = new DevComponents.DotNetBar.SuperTabControlPanel();
-			this.cbHistoryY2 = new System.Windows.Forms.ComboBox();
+			this.cbHistoryY2 = new DevComponents.DotNetBar.Controls.ComboBoxEx();
 			this.labelX5 = new DevComponents.DotNetBar.LabelX();
 			this.progDeviceHistory = new DevComponents.DotNetBar.Controls.CircularProgress();
 			this.graphHistory = new ZedGraph.ZedGraphControl();
@@ -48,7 +48,6 @@
 			this.dtHistoryEnd = new DevComponents.Editors.DateTimeAdv.DateTimeInput();
 			this.labelX3 = new DevComponents.DotNetBar.LabelX();
 			this.dtHistoryBegin = new DevComponents.Editors.DateTimeAdv.DateTimeInput();
-			this.cbDeviceHistory = new EnergyMonitorApp.DeviceComboBox();
 			this.deviceImageList = new System.Windows.Forms.ImageList(this.components);
 			this.tabDeviceHistory = new DevComponents.DotNetBar.SuperTabItem();
 			this.superTabControlPanel1 = new DevComponents.DotNetBar.SuperTabControlPanel();
@@ -56,7 +55,6 @@
 			this.colDeviceID = new DevComponents.DotNetBar.SuperGrid.GridColumn();
 			this.colDeviceType = new DevComponents.DotNetBar.SuperGrid.GridColumn();
 			this.colDeviceName = new DevComponents.DotNetBar.SuperGrid.GridColumn();
-			this.colDeviceAction = new DevComponents.DotNetBar.SuperGrid.GridColumn();
 			this.progUpdateData = new DevComponents.DotNetBar.Controls.CircularProgress();
 			this.txtDiffTime = new DevComponents.DotNetBar.Controls.TextBoxX();
 			this.labelX2 = new DevComponents.DotNetBar.LabelX();
@@ -71,7 +69,6 @@
 			this.colBlockKwh = new DevComponents.DotNetBar.SuperGrid.GridColumn();
 			this.colBlockDate = new DevComponents.DotNetBar.SuperGrid.GridColumn();
 			this.colBlockChart = new DevComponents.DotNetBar.SuperGrid.GridColumn();
-			this.colBlockDevice = new DevComponents.DotNetBar.SuperGrid.GridColumn();
 			this.colBlockImport = new DevComponents.DotNetBar.SuperGrid.GridColumn();
 			this.tabBlockManager = new DevComponents.DotNetBar.SuperTabItem();
 			this.statusBar = new DevComponents.DotNetBar.Bar();
@@ -81,6 +78,9 @@
 			this.cpCanvasColor = new DevComponents.DotNetBar.ColorPickerDropDown();
 			this.cpBaseColor = new DevComponents.DotNetBar.ColorPickerDropDown();
 			this.deviceImageListCombo = new System.Windows.Forms.ImageList(this.components);
+			this.cbDeviceHistory = new EnergyMonitorApp.DeviceComboBox();
+			this.colDeviceAction = new DevComponents.DotNetBar.SuperGrid.GridColumn();
+			this.colBlockDevice = new DevComponents.DotNetBar.SuperGrid.GridColumn();
 			((System.ComponentModel.ISupportInitialize)(this.superTabControl1)).BeginInit();
 			this.superTabControl1.SuspendLayout();
 			this.superTabControlPanel3.SuspendLayout();
@@ -204,7 +204,6 @@
 			// 
 			// cbHistoryY2
 			// 
-			this.cbHistoryY2.BackColor = System.Drawing.Color.WhiteSmoke;
 			this.cbHistoryY2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.cbHistoryY2.ForeColor = System.Drawing.Color.Black;
 			this.cbHistoryY2.FormattingEnabled = true;
@@ -215,6 +214,7 @@
 			this.cbHistoryY2.Location = new System.Drawing.Point(10, 261);
 			this.cbHistoryY2.Name = "cbHistoryY2";
 			this.cbHistoryY2.Size = new System.Drawing.Size(207, 27);
+			this.cbHistoryY2.Style = DevComponents.DotNetBar.eDotNetBarStyle.StyleManagerControlled;
 			this.cbHistoryY2.TabIndex = 12;
 			// 
 			// labelX5
@@ -422,21 +422,6 @@
 			this.dtHistoryBegin.TimeSelectorTimeFormat = DevComponents.Editors.DateTimeAdv.eTimeSelectorFormat.Time24H;
 			this.dtHistoryBegin.TimeSelectorType = DevComponents.Editors.DateTimeAdv.eTimeSelectorType.TouchStyle;
 			// 
-			// cbDeviceHistory
-			// 
-			this.cbDeviceHistory.BackColor = System.Drawing.Color.WhiteSmoke;
-			this.cbDeviceHistory.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
-			this.cbDeviceHistory.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.cbDeviceHistory.ForeColor = System.Drawing.Color.Black;
-			this.cbDeviceHistory.FormattingEnabled = true;
-			this.cbDeviceHistory.ImageList = this.deviceImageList;
-			this.cbDeviceHistory.ItemHeight = 64;
-			this.cbDeviceHistory.Location = new System.Drawing.Point(12, 15);
-			this.cbDeviceHistory.Name = "cbDeviceHistory";
-			this.cbDeviceHistory.Size = new System.Drawing.Size(209, 70);
-			this.cbDeviceHistory.TabIndex = 1;
-			this.cbDeviceHistory.SelectedIndexChanged += new System.EventHandler(this.cbDeviceHistory_SelectedIndexChanged);
-			// 
 			// deviceImageList
 			// 
 			this.deviceImageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("deviceImageList.ImageStream")));
@@ -522,14 +507,6 @@
 			this.colDeviceName.AutoSizeMode = DevComponents.DotNetBar.SuperGrid.ColumnAutoSizeMode.Fill;
 			this.colDeviceName.Name = "Tên thiết bị";
 			// 
-			// colDeviceAction
-			// 
-			this.colDeviceAction.ColumnSortMode = DevComponents.DotNetBar.SuperGrid.ColumnSortMode.None;
-			this.colDeviceAction.EditorType = typeof(DevComponents.DotNetBar.SuperGrid.GridRadialMenuEditControl);
-			this.colDeviceAction.FillWeight = 75;
-			this.colDeviceAction.Name = "H.Đ";
-			this.colDeviceAction.SortIndicator = DevComponents.DotNetBar.SuperGrid.SortIndicator.None;
-			// 
 			// progUpdateData
 			// 
 			this.progUpdateData.BackColor = System.Drawing.Color.Transparent;
@@ -587,7 +564,6 @@
 			// 
 			this.lbFileList.BackgroundStyle.Class = "ListBoxAdv";
 			this.lbFileList.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-			this.lbFileList.CheckStateMember = null;
 			this.lbFileList.ContainerControlProcessDialogKey = true;
 			this.lbFileList.DragDropSupport = true;
 			this.lbFileList.ForeColor = System.Drawing.Color.Black;
@@ -714,12 +690,6 @@
 			this.colBlockChart.Name = "Biểu đồ (W)";
 			this.colBlockChart.Width = 250;
 			// 
-			// colBlockDevice
-			// 
-			this.colBlockDevice.EditorType = typeof(DevComponents.DotNetBar.SuperGrid.GridComboBoxExEditControl);
-			this.colBlockDevice.Name = "Thiết bị";
-			this.colBlockDevice.Width = 200;
-			// 
 			// colBlockImport
 			// 
 			background1.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
@@ -805,6 +775,35 @@
 			this.deviceImageListCombo.Images.SetKeyName(3, "washing_machine.jpg");
 			this.deviceImageListCombo.Images.SetKeyName(4, "water_heater.jpg");
 			// 
+			// cbDeviceHistory
+			// 
+			this.cbDeviceHistory.BackColor = System.Drawing.Color.WhiteSmoke;
+			this.cbDeviceHistory.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+			this.cbDeviceHistory.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cbDeviceHistory.ForeColor = System.Drawing.Color.Black;
+			this.cbDeviceHistory.FormattingEnabled = true;
+			this.cbDeviceHistory.ImageList = this.deviceImageList;
+			this.cbDeviceHistory.ItemHeight = 64;
+			this.cbDeviceHistory.Location = new System.Drawing.Point(12, 15);
+			this.cbDeviceHistory.Name = "cbDeviceHistory";
+			this.cbDeviceHistory.Size = new System.Drawing.Size(209, 70);
+			this.cbDeviceHistory.TabIndex = 1;
+			this.cbDeviceHistory.SelectedIndexChanged += new System.EventHandler(this.cbDeviceHistory_SelectedIndexChanged);
+			// 
+			// colDeviceAction
+			// 
+			this.colDeviceAction.ColumnSortMode = DevComponents.DotNetBar.SuperGrid.ColumnSortMode.None;
+			this.colDeviceAction.EditorType = typeof(DevComponents.DotNetBar.SuperGrid.GridRadialMenuEditControl);
+			this.colDeviceAction.FillWeight = 75;
+			this.colDeviceAction.Name = "H.Đ";
+			this.colDeviceAction.SortIndicator = DevComponents.DotNetBar.SuperGrid.SortIndicator.None;
+			// 
+			// colBlockDevice
+			// 
+			this.colBlockDevice.EditorType = typeof(DevComponents.DotNetBar.SuperGrid.GridComboBoxExEditControl);
+			this.colBlockDevice.Name = "Thiết bị";
+			this.colBlockDevice.Width = 200;
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -880,6 +879,6 @@
 		private ZedGraph.ZedGraphControl graphHistory;
 		private DevComponents.DotNetBar.Controls.CircularProgress progDeviceHistory;
 		private DevComponents.DotNetBar.LabelX labelX5;
-		private System.Windows.Forms.ComboBox cbHistoryY2;
+		private DevComponents.DotNetBar.Controls.ComboBoxEx cbHistoryY2;
 	}
 }

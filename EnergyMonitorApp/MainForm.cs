@@ -36,6 +36,7 @@ namespace EnergyMonitorApp
 
 		private void cbDeviceHistoryInit()
 		{
+			cbDeviceHistory.Items.Clear();
 			foreach (Device dev in DeviceManager.DeviceList)
 			{
 				if (!dev.IsDeleted)
@@ -143,22 +144,24 @@ namespace EnergyMonitorApp
 
 				//powerList_X = CleanData(powerList_X.ToArray(), 5, 0.8);
 				//powerList_Y = filterSignal(powerList_Y.ToArray()).ToList();
-				curve = pane.AddCurve("Công suất (P-W)", powerList_X.ToArray(), filterSignal(powerList_Y.ToArray(), 150), Color.Red, SymbolType.None);
+				curve = pane.AddCurve("Công suất (P-W)", powerList_X.ToArray(), filterSignal(powerList_Y.ToArray(), 175, 5, 3), Color.Red, SymbolType.None);
 				((LineItem)pane.CurveList[0]).Line.Width = 2.0F;
 
 				if (y2val == 0)
 				{
-					curve = pane.AddCurve("Dòng điện (I-A)", currentList_X.ToArray(), filterSignal(currentList_Y.ToArray(), 50), Color.Blue, SymbolType.None);
+					curve = pane.AddCurve("Dòng điện (I-A)", currentList_X.ToArray(), filterSignal(currentList_Y.ToArray(), 50, 1, 2), Color.Blue, SymbolType.None);
+					curve.IsY2Axis = true;
 				}
 				else if (y2val == 1)
 				{
-					curve = pane.AddCurve("Điện áp (U-V)", currentList_X.ToArray(), filterSignal(currentList_Y.ToArray(), 25), Color.Blue, SymbolType.None);
+					curve = pane.AddCurve("Điện áp (U-V)", currentList_X.ToArray(), filterSignal(currentList_Y.ToArray(), 5, 0, 0), Color.Blue, SymbolType.None);
+					curve.IsY2Axis = true;
 				}
 				else if (y2val == 2)
 				{
-					curve = pane.AddCurve("Công suất biểu kiến (S-VA)", currentList_X.ToArray(), filterSignal(currentList_Y.ToArray(), 50), Color.Blue, SymbolType.None);
+					curve = pane.AddCurve("Công suất biểu kiến (S-VA)", currentList_X.ToArray(), filterSignal(currentList_Y.ToArray(), 50, 1, 2), Color.Blue, SymbolType.None);
+					curve.IsY2Axis = false;
 				}
-				curve.IsY2Axis = true;
 
 				graphHistory.AxisChange();
 				graphHistory.Refresh();
@@ -168,7 +171,7 @@ namespace EnergyMonitorApp
 			}
 		}
 
-		private double[] filterSignal(double[] input, int look)
+		private double[] filterSignal(double[] input, int look, int rippleLook, int rippleThreshold)
 		{
 			List<double> output = new List<double>();
 			List<double> tmpList = new List<double>();
@@ -182,63 +185,65 @@ namespace EnergyMonitorApp
 				else
 				{
 					tmpList.Add(0);
-					output.AddRange(_filterSignal(tmpList.ToArray(), look));
+					output.AddRange(_filterSignal(tmpList.ToArray(), look, rippleLook, rippleThreshold));
 					tmpList = new List<double>();
 				}
 			}
 			return output.ToArray();
 		}
 
-		private double[] _filterSignal(double[] input, int look)
+		private double[] _filterSignal(double[] input, int look, int rippleLook, int rippleThreshold)
 		{
 			double[] output = new double[input.Length];
 			if (look * 2 >= input.Length)
 			{
 				look = input.Length / 2;
 			}
-			int lookX2 = look * 2;
 			int iTo = input.Length - look - 1;
-			int jTo;
-			double sum;
+			int length = input.Length;
+			double sum, iS0, iS2;
+			int avgCount, jTo;
 			for (int i = 0; i < input.Length; i++)
 			{
+				// Ripple filter
 				if (input[i] == 0)
 				{
 					output[i] = 0;
 					continue;
 				}
-				if (i < look)
+				if (rippleThreshold > 0)
 				{
-					sum = 0;
-					jTo = i + look;
-					int count = 0;
-					for (int j = i; j < jTo; j++)
+					int start = Math.Max(0, i - rippleLook);
+					int end = Math.Min(length, i + rippleLook);
+					int zeroCount = 0;
+					for (int k = start; k < end; k++)
 					{
-						sum += input[j];
-						count++;
+						if (input[k] == 0) zeroCount++;
 					}
-					output[i] = sum / look;
-					continue;
-				}
-				if (i > iTo)
-				{
-					sum = 0;
-					jTo = i - look;
-					int count = 0;
-					for (int j = i; j > jTo; j--)
+					if (zeroCount >= rippleThreshold)
 					{
-						sum += input[j];
-						count++;
+						output[i] = 0;
+						continue;
 					}
-					output[i] = sum / look;
-					continue;
 				}
+				// Real filter
 				sum = 0;
-				for (int j = -look; j < look; j++)
+				avgCount = 0;
+				jTo = Math.Min(length, i + look);
+				for (int j = Math.Max(0, i - look); j < jTo; j++)
 				{
-					sum += input[i + j];
+					double val = input[j];
+					if (val != 0)
+					{
+						sum += val;
+						avgCount++;
+					}
 				}
-				output[i] = sum / lookX2;
+				iS0 = output[i] = sum / avgCount;
+				if (i >= 2 && iS0 > 0 && output[i - 1] == 0 && (iS2 = output[i - 2]) > 0)
+				{
+					output[i - 1] = (iS0 + iS2) / 2;
+				}
 			}
 			return output;
 		}
