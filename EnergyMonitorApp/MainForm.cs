@@ -109,16 +109,16 @@ namespace EnergyMonitorApp
 							{
 								powerList_X.Add(lastDt);
 								powerList_Y.Add(0);
-								powerList_X.Add((double)new XDate(rec.Time));
+								powerList_X.Add(rec.Time.ToOADate());
 								powerList_Y.Add(0);
 							}
 							if (powerList_X.Count == 0)
 							{
-								powerList_X.Add((double)new XDate(rec.Time));
+								powerList_X.Add(rec.Time.ToOADate());
 								powerList_Y.Add(0);
 							}
 						}
-						powerList_X.Add((double)new XDate(rec.Time));
+						powerList_X.Add(rec.Time.ToOADate());
 						powerList_Y.Add(rec.RealPower);
 					}
 					powerList_Y.Add(-1);
@@ -135,16 +135,16 @@ namespace EnergyMonitorApp
 							{
 								subList_X.Add(lastDt);
 								subList_Y.Add(0);
-								subList_X.Add((double)new XDate(rec.Time));
+								subList_X.Add(rec.Time.ToOADate());
 								subList_Y.Add(0);
 							}
 							if (subList_X.Count == 0)
 							{
-								subList_X.Add((double)new XDate(rec.Time));
+								subList_X.Add(rec.Time.ToOADate());
 								subList_Y.Add(0);
 							}
 						}
-						subList_X.Add((double)new XDate(rec.Time));
+						subList_X.Add(rec.Time.ToOADate());
 						if (y2val == 0)
 						{
 							subList_Y.Add(rec.I);
@@ -177,10 +177,10 @@ namespace EnergyMonitorApp
 				}
 
 				pane.CurveList.Clear();
-				CurveItem curve;
+				LineItem curve;
 
 				curve = pane.AddCurve("Công suất thực (P-W)", powerList_X.ToArray(), filterSignal(powerList_Y.ToArray(), 175, 5, 3), Color.Red, SymbolType.None);
-				((LineItem)pane.CurveList[0]).Line.Width = 2.0F;
+				curve.Line.Width = 2.0F;
 
 				if (y2val == 0)
 				{
@@ -197,6 +197,14 @@ namespace EnergyMonitorApp
 					curve = pane.AddCurve("Công suất biểu kiến (S-VA)", subList_X.ToArray(), filterSignal(subList_Y.ToArray(), 50, 1, 2), Color.Blue, SymbolType.None);
 					curve.IsY2Axis = false;
 				}
+
+				Graphics g = this.CreateGraphics();
+				pane.YAxis.ResetAutoScale(pane, g);
+				pane.Y2Axis.ResetAutoScale(pane, g);
+				pane.XAxis.ResetAutoScale(pane, g);
+				g.Dispose();
+				pane.ZoomStack.Clear();
+				pane.XAxis.Scale.Format = "HH:mm dd/MM/yy";
 
 				graphHistory.AxisChange();
 				graphHistory.Refresh();
@@ -340,7 +348,7 @@ namespace EnergyMonitorApp
 					}
 				}
 			}
-			GenerateHistoryGraph();
+			new Thread(GenerateHistoryGraph).Start();
 		}
 
 
@@ -716,12 +724,13 @@ namespace EnergyMonitorApp
 			progUpdateData.IsRunning = false;
 
 			updateBlockList();
-
 			if (cbDeviceHistory.Items.Count > 0)
 			{
 				cbDeviceHistory_SelectedIndexChanged(this, null);
 			}
-			tabDeviceStatistic.Enabled = tabDeviceHistory.Enabled = tabBlockManager.Enabled = true;
+			tabEnvironmentInit();
+
+			tabEnvironment.Enabled = tabDeviceStatistic.Enabled = tabDeviceHistory.Enabled = tabBlockManager.Enabled = true;
 		}
 
 		private void btnAuthor_Click(object sender, EventArgs e)
@@ -772,6 +781,173 @@ namespace EnergyMonitorApp
 		}
 
 		#endregion\
+
+		#region "Evironment function"
+
+		private void tabEnvironmentInit()
+		{
+			minEnvironmentDT = DateTime.MaxValue;
+			maxEnvironmentDT = DateTime.MinValue;
+			foreach (LogRecord lrec in LogManager.LogEntryList)
+			{
+				ILogEnvironment rec = lrec as ILogEnvironment;
+				if (rec != null)
+				{
+					if (rec.Time < minEnvironmentDT)
+					{
+						minEnvironmentDT = rec.Time;
+					}
+					if (rec.Time > maxEnvironmentDT)
+					{
+						maxEnvironmentDT = rec.Time;
+					}
+				}
+			}
+			dtEnvironmentBegin.Value = dtEnvironmentBegin.MinDate = dtEnvironmentEnd.MinDate = minEnvironmentDT;
+			dtEnvironmentEnd.Value = dtEnvironmentBegin.MaxDate = dtEnvironmentEnd.MaxDate = maxEnvironmentDT;
+		}
+
+		private DateTime minEnvironmentDT;
+		private DateTime maxEnvironmentDT;
+		private readonly Dictionary<byte, Color> clientTemperatureColor = new Dictionary<byte, Color>()
+		{
+			{1, Color.Red},
+			{2, Color.Blue}
+		};
+		private void btnUpdateEvironment_Click(object sender, EventArgs e)
+		{
+			if (dtEnvironmentBegin.Value >= dtEnvironmentEnd.Value)
+			{
+				MessageBoxEx.Show(this, "<font size='18'><b>Ngày bắt đầu phải trước ngày kết thúc !</b></font>",
+						"<font size='15'><b>Thông báo</b></font>", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				dtEnvironmentBegin.Value = minEnvironmentDT;
+				dtEnvironmentEnd.Value = maxEnvironmentDT;
+			}
+			else
+			{
+				if (dtEnvironmentBegin.Value < minEnvironmentDT)
+				{
+					dtEnvironmentBegin.Value = minEnvironmentDT;
+				}
+				if (dtEnvironmentEnd.Value > maxEnvironmentDT)
+				{
+					dtEnvironmentEnd.Value = maxEnvironmentDT;
+				}
+			}
+			DateTime beginTime = dtEnvironmentBegin.Value;
+			DateTime endTime = dtEnvironmentEnd.Value;
+
+			double sum = 0;
+			int avgCount = 0;
+			Dictionary<byte, List<double>> dictData_X = new Dictionary<byte, List<double>>();
+			Dictionary<byte, List<double>> dictData_Y = new Dictionary<byte, List<double>>();
+			foreach (LogRecord lrec in LogManager.LogEntryList)
+			{
+				ILogEnvironment rec = lrec as ILogEnvironment;
+				if (rec != null)
+				{
+					if (rec.Time < beginTime || rec.Time > endTime)
+					{
+						continue;
+					}
+					sum += rec.Temperature;
+					avgCount++;
+
+					List<double> list_X;
+					if (!dictData_X.TryGetValue(rec.ClientID, out list_X))
+					{
+						list_X = new List<double>();
+						dictData_X.Add(rec.ClientID, list_X);
+					}
+					List<double> list_Y;
+					if (!dictData_Y.TryGetValue(rec.ClientID, out list_Y))
+					{
+						list_Y = new List<double>();
+						dictData_Y.Add(rec.ClientID, list_Y);
+					}
+					list_X.Add(rec.Time.ToOADate());
+					list_Y.Add(rec.Temperature);
+				}
+			}
+			sum /= avgCount;
+			txtAverageTemperature.Text = sum.ToString("F2") + "\u00B0C";
+
+			GraphPane pane = graphEnvironment.GraphPane;
+			pane.Title.Text = "Lịch sử môi trường";
+			pane.YAxis.Title.Text = "Nhiệt độ (\u00B0C)";
+			pane.Fill = new Fill(Color.White, Color.LightGray, 45.0f);
+
+			pane.XAxis.Type = AxisType.Date;
+			pane.XAxis.Title.Text = "Thời gian";
+			pane.XAxis.Scale.Format = "HH:mm dd/MM/yy";
+			pane.XAxis.Scale.FontSpec.Size = 8;
+
+			pane.CurveList.Clear();
+			foreach (KeyValuePair<byte, List<double>> data in dictData_X)
+			{
+				LineItem curve = pane.AddCurve("Nhiệt độ mạch " + data.Key + " (\u00B0C)",
+					data.Value.ToArray(), lowPassFilter(dictData_Y[data.Key].ToArray(), 40, 0.8),
+					clientTemperatureColor[data.Key], SymbolType.None);
+			}
+
+			Graphics g = this.CreateGraphics();
+			pane.YAxis.ResetAutoScale(pane, g);
+			pane.Y2Axis.ResetAutoScale(pane, g);
+			pane.XAxis.ResetAutoScale(pane, g);
+			g.Dispose();
+			pane.ZoomStack.Clear();
+			pane.XAxis.Scale.Format = "HH:mm dd/MM/yy";
+
+			graphEnvironment.AxisChange();
+			graphEnvironment.Refresh();
+		}
+
+		private double[] lowPassFilter(double[] noisy, int range, double decay)
+		{
+			double[] clean = new double[noisy.Length];
+			double[] coefficients = Coefficients(range, decay);
+
+			double divisor = 0;
+			for (int i = -range; i <= range; i++)
+				divisor += coefficients[Math.Abs(i)];
+
+			for (int i = range; i < clean.Length - range; i++)
+			{
+				double temp = 0;
+				for (int j = -range; j <= range; j++)
+					temp += noisy[i + j] * coefficients[Math.Abs(j)];
+				clean[i] = temp / divisor;
+			}
+
+			double leadSum = 0;
+			double trailSum = 0;
+			int leadRef = range;
+			int trailRef = clean.Length - range - 1;
+			for (int i = 1; i <= range; i++)
+			{
+				leadSum += (clean[leadRef] - clean[leadRef + i]) / i;
+				trailSum += (clean[trailRef] - clean[trailRef - i]) / i;
+			}
+			double leadSlope = leadSum / range;
+			double trailSlope = trailSum / range;
+
+			for (int i = 1; i <= range; i++)
+			{
+				clean[leadRef - i] = clean[leadRef] + leadSlope * i;
+				clean[trailRef + i] = clean[trailRef] + trailSlope * i;
+			}
+			return clean;
+		}
+
+		private double[] Coefficients(int range, double decay)
+		{
+			double[] coefficients = new double[range + 1];
+			for (int i = 0; i <= range; i++)
+				coefficients[i] = Math.Pow(decay, i);
+			return coefficients;
+		}
+
+		#endregion
 
 	}
 }

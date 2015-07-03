@@ -18,7 +18,14 @@ namespace EnergyMonitorApp
 		public byte ClientID { get; set; }
 	}
 
-	class Log_MasterHeartbeat : LogRecord
+	interface ILogEnvironment
+	{
+		byte ClientID { get; set; }
+		float Temperature { get; set; }
+		DateTime Time { get; set; }
+	}
+
+	class Log_MasterHeartbeat : LogRecord, ILogEnvironment
 	{
 		public float VCC { get; set; }
 		public uint Uptime { get; set; }
@@ -33,7 +40,7 @@ namespace EnergyMonitorApp
 		public uint FreeRam { get; set; }
 	}
 
-	class Log_ClientTemperature : LogRecord
+	class Log_ClientTemperature : LogRecord, ILogEnvironment
 	{
 		public float Temperature { get; set; }
 	}

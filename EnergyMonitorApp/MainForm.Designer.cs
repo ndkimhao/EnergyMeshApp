@@ -30,16 +30,24 @@
 		{
 			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-			DevComponents.DotNetBar.SuperGrid.Style.Padding padding1 = new DevComponents.DotNetBar.SuperGrid.Style.Padding();
-			DevComponents.DotNetBar.SuperGrid.Style.Background background3 = new DevComponents.DotNetBar.SuperGrid.Style.Background();
+			DevComponents.DotNetBar.SuperGrid.Style.Padding padding2 = new DevComponents.DotNetBar.SuperGrid.Style.Padding();
+			DevComponents.DotNetBar.SuperGrid.Style.Background background2 = new DevComponents.DotNetBar.SuperGrid.Style.Background();
 			this.styleManager = new DevComponents.DotNetBar.StyleManager(this.components);
 			this.tabItem1 = new DevComponents.DotNetBar.TabItem(this.components);
 			this.tabControlPanel1 = new DevComponents.DotNetBar.TabControlPanel();
 			this.tabItem3 = new DevComponents.DotNetBar.TabItem(this.components);
 			this.tabControlPanel3 = new DevComponents.DotNetBar.TabControlPanel();
 			this.superTabControl1 = new DevComponents.DotNetBar.SuperTabControl();
-			this.superTabControlPanel4 = new DevComponents.DotNetBar.SuperTabControlPanel();
-			this.tabDeviceStatistic = new DevComponents.DotNetBar.SuperTabItem();
+			this.superTabControlPanel5 = new DevComponents.DotNetBar.SuperTabControlPanel();
+			this.graphEnvironment = new ZedGraph.ZedGraphControl();
+			this.txtAverageTemperature = new System.Windows.Forms.TextBox();
+			this.labelX7 = new DevComponents.DotNetBar.LabelX();
+			this.btnUpdateEvironment = new DevComponents.DotNetBar.ButtonX();
+			this.labelX8 = new DevComponents.DotNetBar.LabelX();
+			this.dtEnvironmentEnd = new DevComponents.Editors.DateTimeAdv.DateTimeInput();
+			this.labelX9 = new DevComponents.DotNetBar.LabelX();
+			this.dtEnvironmentBegin = new DevComponents.Editors.DateTimeAdv.DateTimeInput();
+			this.tabEnvironment = new DevComponents.DotNetBar.SuperTabItem();
 			this.superTabControlPanel1 = new DevComponents.DotNetBar.SuperTabControlPanel();
 			this.gridDevice = new DevComponents.DotNetBar.SuperGrid.SuperGridControl();
 			this.colDeviceID = new DevComponents.DotNetBar.SuperGrid.GridColumn();
@@ -55,6 +63,8 @@
 			this.btnUpdateData = new DevComponents.DotNetBar.ButtonX();
 			this.superTabItem1 = new DevComponents.DotNetBar.SuperTabItem();
 			this.superTabControlPanel3 = new DevComponents.DotNetBar.SuperTabControlPanel();
+			this.txtDeviceHistoryPower = new System.Windows.Forms.TextBox();
+			this.labelX6 = new DevComponents.DotNetBar.LabelX();
 			this.cbHistoryY2 = new DevComponents.DotNetBar.Controls.ComboBoxEx();
 			this.labelX5 = new DevComponents.DotNetBar.LabelX();
 			this.progDeviceHistory = new DevComponents.DotNetBar.Controls.CircularProgress();
@@ -67,6 +77,8 @@
 			this.cbDeviceHistory = new EnergyMonitorApp.DeviceComboBox();
 			this.deviceImageList = new System.Windows.Forms.ImageList(this.components);
 			this.tabDeviceHistory = new DevComponents.DotNetBar.SuperTabItem();
+			this.superTabControlPanel4 = new DevComponents.DotNetBar.SuperTabControlPanel();
+			this.tabDeviceStatistic = new DevComponents.DotNetBar.SuperTabItem();
 			this.superTabControlPanel2 = new DevComponents.DotNetBar.SuperTabControlPanel();
 			this.gridBlocks = new DevComponents.DotNetBar.SuperGrid.SuperGridControl();
 			this.colBlockID = new DevComponents.DotNetBar.SuperGrid.GridColumn();
@@ -83,10 +95,11 @@
 			this.cpCanvasColor = new DevComponents.DotNetBar.ColorPickerDropDown();
 			this.cpBaseColor = new DevComponents.DotNetBar.ColorPickerDropDown();
 			this.deviceImageListCombo = new System.Windows.Forms.ImageList(this.components);
-			this.labelX6 = new DevComponents.DotNetBar.LabelX();
-			this.txtDeviceHistoryPower = new System.Windows.Forms.TextBox();
 			((System.ComponentModel.ISupportInitialize)(this.superTabControl1)).BeginInit();
 			this.superTabControl1.SuspendLayout();
+			this.superTabControlPanel5.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.dtEnvironmentEnd)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.dtEnvironmentBegin)).BeginInit();
 			this.superTabControlPanel1.SuspendLayout();
 			this.superTabControlPanel3.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.dtHistoryEnd)).BeginInit();
@@ -167,9 +180,10 @@
 			this.superTabControl1.ControlBox.SubItems.AddRange(new DevComponents.DotNetBar.BaseItem[] {
             this.superTabControl1.ControlBox.MenuBox,
             this.superTabControl1.ControlBox.CloseBox});
+			this.superTabControl1.Controls.Add(this.superTabControlPanel5);
+			this.superTabControl1.Controls.Add(this.superTabControlPanel1);
 			this.superTabControl1.Controls.Add(this.superTabControlPanel3);
 			this.superTabControl1.Controls.Add(this.superTabControlPanel4);
-			this.superTabControl1.Controls.Add(this.superTabControlPanel1);
 			this.superTabControl1.Controls.Add(this.superTabControlPanel2);
 			this.superTabControl1.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
 			this.superTabControl1.ForeColor = System.Drawing.Color.Black;
@@ -185,26 +199,232 @@
             this.superTabItem1,
             this.tabBlockManager,
             this.tabDeviceHistory,
-            this.tabDeviceStatistic});
+            this.tabDeviceStatistic,
+            this.tabEnvironment});
 			this.superTabControl1.TabStyle = DevComponents.DotNetBar.eSuperTabStyle.Office2010BackstageBlue;
 			this.superTabControl1.Text = "superTabControl1";
 			// 
-			// superTabControlPanel4
+			// superTabControlPanel5
 			// 
-			this.superTabControlPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.superTabControlPanel4.Location = new System.Drawing.Point(0, 36);
-			this.superTabControlPanel4.Name = "superTabControlPanel4";
-			this.superTabControlPanel4.Size = new System.Drawing.Size(1090, 650);
-			this.superTabControlPanel4.TabIndex = 0;
-			this.superTabControlPanel4.TabItem = this.tabDeviceStatistic;
+			this.superTabControlPanel5.Controls.Add(this.graphEnvironment);
+			this.superTabControlPanel5.Controls.Add(this.txtAverageTemperature);
+			this.superTabControlPanel5.Controls.Add(this.labelX7);
+			this.superTabControlPanel5.Controls.Add(this.btnUpdateEvironment);
+			this.superTabControlPanel5.Controls.Add(this.labelX8);
+			this.superTabControlPanel5.Controls.Add(this.dtEnvironmentEnd);
+			this.superTabControlPanel5.Controls.Add(this.labelX9);
+			this.superTabControlPanel5.Controls.Add(this.dtEnvironmentBegin);
+			this.superTabControlPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.superTabControlPanel5.Location = new System.Drawing.Point(0, 36);
+			this.superTabControlPanel5.Name = "superTabControlPanel5";
+			this.superTabControlPanel5.Size = new System.Drawing.Size(1090, 650);
+			this.superTabControlPanel5.TabIndex = 0;
+			this.superTabControlPanel5.TabItem = this.tabEnvironment;
 			// 
-			// tabDeviceStatistic
+			// graphEnvironment
 			// 
-			this.tabDeviceStatistic.AttachedControl = this.superTabControlPanel4;
-			this.tabDeviceStatistic.Enabled = false;
-			this.tabDeviceStatistic.GlobalItem = false;
-			this.tabDeviceStatistic.Name = "tabDeviceStatistic";
-			this.tabDeviceStatistic.Text = "Thống kê thiết bị";
+			this.graphEnvironment.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.graphEnvironment.Location = new System.Drawing.Point(238, 0);
+			this.graphEnvironment.Margin = new System.Windows.Forms.Padding(4);
+			this.graphEnvironment.Name = "graphEnvironment";
+			this.graphEnvironment.ScrollGrace = 0D;
+			this.graphEnvironment.ScrollMaxX = 0D;
+			this.graphEnvironment.ScrollMaxY = 0D;
+			this.graphEnvironment.ScrollMaxY2 = 0D;
+			this.graphEnvironment.ScrollMinX = 0D;
+			this.graphEnvironment.ScrollMinY = 0D;
+			this.graphEnvironment.ScrollMinY2 = 0D;
+			this.graphEnvironment.Size = new System.Drawing.Size(852, 650);
+			this.graphEnvironment.TabIndex = 22;
+			// 
+			// txtAverageTemperature
+			// 
+			this.txtAverageTemperature.Location = new System.Drawing.Point(13, 207);
+			this.txtAverageTemperature.Name = "txtAverageTemperature";
+			this.txtAverageTemperature.ReadOnly = true;
+			this.txtAverageTemperature.Size = new System.Drawing.Size(208, 26);
+			this.txtAverageTemperature.TabIndex = 21;
+			// 
+			// labelX7
+			// 
+			this.labelX7.BackColor = System.Drawing.Color.Transparent;
+			// 
+			// 
+			// 
+			this.labelX7.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.labelX7.ForeColor = System.Drawing.Color.Black;
+			this.labelX7.Location = new System.Drawing.Point(12, 177);
+			this.labelX7.Name = "labelX7";
+			this.labelX7.Size = new System.Drawing.Size(208, 23);
+			this.labelX7.TabIndex = 20;
+			this.labelX7.Text = "Nhiệt độ trung bình:";
+			// 
+			// btnUpdateEvironment
+			// 
+			this.btnUpdateEvironment.AccessibleRole = System.Windows.Forms.AccessibleRole.PushButton;
+			this.btnUpdateEvironment.ColorTable = DevComponents.DotNetBar.eButtonColor.OrangeWithBackground;
+			this.btnUpdateEvironment.Font = new System.Drawing.Font("Segoe UI Black", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
+			this.btnUpdateEvironment.Location = new System.Drawing.Point(12, 287);
+			this.btnUpdateEvironment.Name = "btnUpdateEvironment";
+			this.btnUpdateEvironment.Size = new System.Drawing.Size(208, 98);
+			this.btnUpdateEvironment.Style = DevComponents.DotNetBar.eDotNetBarStyle.StyleManagerControlled;
+			this.btnUpdateEvironment.Symbol = "";
+			this.btnUpdateEvironment.SymbolSize = 35F;
+			this.btnUpdateEvironment.TabIndex = 19;
+			this.btnUpdateEvironment.Text = " Thống kê";
+			this.btnUpdateEvironment.Click += new System.EventHandler(this.btnUpdateEvironment_Click);
+			// 
+			// labelX8
+			// 
+			this.labelX8.BackColor = System.Drawing.Color.Transparent;
+			// 
+			// 
+			// 
+			this.labelX8.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.labelX8.ForeColor = System.Drawing.Color.Black;
+			this.labelX8.Location = new System.Drawing.Point(9, 92);
+			this.labelX8.Name = "labelX8";
+			this.labelX8.Size = new System.Drawing.Size(208, 23);
+			this.labelX8.TabIndex = 18;
+			this.labelX8.Text = "Thời gian kết thúc:";
+			// 
+			// dtEnvironmentEnd
+			// 
+			this.dtEnvironmentEnd.AutoOffFreeTextEntry = true;
+			this.dtEnvironmentEnd.BackColor = System.Drawing.Color.White;
+			// 
+			// 
+			// 
+			this.dtEnvironmentEnd.BackgroundStyle.Class = "DateTimeInputBackground";
+			this.dtEnvironmentEnd.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.dtEnvironmentEnd.ButtonDropDown.Shortcut = DevComponents.DotNetBar.eShortcut.AltDown;
+			this.dtEnvironmentEnd.ButtonDropDown.Visible = true;
+			this.dtEnvironmentEnd.CustomFormat = "HH:mm dd/MM/yyyy";
+			this.dtEnvironmentEnd.DateTimeSelectorVisibility = DevComponents.Editors.DateTimeAdv.eDateTimeSelectorVisibility.Both;
+			this.dtEnvironmentEnd.ForeColor = System.Drawing.Color.Black;
+			this.dtEnvironmentEnd.Format = DevComponents.Editors.eDateTimePickerFormat.Custom;
+			this.dtEnvironmentEnd.InputHorizontalAlignment = DevComponents.Editors.eHorizontalAlignment.Center;
+			this.dtEnvironmentEnd.IsPopupCalendarOpen = false;
+			this.dtEnvironmentEnd.Location = new System.Drawing.Point(13, 121);
+			// 
+			// 
+			// 
+			this.dtEnvironmentEnd.MonthCalendar.AnnuallyMarkedDates = new System.DateTime[0];
+			// 
+			// 
+			// 
+			this.dtEnvironmentEnd.MonthCalendar.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.dtEnvironmentEnd.MonthCalendar.CalendarDimensions = new System.Drawing.Size(1, 1);
+			// 
+			// 
+			// 
+			this.dtEnvironmentEnd.MonthCalendar.CommandsBackgroundStyle.BackColor2SchemePart = DevComponents.DotNetBar.eColorSchemePart.BarBackground2;
+			this.dtEnvironmentEnd.MonthCalendar.CommandsBackgroundStyle.BackColorGradientAngle = 90;
+			this.dtEnvironmentEnd.MonthCalendar.CommandsBackgroundStyle.BackColorSchemePart = DevComponents.DotNetBar.eColorSchemePart.BarBackground;
+			this.dtEnvironmentEnd.MonthCalendar.CommandsBackgroundStyle.BorderTop = DevComponents.DotNetBar.eStyleBorderType.Solid;
+			this.dtEnvironmentEnd.MonthCalendar.CommandsBackgroundStyle.BorderTopColorSchemePart = DevComponents.DotNetBar.eColorSchemePart.BarDockedBorder;
+			this.dtEnvironmentEnd.MonthCalendar.CommandsBackgroundStyle.BorderTopWidth = 1;
+			this.dtEnvironmentEnd.MonthCalendar.CommandsBackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.dtEnvironmentEnd.MonthCalendar.DayClickAutoClosePopup = false;
+			this.dtEnvironmentEnd.MonthCalendar.DisplayMonth = new System.DateTime(2015, 7, 1, 0, 0, 0, 0);
+			this.dtEnvironmentEnd.MonthCalendar.FirstDayOfWeek = System.DayOfWeek.Monday;
+			this.dtEnvironmentEnd.MonthCalendar.MarkedDates = new System.DateTime[0];
+			this.dtEnvironmentEnd.MonthCalendar.MonthlyMarkedDates = new System.DateTime[0];
+			// 
+			// 
+			// 
+			this.dtEnvironmentEnd.MonthCalendar.NavigationBackgroundStyle.BackColor2SchemePart = DevComponents.DotNetBar.eColorSchemePart.PanelBackground2;
+			this.dtEnvironmentEnd.MonthCalendar.NavigationBackgroundStyle.BackColorGradientAngle = 90;
+			this.dtEnvironmentEnd.MonthCalendar.NavigationBackgroundStyle.BackColorSchemePart = DevComponents.DotNetBar.eColorSchemePart.PanelBackground;
+			this.dtEnvironmentEnd.MonthCalendar.NavigationBackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.dtEnvironmentEnd.MonthCalendar.WeeklyMarkedDays = new System.DayOfWeek[0];
+			this.dtEnvironmentEnd.Name = "dtEnvironmentEnd";
+			this.dtEnvironmentEnd.Size = new System.Drawing.Size(209, 26);
+			this.dtEnvironmentEnd.Style = DevComponents.DotNetBar.eDotNetBarStyle.StyleManagerControlled;
+			this.dtEnvironmentEnd.TabIndex = 17;
+			this.dtEnvironmentEnd.TimeSelectorTimeFormat = DevComponents.Editors.DateTimeAdv.eTimeSelectorFormat.Time24H;
+			this.dtEnvironmentEnd.TimeSelectorType = DevComponents.Editors.DateTimeAdv.eTimeSelectorType.TouchStyle;
+			// 
+			// labelX9
+			// 
+			this.labelX9.BackColor = System.Drawing.Color.Transparent;
+			// 
+			// 
+			// 
+			this.labelX9.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.labelX9.ForeColor = System.Drawing.Color.Black;
+			this.labelX9.Location = new System.Drawing.Point(9, 25);
+			this.labelX9.Name = "labelX9";
+			this.labelX9.Size = new System.Drawing.Size(208, 23);
+			this.labelX9.TabIndex = 16;
+			this.labelX9.Text = "Thời gian bắt đầu:";
+			// 
+			// dtEnvironmentBegin
+			// 
+			this.dtEnvironmentBegin.AutoOffFreeTextEntry = true;
+			this.dtEnvironmentBegin.BackColor = System.Drawing.Color.White;
+			// 
+			// 
+			// 
+			this.dtEnvironmentBegin.BackgroundStyle.Class = "DateTimeInputBackground";
+			this.dtEnvironmentBegin.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.dtEnvironmentBegin.ButtonDropDown.Shortcut = DevComponents.DotNetBar.eShortcut.AltDown;
+			this.dtEnvironmentBegin.ButtonDropDown.Visible = true;
+			this.dtEnvironmentBegin.CustomFormat = "HH:mm dd/MM/yyyy";
+			this.dtEnvironmentBegin.DateTimeSelectorVisibility = DevComponents.Editors.DateTimeAdv.eDateTimeSelectorVisibility.Both;
+			this.dtEnvironmentBegin.ForeColor = System.Drawing.Color.Black;
+			this.dtEnvironmentBegin.Format = DevComponents.Editors.eDateTimePickerFormat.Custom;
+			this.dtEnvironmentBegin.InputHorizontalAlignment = DevComponents.Editors.eHorizontalAlignment.Center;
+			this.dtEnvironmentBegin.IsPopupCalendarOpen = false;
+			this.dtEnvironmentBegin.Location = new System.Drawing.Point(12, 54);
+			// 
+			// 
+			// 
+			this.dtEnvironmentBegin.MonthCalendar.AnnuallyMarkedDates = new System.DateTime[0];
+			// 
+			// 
+			// 
+			this.dtEnvironmentBegin.MonthCalendar.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.dtEnvironmentBegin.MonthCalendar.CalendarDimensions = new System.Drawing.Size(1, 1);
+			// 
+			// 
+			// 
+			this.dtEnvironmentBegin.MonthCalendar.CommandsBackgroundStyle.BackColor2SchemePart = DevComponents.DotNetBar.eColorSchemePart.BarBackground2;
+			this.dtEnvironmentBegin.MonthCalendar.CommandsBackgroundStyle.BackColorGradientAngle = 90;
+			this.dtEnvironmentBegin.MonthCalendar.CommandsBackgroundStyle.BackColorSchemePart = DevComponents.DotNetBar.eColorSchemePart.BarBackground;
+			this.dtEnvironmentBegin.MonthCalendar.CommandsBackgroundStyle.BorderTop = DevComponents.DotNetBar.eStyleBorderType.Solid;
+			this.dtEnvironmentBegin.MonthCalendar.CommandsBackgroundStyle.BorderTopColorSchemePart = DevComponents.DotNetBar.eColorSchemePart.BarDockedBorder;
+			this.dtEnvironmentBegin.MonthCalendar.CommandsBackgroundStyle.BorderTopWidth = 1;
+			this.dtEnvironmentBegin.MonthCalendar.CommandsBackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.dtEnvironmentBegin.MonthCalendar.DayClickAutoClosePopup = false;
+			this.dtEnvironmentBegin.MonthCalendar.DisplayMonth = new System.DateTime(2015, 7, 1, 0, 0, 0, 0);
+			this.dtEnvironmentBegin.MonthCalendar.FirstDayOfWeek = System.DayOfWeek.Monday;
+			this.dtEnvironmentBegin.MonthCalendar.MarkedDates = new System.DateTime[0];
+			this.dtEnvironmentBegin.MonthCalendar.MonthlyMarkedDates = new System.DateTime[0];
+			// 
+			// 
+			// 
+			this.dtEnvironmentBegin.MonthCalendar.NavigationBackgroundStyle.BackColor2SchemePart = DevComponents.DotNetBar.eColorSchemePart.PanelBackground2;
+			this.dtEnvironmentBegin.MonthCalendar.NavigationBackgroundStyle.BackColorGradientAngle = 90;
+			this.dtEnvironmentBegin.MonthCalendar.NavigationBackgroundStyle.BackColorSchemePart = DevComponents.DotNetBar.eColorSchemePart.PanelBackground;
+			this.dtEnvironmentBegin.MonthCalendar.NavigationBackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.dtEnvironmentBegin.MonthCalendar.WeeklyMarkedDays = new System.DayOfWeek[0];
+			this.dtEnvironmentBegin.Name = "dtEnvironmentBegin";
+			this.dtEnvironmentBegin.Size = new System.Drawing.Size(209, 26);
+			this.dtEnvironmentBegin.Style = DevComponents.DotNetBar.eDotNetBarStyle.StyleManagerControlled;
+			this.dtEnvironmentBegin.TabIndex = 15;
+			this.dtEnvironmentBegin.TimeSelectorTimeFormat = DevComponents.Editors.DateTimeAdv.eTimeSelectorFormat.Time24H;
+			this.dtEnvironmentBegin.TimeSelectorType = DevComponents.Editors.DateTimeAdv.eTimeSelectorType.TouchStyle;
+			// 
+			// tabEnvironment
+			// 
+			this.tabEnvironment.AttachedControl = this.superTabControlPanel5;
+			this.tabEnvironment.Enabled = false;
+			this.tabEnvironment.GlobalItem = false;
+			this.tabEnvironment.Name = "tabEnvironment";
+			this.tabEnvironment.Text = "Môi trường";
 			// 
 			// superTabControlPanel1
 			// 
@@ -338,6 +558,7 @@
 			// 
 			this.lbFileList.BackgroundStyle.Class = "ListBoxAdv";
 			this.lbFileList.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.lbFileList.CheckStateMember = null;
 			this.lbFileList.ContainerControlProcessDialogKey = true;
 			this.lbFileList.DragDropSupport = true;
 			this.lbFileList.ForeColor = System.Drawing.Color.Black;
@@ -420,6 +641,28 @@
 			this.superTabControlPanel3.Size = new System.Drawing.Size(1090, 650);
 			this.superTabControlPanel3.TabIndex = 0;
 			this.superTabControlPanel3.TabItem = this.tabDeviceHistory;
+			// 
+			// txtDeviceHistoryPower
+			// 
+			this.txtDeviceHistoryPower.Location = new System.Drawing.Point(10, 345);
+			this.txtDeviceHistoryPower.Name = "txtDeviceHistoryPower";
+			this.txtDeviceHistoryPower.ReadOnly = true;
+			this.txtDeviceHistoryPower.Size = new System.Drawing.Size(208, 26);
+			this.txtDeviceHistoryPower.TabIndex = 14;
+			// 
+			// labelX6
+			// 
+			this.labelX6.BackColor = System.Drawing.Color.Transparent;
+			// 
+			// 
+			// 
+			this.labelX6.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.labelX6.ForeColor = System.Drawing.Color.Black;
+			this.labelX6.Location = new System.Drawing.Point(9, 315);
+			this.labelX6.Name = "labelX6";
+			this.labelX6.Size = new System.Drawing.Size(208, 23);
+			this.labelX6.TabIndex = 13;
+			this.labelX6.Text = "Tiêu thụ:";
 			// 
 			// cbHistoryY2
 			// 
@@ -601,7 +844,7 @@
 			this.dtHistoryBegin.Format = DevComponents.Editors.eDateTimePickerFormat.Custom;
 			this.dtHistoryBegin.InputHorizontalAlignment = DevComponents.Editors.eHorizontalAlignment.Center;
 			this.dtHistoryBegin.IsPopupCalendarOpen = false;
-			this.dtHistoryBegin.Location = new System.Drawing.Point(13, 123);
+			this.dtHistoryBegin.Location = new System.Drawing.Point(10, 123);
 			// 
 			// 
 			// 
@@ -650,7 +893,7 @@
 			this.cbDeviceHistory.FormattingEnabled = true;
 			this.cbDeviceHistory.ImageList = this.deviceImageList;
 			this.cbDeviceHistory.ItemHeight = 64;
-			this.cbDeviceHistory.Location = new System.Drawing.Point(12, 15);
+			this.cbDeviceHistory.Location = new System.Drawing.Point(10, 18);
 			this.cbDeviceHistory.Name = "cbDeviceHistory";
 			this.cbDeviceHistory.Size = new System.Drawing.Size(209, 70);
 			this.cbDeviceHistory.TabIndex = 1;
@@ -673,6 +916,23 @@
 			this.tabDeviceHistory.GlobalItem = false;
 			this.tabDeviceHistory.Name = "tabDeviceHistory";
 			this.tabDeviceHistory.Text = "Lịch sử thiết bị";
+			// 
+			// superTabControlPanel4
+			// 
+			this.superTabControlPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.superTabControlPanel4.Location = new System.Drawing.Point(0, 36);
+			this.superTabControlPanel4.Name = "superTabControlPanel4";
+			this.superTabControlPanel4.Size = new System.Drawing.Size(1090, 650);
+			this.superTabControlPanel4.TabIndex = 0;
+			this.superTabControlPanel4.TabItem = this.tabDeviceStatistic;
+			// 
+			// tabDeviceStatistic
+			// 
+			this.tabDeviceStatistic.AttachedControl = this.superTabControlPanel4;
+			this.tabDeviceStatistic.Enabled = false;
+			this.tabDeviceStatistic.GlobalItem = false;
+			this.tabDeviceStatistic.Name = "tabDeviceStatistic";
+			this.tabDeviceStatistic.Text = "Thống kê thiết bị";
 			// 
 			// superTabControlPanel2
 			// 
@@ -705,9 +965,9 @@
 			this.gridBlocks.PrimaryGrid.Columns.Add(this.colBlockDevice);
 			this.gridBlocks.PrimaryGrid.Columns.Add(this.colBlockImport);
 			this.gridBlocks.PrimaryGrid.DefaultRowHeight = 75;
-			padding1.Bottom = 4;
-			padding1.Top = 4;
-			this.gridBlocks.PrimaryGrid.DefaultVisualStyles.ColumnHeaderStyles.Default.Padding = padding1;
+			padding2.Bottom = 4;
+			padding2.Top = 4;
+			this.gridBlocks.PrimaryGrid.DefaultVisualStyles.ColumnHeaderStyles.Default.Padding = padding2;
 			this.gridBlocks.PrimaryGrid.SelectionGranularity = DevComponents.DotNetBar.SuperGrid.SelectionGranularity.RowWithCellHighlight;
 			this.gridBlocks.PrimaryGrid.SortLevel = DevComponents.DotNetBar.SuperGrid.SortLevel.None;
 			this.gridBlocks.Size = new System.Drawing.Size(1090, 650);
@@ -746,8 +1006,8 @@
 			// 
 			// colBlockImport
 			// 
-			background3.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-			this.colBlockImport.CellStyles.MouseOver.Background = background3;
+			background2.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+			this.colBlockImport.CellStyles.MouseOver.Background = background2;
 			this.colBlockImport.EditorType = typeof(DevComponents.DotNetBar.SuperGrid.GridLabelXEditControl);
 			this.colBlockImport.MarkRowDirtyOnCellValueChange = false;
 			this.colBlockImport.Name = "Nhập";
@@ -829,28 +1089,6 @@
 			this.deviceImageListCombo.Images.SetKeyName(3, "washing_machine.jpg");
 			this.deviceImageListCombo.Images.SetKeyName(4, "water_heater.jpg");
 			// 
-			// labelX6
-			// 
-			this.labelX6.BackColor = System.Drawing.Color.Transparent;
-			// 
-			// 
-			// 
-			this.labelX6.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-			this.labelX6.ForeColor = System.Drawing.Color.Black;
-			this.labelX6.Location = new System.Drawing.Point(9, 315);
-			this.labelX6.Name = "labelX6";
-			this.labelX6.Size = new System.Drawing.Size(208, 23);
-			this.labelX6.TabIndex = 13;
-			this.labelX6.Text = "Tiêu thụ:";
-			// 
-			// txtDeviceHistoryPower
-			// 
-			this.txtDeviceHistoryPower.Location = new System.Drawing.Point(10, 345);
-			this.txtDeviceHistoryPower.Name = "txtDeviceHistoryPower";
-			this.txtDeviceHistoryPower.ReadOnly = true;
-			this.txtDeviceHistoryPower.Size = new System.Drawing.Size(208, 26);
-			this.txtDeviceHistoryPower.TabIndex = 14;
-			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -866,6 +1104,10 @@
 			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
 			((System.ComponentModel.ISupportInitialize)(this.superTabControl1)).EndInit();
 			this.superTabControl1.ResumeLayout(false);
+			this.superTabControlPanel5.ResumeLayout(false);
+			this.superTabControlPanel5.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.dtEnvironmentEnd)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.dtEnvironmentBegin)).EndInit();
 			this.superTabControlPanel1.ResumeLayout(false);
 			this.superTabControlPanel3.ResumeLayout(false);
 			this.superTabControlPanel3.PerformLayout();
@@ -932,5 +1174,15 @@
 		private DevComponents.DotNetBar.SuperTabItem tabDeviceStatistic;
 		private DevComponents.DotNetBar.LabelX labelX6;
 		private System.Windows.Forms.TextBox txtDeviceHistoryPower;
+		private DevComponents.DotNetBar.SuperTabControlPanel superTabControlPanel5;
+		private DevComponents.DotNetBar.SuperTabItem tabEnvironment;
+		private System.Windows.Forms.TextBox txtAverageTemperature;
+		private DevComponents.DotNetBar.LabelX labelX7;
+		private DevComponents.DotNetBar.ButtonX btnUpdateEvironment;
+		private DevComponents.DotNetBar.LabelX labelX8;
+		private DevComponents.Editors.DateTimeAdv.DateTimeInput dtEnvironmentEnd;
+		private DevComponents.DotNetBar.LabelX labelX9;
+		private DevComponents.Editors.DateTimeAdv.DateTimeInput dtEnvironmentBegin;
+		private ZedGraph.ZedGraphControl graphEnvironment;
 	}
 }
