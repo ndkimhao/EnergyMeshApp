@@ -82,6 +82,7 @@ namespace EnergyMonitorApp
 				pane.XAxis.Scale.Format = "HH:mm dd/MM/yy";
 				pane.XAxis.Scale.FontSpec.Size = 8;
 
+				double wh = 0;
 				List<double> powerList_X = new List<double>();
 				List<double> powerList_Y = new List<double>();
 				List<double> currentList_X = new List<double>();
@@ -90,9 +91,16 @@ namespace EnergyMonitorApp
 				{
 					PowerBlock block = LogManager.PowerBlockList[blockID];
 					bool isFirst = true;
-					foreach (Log_ClientRealPower rec in block.RealPowerList)
+					int forTo = block.RealPowerList.Count - 1;
+					for (int i = 0; i < block.RealPowerList.Count; i++)
 					{
+						Log_ClientRealPower rec = block.RealPowerList[i];
 						if (rec.Time < beginTime || rec.Time > endTime) continue;
+						if (i < forTo)
+						{
+							TimeSpan diff = block.RealPowerList[i + 1].Time - rec.Time;
+							wh += rec.RealPower * diff.TotalSeconds;
+						}
 						if (isFirst)
 						{
 							isFirst = false;
@@ -165,6 +173,17 @@ namespace EnergyMonitorApp
 
 				graphHistory.AxisChange();
 				graphHistory.Refresh();
+
+				wh /= 3600;
+				if (wh > 1000)
+				{
+					wh /= 1000;
+					txtDeviceHistoryPower.Text = wh.ToString("F2") + " kWH";
+				}
+				else
+				{
+					txtDeviceHistoryPower.Text = wh.ToString("F2") + " WH";
+				}
 
 				progDeviceHistory.IsRunning = false;
 				lblStatus.Text = "Thống kê dữ liệu hoàn tất";
@@ -676,8 +695,7 @@ namespace EnergyMonitorApp
 			{
 				cbDeviceHistory_SelectedIndexChanged(this, null);
 			}
-			tabBlockManager.Enabled = true;
-			tabDeviceHistory.Enabled = true;
+			tabDeviceStatistic.Enabled = tabDeviceHistory.Enabled = tabBlockManager.Enabled = true;
 		}
 
 		private void btnAuthor_Click(object sender, EventArgs e)
