@@ -24,7 +24,7 @@ void always_inline RF_loop() {
 
         SD_logBegin(Log_ClientHeartbeat);
         SD_logData(from);
-        SD_logData(vcc, 100);
+        SD_logData(vcc, 1000);
         SD_logData(uptime);
         SD_logData(freeRam);
         SD_logEndRecord();
@@ -141,7 +141,7 @@ void always_inline RF_loop() {
     float temp = RTC.temperature() / 4.0;
 
     SD_logBegin(Log_MasterHeartbeat);
-    SD_logData(vcc, 100);
+    SD_logData(vcc, 1000);
     SD_logData(uptime);
     SD_logData(freeRam);
     SD_logData(temp);

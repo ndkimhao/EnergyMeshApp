@@ -28,13 +28,13 @@ namespace EnergyMonitorApp
 			Control.CheckForIllegalCrossThreadCalls = false;
 			gridDeviceInit();
 			gridBlockInit();
-			deviceHistoryInit();
+			cbDeviceHistoryInit();
 			cbThemeInit();
 		}
 
 		#region "Device history function"
 
-		private void deviceHistoryInit()
+		private void cbDeviceHistoryInit()
 		{
 			foreach (Device dev in DeviceManager.DeviceList)
 			{
@@ -44,6 +44,7 @@ namespace EnergyMonitorApp
 				}
 			}
 			cbDeviceHistory.SelectedIndex = 0;
+			cbHistoryY2.SelectedIndex = 0;
 		}
 
 		private void GenerateHistoryGraph()
@@ -51,11 +52,27 @@ namespace EnergyMonitorApp
 			Device dev = (Device)cbDeviceHistory.SelectedItem;
 			if (dev != null)
 			{
+				int y2val = cbHistoryY2.SelectedIndex;
+				lblStatus.Text = "Đang thống kê dữ liệu...";
+				progDeviceHistory.IsRunning = true;
+				DateTime beginTime = dtHistoryBegin.Value;
+				DateTime endTime = dtHistoryEnd.Value;
 				GraphPane pane = graphHistory.GraphPane;
 
 				pane.Title.Text = "Lịch sử tiêu thụ: " + dev.Name;
-				pane.YAxis.Title.Text = "Lượng điện tiêu thụ (WH)";
-				pane.Y2Axis.Title.Text = "Dòng điện tiêu thụ (A)";
+				pane.YAxis.Title.Text = "Công suất tiêu thụ (W)";
+				if (y2val == 0)
+				{
+					pane.Y2Axis.Title.Text = "Dòng điện tiêu thụ (A)";
+				}
+				else if (y2val == 1)
+				{
+					pane.Y2Axis.Title.Text = "Điện áp (V)";
+				}
+				else if (y2val == 2)
+				{
+					pane.Y2Axis.Title.Text = "Công suất biểu kiến (VA)";
+				}
 				pane.Y2Axis.IsVisible = true;
 				pane.Fill = new Fill(Color.White, Color.LightGray, 45.0f);
 
@@ -74,6 +91,7 @@ namespace EnergyMonitorApp
 					bool isFirst = true;
 					foreach (Log_ClientRealPower rec in block.RealPowerList)
 					{
+						if (rec.Time < beginTime || rec.Time > endTime) continue;
 						if (isFirst)
 						{
 							isFirst = false;
@@ -83,12 +101,16 @@ namespace EnergyMonitorApp
 						powerList_X.Add((double)new XDate(rec.Time));
 						powerList_Y.Add(rec.RealPower);
 					}
-					powerList_X.Add(powerList_X.Last());
-					powerList_Y.Add(0);
+					if (powerList_X.Count > 0)
+					{
+						powerList_X.Add(powerList_X.Last());
+						powerList_Y.Add(-1);
+					}
 
 					isFirst = true;
 					foreach (Log_ClientDetailPower rec in block.DetailPowerList)
 					{
+						if (rec.Time < beginTime || rec.Time > endTime) continue;
 						if (isFirst)
 						{
 							isFirst = false;
@@ -96,32 +118,129 @@ namespace EnergyMonitorApp
 							currentList_Y.Add(0);
 						}
 						currentList_X.Add((double)new XDate(rec.Time));
-						currentList_Y.Add(rec.I);
+						if (y2val == 0)
+						{
+							currentList_Y.Add(rec.I);
+						}
+						else if (y2val == 1)
+						{
+							currentList_Y.Add(rec.V);
+						}
+						else if (y2val == 2)
+						{
+							currentList_Y.Add(rec.I * rec.V);
+						}
 					}
-					currentList_X.Add(currentList_X.Last());
-					currentList_Y.Add(0);
+					if (currentList_X.Count > 0)
+					{
+						currentList_X.Add(currentList_X.Last());
+						currentList_Y.Add(-1);
+					}
 				}
 
 				pane.CurveList.Clear();
 				CurveItem curve;
 
 				//powerList_X = CleanData(powerList_X.ToArray(), 5, 0.8);
-				curve = pane.AddCurve("Công suất (P-WH)", powerList_X.ToArray(), powerList_Y.ToArray(), Color.Red, SymbolType.None);
+				//powerList_Y = filterSignal(powerList_Y.ToArray()).ToList();
+				curve = pane.AddCurve("Công suất (P-W)", powerList_X.ToArray(), filterSignal(powerList_Y.ToArray(), 150), Color.Red, SymbolType.None);
+				((LineItem)pane.CurveList[0]).Line.Width = 2.0F;
 
-				curve = pane.AddCurve("Dòng điện (I-A)", currentList_X.ToArray(), currentList_Y.ToArray(), Color.Blue, SymbolType.None);
+				if (y2val == 0)
+				{
+					curve = pane.AddCurve("Dòng điện (I-A)", currentList_X.ToArray(), filterSignal(currentList_Y.ToArray(), 50), Color.Blue, SymbolType.None);
+				}
+				else if (y2val == 1)
+				{
+					curve = pane.AddCurve("Điện áp (U-V)", currentList_X.ToArray(), filterSignal(currentList_Y.ToArray(), 25), Color.Blue, SymbolType.None);
+				}
+				else if (y2val == 2)
+				{
+					curve = pane.AddCurve("Công suất biểu kiến (S-VA)", currentList_X.ToArray(), filterSignal(currentList_Y.ToArray(), 50), Color.Blue, SymbolType.None);
+				}
 				curve.IsY2Axis = true;
 
 				graphHistory.AxisChange();
 				graphHistory.Refresh();
+
+				progDeviceHistory.IsRunning = false;
+				lblStatus.Text = "Thống kê dữ liệu hoàn tất";
 			}
 		}
 
-		private double[] Coefficients(int range, double decay)
+		private double[] filterSignal(double[] input, int look)
 		{
-			double[] coefficients = new double[range + 1];
-			for (int i = 0; i <= range; i++)
-				coefficients[i] = Math.Pow(decay, i);
-			return coefficients;
+			List<double> output = new List<double>();
+			List<double> tmpList = new List<double>();
+			for (int i = 0; i < input.Length; i++)
+			{
+				double val = input[i];
+				if (val != -1)
+				{
+					tmpList.Add(val);
+				}
+				else
+				{
+					tmpList.Add(0);
+					output.AddRange(_filterSignal(tmpList.ToArray(), look));
+					tmpList = new List<double>();
+				}
+			}
+			return output.ToArray();
+		}
+
+		private double[] _filterSignal(double[] input, int look)
+		{
+			double[] output = new double[input.Length];
+			if (look * 2 >= input.Length)
+			{
+				look = input.Length / 2;
+			}
+			int lookX2 = look * 2;
+			int iTo = input.Length - look - 1;
+			int jTo;
+			double sum;
+			for (int i = 0; i < input.Length; i++)
+			{
+				if (input[i] == 0)
+				{
+					output[i] = 0;
+					continue;
+				}
+				if (i < look)
+				{
+					sum = 0;
+					jTo = i + look;
+					int count = 0;
+					for (int j = i; j < jTo; j++)
+					{
+						sum += input[j];
+						count++;
+					}
+					output[i] = sum / look;
+					continue;
+				}
+				if (i > iTo)
+				{
+					sum = 0;
+					jTo = i - look;
+					int count = 0;
+					for (int j = i; j > jTo; j--)
+					{
+						sum += input[j];
+						count++;
+					}
+					output[i] = sum / look;
+					continue;
+				}
+				sum = 0;
+				for (int j = -look; j < look; j++)
+				{
+					sum += input[i + j];
+				}
+				output[i] = sum / lookX2;
+			}
+			return output;
 		}
 
 		private void cbDeviceHistory_SelectedIndexChanged(object sender, EventArgs e)
@@ -131,8 +250,18 @@ namespace EnergyMonitorApp
 			{
 				DateTime beginTime = dev.BeginTime;
 				DateTime endTime = dev.EndTime;
-				dtHistoryBegin.Value = dtHistoryBegin.MinDate = dtHistoryEnd.MinDate = beginTime;
-				dtHistoryEnd.Value = dtHistoryBegin.MaxDate = dtHistoryEnd.MaxDate = endTime;
+				if (beginTime != DateTime.MaxValue && endTime != DateTime.MinValue)
+				{
+					cbHistoryY2.Enabled = dtHistoryBegin.Enabled = dtHistoryEnd.Enabled = btnUpdateHistory.Enabled = true;
+					dtHistoryBegin.Value = dtHistoryBegin.MinDate = dtHistoryEnd.MinDate = beginTime;
+					dtHistoryEnd.Value = dtHistoryBegin.MaxDate = dtHistoryEnd.MaxDate = endTime;
+				}
+				else
+				{
+					cbHistoryY2.Enabled = dtHistoryBegin.Enabled = dtHistoryEnd.Enabled = btnUpdateHistory.Enabled = false;
+					dtHistoryBegin.Value = dtHistoryBegin.MinDate = dtHistoryEnd.MinDate = DateTime.Now;
+					dtHistoryEnd.Value = dtHistoryBegin.MaxDate = dtHistoryEnd.MaxDate = DateTime.Now;
+				}
 			}
 		}
 		private void btnUpdateHistory_Click(object sender, EventArgs e)
@@ -155,7 +284,7 @@ namespace EnergyMonitorApp
 					{
 						dtHistoryBegin.Value = beginTime;
 					}
-					if (dtHistoryEnd.Value < endTime)
+					if (dtHistoryEnd.Value > endTime)
 					{
 						dtHistoryEnd.Value = endTime;
 					}
@@ -244,10 +373,12 @@ namespace EnergyMonitorApp
 					if (!dev.BlockList.Exists(l => l == block.ID))
 					{
 						dev.BlockList.Add(block.ID);
+						dev.BlockList.Sort((l1, l2) => l1.CompareTo(l2));
 					}
 					if (newDevID == -2 || owner == null || owner.ID != newDevID) SetCellColor(row.Cells[0], Color.Gray);
 				}
 				DeviceManager.SaveDeviceList();
+				cbDeviceHistory_SelectedIndexChanged(this, null);
 			}
 		}
 
@@ -352,6 +483,11 @@ namespace EnergyMonitorApp
 						}
 						row.RowDirty = false;
 						gridBlockInit();
+					}
+					if (cbDeviceHistory.Items.Count > 0)
+					{
+						cbDeviceHistoryInit();
+						cbDeviceHistory_SelectedIndexChanged(this, null);
 					}
 				}
 			}
@@ -530,6 +666,13 @@ namespace EnergyMonitorApp
 			progUpdateData.IsRunning = false;
 
 			updateBlockList();
+
+			if (cbDeviceHistory.Items.Count > 0)
+			{
+				cbDeviceHistory_SelectedIndexChanged(this, null);
+			}
+			tabBlockManager.Enabled = true;
+			tabDeviceHistory.Enabled = true;
 		}
 
 		private void btnAuthor_Click(object sender, EventArgs e)
