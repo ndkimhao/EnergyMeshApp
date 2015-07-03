@@ -61,7 +61,7 @@ namespace EnergyMonitorApp
 				GraphPane pane = graphHistory.GraphPane;
 
 				pane.Title.Text = "Lịch sử tiêu thụ: " + dev.Name;
-				pane.YAxis.Title.Text = "Công suất tiêu thụ (W)";
+				pane.YAxis.Title.Text = "Công suất thực (W)";
 				if (y2val == 0)
 				{
 					pane.Y2Axis.Title.Text = "Dòng điện tiêu thụ (A)";
@@ -85,8 +85,8 @@ namespace EnergyMonitorApp
 				double wh = 0;
 				List<double> powerList_X = new List<double>();
 				List<double> powerList_Y = new List<double>();
-				List<double> currentList_X = new List<double>();
-				List<double> currentList_Y = new List<double>();
+				List<double> subList_X = new List<double>();
+				List<double> subList_Y = new List<double>();
 				foreach (long blockID in dev.BlockList)
 				{
 					PowerBlock block = LogManager.PowerBlockList[blockID];
@@ -104,17 +104,24 @@ namespace EnergyMonitorApp
 						if (isFirst)
 						{
 							isFirst = false;
-							powerList_X.Add((double)new XDate(rec.Time));
-							powerList_Y.Add(0);
+							double lastDt;
+							if (powerList_X.Count > 0 && Math.Abs((rec.Time - DateTime.FromOADate(lastDt = powerList_X.Last())).TotalSeconds) > 20)
+							{
+								powerList_X.Add(lastDt);
+								powerList_Y.Add(0);
+								powerList_X.Add((double)new XDate(rec.Time));
+								powerList_Y.Add(0);
+							}
+							if (powerList_X.Count == 0)
+							{
+								powerList_X.Add((double)new XDate(rec.Time));
+								powerList_Y.Add(0);
+							}
 						}
 						powerList_X.Add((double)new XDate(rec.Time));
 						powerList_Y.Add(rec.RealPower);
 					}
-					if (powerList_X.Count > 0)
-					{
-						powerList_X.Add(powerList_X.Last());
-						powerList_Y.Add(-1);
-					}
+					powerList_Y.Add(-1);
 
 					isFirst = true;
 					foreach (Log_ClientDetailPower rec in block.DetailPowerList)
@@ -123,51 +130,71 @@ namespace EnergyMonitorApp
 						if (isFirst)
 						{
 							isFirst = false;
-							currentList_X.Add((double)new XDate(rec.Time));
-							currentList_Y.Add(0);
+							double lastDt;
+							if (subList_X.Count > 0 && Math.Abs((rec.Time - DateTime.FromOADate(lastDt = subList_X.Last())).TotalSeconds) > 20)
+							{
+								subList_X.Add(lastDt);
+								subList_Y.Add(0);
+								subList_X.Add((double)new XDate(rec.Time));
+								subList_Y.Add(0);
+							}
+							if (subList_X.Count == 0)
+							{
+								subList_X.Add((double)new XDate(rec.Time));
+								subList_Y.Add(0);
+							}
 						}
-						currentList_X.Add((double)new XDate(rec.Time));
+						subList_X.Add((double)new XDate(rec.Time));
 						if (y2val == 0)
 						{
-							currentList_Y.Add(rec.I);
+							subList_Y.Add(rec.I);
 						}
 						else if (y2val == 1)
 						{
-							currentList_Y.Add(rec.V);
+							subList_Y.Add(rec.V);
 						}
 						else if (y2val == 2)
 						{
-							currentList_Y.Add(rec.I * rec.V);
+							subList_Y.Add(rec.I * rec.V);
 						}
 					}
-					if (currentList_X.Count > 0)
-					{
-						currentList_X.Add(currentList_X.Last());
-						currentList_Y.Add(-1);
-					}
+					subList_Y.Add(-1);
+				}
+
+				if (powerList_X.Count > 0)
+				{
+					powerList_X.Add(powerList_X.Last());
+					powerList_Y.RemoveAt(powerList_Y.Count - 1);
+					powerList_Y.Add(0);
+					powerList_Y.Add(-1);
+				}
+				if (subList_X.Count > 0)
+				{
+					subList_X.Add(subList_X.Last());
+					subList_Y.RemoveAt(subList_Y.Count - 1);
+					subList_Y.Add(0);
+					subList_Y.Add(-1);
 				}
 
 				pane.CurveList.Clear();
 				CurveItem curve;
 
-				//powerList_X = CleanData(powerList_X.ToArray(), 5, 0.8);
-				//powerList_Y = filterSignal(powerList_Y.ToArray()).ToList();
-				curve = pane.AddCurve("Công suất (P-W)", powerList_X.ToArray(), filterSignal(powerList_Y.ToArray(), 175, 5, 3), Color.Red, SymbolType.None);
+				curve = pane.AddCurve("Công suất thực (P-W)", powerList_X.ToArray(), filterSignal(powerList_Y.ToArray(), 175, 5, 3), Color.Red, SymbolType.None);
 				((LineItem)pane.CurveList[0]).Line.Width = 2.0F;
 
 				if (y2val == 0)
 				{
-					curve = pane.AddCurve("Dòng điện (I-A)", currentList_X.ToArray(), filterSignal(currentList_Y.ToArray(), 50, 1, 2), Color.Blue, SymbolType.None);
+					curve = pane.AddCurve("Dòng điện (I-A)", subList_X.ToArray(), filterSignal(subList_Y.ToArray(), 50, 1, 2), Color.Blue, SymbolType.None);
 					curve.IsY2Axis = true;
 				}
 				else if (y2val == 1)
 				{
-					curve = pane.AddCurve("Điện áp (U-V)", currentList_X.ToArray(), filterSignal(currentList_Y.ToArray(), 5, 0, 0), Color.Blue, SymbolType.None);
+					curve = pane.AddCurve("Điện áp (U-V)", subList_X.ToArray(), filterSignal(subList_Y.ToArray(), 5, 0, 0), Color.Blue, SymbolType.None);
 					curve.IsY2Axis = true;
 				}
 				else if (y2val == 2)
 				{
-					curve = pane.AddCurve("Công suất biểu kiến (S-VA)", currentList_X.ToArray(), filterSignal(currentList_Y.ToArray(), 50, 1, 2), Color.Blue, SymbolType.None);
+					curve = pane.AddCurve("Công suất biểu kiến (S-VA)", subList_X.ToArray(), filterSignal(subList_Y.ToArray(), 50, 1, 2), Color.Blue, SymbolType.None);
 					curve.IsY2Axis = false;
 				}
 
@@ -203,7 +230,6 @@ namespace EnergyMonitorApp
 				}
 				else
 				{
-					tmpList.Add(0);
 					output.AddRange(_filterSignal(tmpList.ToArray(), look, rippleLook, rippleThreshold));
 					tmpList = new List<double>();
 				}
