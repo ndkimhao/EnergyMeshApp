@@ -118,25 +118,25 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="copy" xml:space="preserve">
-    <value>Copy</value>
+    <value>Sao chép</value>
   </data>
   <data name="copied_to_clip" xml:space="preserve">
-    <value>Image copied to clipboard</value>
+    <value>Đã chép ảnh vào clipboard</value>
   </data>
   <data name="save_as" xml:space="preserve">
-    <value>Save Image As...</value>
+    <value>Lưu ảnh thành...</value>
   </data>
   <data name="set_default" xml:space="preserve">
-    <value>Set Scale to Default</value>
+    <value>Mặc định</value>
   </data>
   <data name="show_val" xml:space="preserve">
-    <value>Show Point Values</value>
+    <value>Hiển thị giá trị</value>
   </data>
   <data name="title_def" xml:space="preserve">
-    <value>Title</value>
+    <value>Tiêu đề</value>
   </data>
   <data name="undo_all" xml:space="preserve">
-    <value>Undo All Zoom/Pan</value>
+    <value>Hủy thu/phóng</value>
   </data>
   <data name="unpan" xml:space="preserve">
     <value>Un-Pan</value>
@@ -145,18 +145,18 @@
     <value>Un-Zoom</value>
   </data>
   <data name="x_title_def" xml:space="preserve">
-    <value>X Axis</value>
+    <value>Trục X</value>
   </data>
   <data name="y_title_def" xml:space="preserve">
-    <value>Y Axis</value>
+    <value>Trục Y</value>
   </data>
   <data name="unscroll" xml:space="preserve">
     <value>Undo Scroll</value>
   </data>
   <data name="page_setup" xml:space="preserve">
-    <value>Page Setup...</value>
+    <value>Cài đặt trang...</value>
   </data>
   <data name="print" xml:space="preserve">
-    <value>Print...</value>
+    <value>In...</value>
   </data>
 </root>

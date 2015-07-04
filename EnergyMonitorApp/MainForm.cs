@@ -377,6 +377,7 @@ namespace EnergyMonitorApp
 							double lastDt;
 							if (powerList_X.Count > 0 && Math.Abs((rec.Time - DateTime.FromOADate(lastDt = powerList_X.Last())).TotalSeconds) > 20)
 							{
+								powerList_Y.Add(-1);
 								powerList_X.Add(lastDt);
 								powerList_Y.Add(0);
 								powerList_X.Add(rec.Time.ToOADate());
@@ -391,7 +392,6 @@ namespace EnergyMonitorApp
 						powerList_X.Add(rec.Time.ToOADate());
 						powerList_Y.Add(rec.RealPower);
 					}
-					powerList_Y.Add(-1);
 
 					isFirst = true;
 					foreach (Log_ClientDetailPower rec in block.DetailPowerList)
@@ -403,6 +403,7 @@ namespace EnergyMonitorApp
 							double lastDt;
 							if (subList_X.Count > 0 && Math.Abs((rec.Time - DateTime.FromOADate(lastDt = subList_X.Last())).TotalSeconds) > 20)
 							{
+								subList_Y.Add(-1);
 								subList_X.Add(lastDt);
 								subList_Y.Add(0);
 								subList_X.Add(rec.Time.ToOADate());
@@ -428,20 +429,17 @@ namespace EnergyMonitorApp
 							subList_Y.Add(rec.I * rec.V);
 						}
 					}
-					subList_Y.Add(-1);
 				}
 
 				if (powerList_X.Count > 0)
 				{
 					powerList_X.Add(powerList_X.Last());
-					powerList_Y.RemoveAt(powerList_Y.Count - 1);
 					powerList_Y.Add(0);
 					powerList_Y.Add(-1);
 				}
 				if (subList_X.Count > 0)
 				{
 					subList_X.Add(subList_X.Last());
-					subList_Y.RemoveAt(subList_Y.Count - 1);
 					subList_Y.Add(0);
 					subList_Y.Add(-1);
 				}
