@@ -28,24 +28,293 @@ namespace EnergyMonitorApp
 			Control.CheckForIllegalCrossThreadCalls = false;
 			gridDeviceInit();
 			gridBlockInit();
-			cbDeviceHistoryInit();
+			cbDeviceInit();
 			cbThemeInit();
 		}
 
+		#region "Device statistic function"
+
+		private void cbDeviceStatistic_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			Device dev = (Device)cbDeviceStatistic.SelectedItem;
+			if (dev != null)
+			{
+				DateTime beginTime = dev.BeginTime;
+				DateTime endTime = dev.EndTime;
+				if (beginTime != DateTime.MaxValue && endTime != DateTime.MinValue)
+				{
+					cbStatisticType.Enabled = dtStatisticBegin.Enabled = dtStatisticEnd.Enabled = btnUpdateStatistic.Enabled = true;
+					dtStatisticBegin.Value = dtStatisticBegin.MinDate = dtStatisticEnd.MinDate = beginTime;
+					dtStatisticEnd.Value = dtStatisticBegin.MaxDate = dtStatisticEnd.MaxDate = endTime;
+				}
+				else
+				{
+					cbStatisticType.Enabled = dtStatisticBegin.Enabled = dtStatisticEnd.Enabled = btnUpdateStatistic.Enabled = false;
+					dtStatisticBegin.Value = dtStatisticBegin.MinDate = dtStatisticEnd.MinDate = DateTime.Now;
+					dtStatisticEnd.Value = dtStatisticBegin.MaxDate = dtStatisticEnd.MaxDate = DateTime.Now;
+				}
+			}
+		}
+
+		private void btnUpdateStatistic_Click(object sender, EventArgs e)
+		{
+			Device dev = (Device)cbDeviceStatistic.SelectedItem;
+			if (dev != null)
+			{
+				DateTime beginTime = dev.BeginTime;
+				DateTime endTime = dev.EndTime;
+				if (dtStatisticBegin.Value >= dtStatisticEnd.Value)
+				{
+					MessageBoxEx.Show(this, "<font size='18'><b>Ngày bắt đầu phải trước ngày kết thúc !</b></font>",
+							"<font size='15'><b>Thông báo</b></font>", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+					dtStatisticBegin.Value = beginTime;
+					dtStatisticEnd.Value = endTime;
+				}
+				else
+				{
+					if (dtStatisticBegin.Value < beginTime)
+					{
+						dtStatisticBegin.Value = beginTime;
+					}
+					if (dtStatisticEnd.Value > endTime)
+					{
+						dtStatisticEnd.Value = endTime;
+					}
+				}
+			}
+			new Thread(GenerateStatisticGraph).Start();
+		}
+
+		private readonly Color[] pieChartColor = new Color[] { 
+			Color.AliceBlue,Color.AntiqueWhite,Color.Aqua,Color.Aquamarine,Color.Azure,Color.Beige,Color.Bisque,Color.BlanchedAlmond,Color.Cornsilk,
+			Color.Cyan,Color.LightBlue,Color.LightCoral,Color.LightCyan,Color.LightGoldenrodYellow,Color.LightGray,Color.LightGreen,Color.LightPink,
+			Color.LightSalmon,Color.LightSeaGreen,Color.LightSkyBlue,Color.LightYellow,Color.PapayaWhip,Color.PeachPuff,Color.Thistle,Color.WhiteSmoke,
+			Color.Red,Color.Green,Color.Gray,Color.Yellow,Color.LimeGreen,Color.MediumAquamarine,Color.Brown,Color.BlueViolet,Color.Violet
+		};
+		private Random rand = new Random();
+		private void GenerateStatisticGraph()
+		{
+			Device dev = (Device)cbDeviceStatistic.SelectedItem;
+			if (dev != null)
+			{
+				lblStatus.Text = "Đang thống kê dữ liệu...";
+				progDeviceStatistic.IsRunning = true;
+
+				DateTime beginTime = dtStatisticBegin.Value;
+				DateTime endTime = dtStatisticEnd.Value;
+				graphStatistic.GraphPane = new GraphPane(graphStatistic.DisplayRectangle, "Title", "X Axis", "Y Axis");
+				GraphPane pane = graphStatistic.GraphPane;
+
+				pane.Title.Text = "Thống kê " + dev.Name + " theo " + cbStatisticType.SelectedItem;
+				pane.YAxis.Title.Text = "Điện năng tiêu thụ (WH)";
+				pane.XAxis.Title.Text = "Khoảng thời gian";
+				int type = cbStatisticType.SelectedIndex;
+				string[] arrLabel = null;
+				double[] arrValue = null;
+				if (type == 0)
+				{
+					arrLabel = new string[24];
+					arrValue = new double[24];
+					for (int i = 0; i < 24; i++)
+					{
+						arrLabel[i] = i + "h";
+					}
+				}
+				else if (type == 1)
+				{
+					arrLabel = new string[7];
+					arrValue = new double[7];
+					for (int i = 2; i <= 7; i++)
+					{
+						arrLabel[i - 2] = "Thứ " + i;
+					}
+					arrLabel[6] = "Chủ nhật";
+				}
+				else if (type == 2)
+				{
+					arrLabel = new string[31];
+					arrValue = new double[31];
+					for (int i = 1; i <= 31; i++)
+					{
+						arrLabel[i - 1] = i.ToString();
+					}
+				}
+				else if (type == 3)
+				{
+					arrLabel = new string[12];
+					arrValue = new double[12];
+					for (int i = 1; i <= 12; i++)
+					{
+						arrLabel[i - 1] = i.ToString();
+					}
+				}
+				pane.XAxis.MajorTic.IsBetweenLabels = true;
+				pane.XAxis.Scale.TextLabels = arrLabel;
+				pane.XAxis.Type = AxisType.Text;
+
+				double totalWH = 0;
+				double ws = 0;
+				foreach (long blockID in dev.BlockList)
+				{
+					PowerBlock block = LogManager.PowerBlockList[blockID];
+					int forTo = block.RealPowerList.Count - 1;
+					for (int i = 0; i < block.RealPowerList.Count; i++)
+					{
+						Log_ClientRealPower rec = block.RealPowerList[i];
+						if (rec.Time < beginTime || rec.Time > endTime) continue;
+						if (i < forTo)
+						{
+							TimeSpan diff = block.RealPowerList[i + 1].Time - rec.Time;
+							ws = rec.RealPower * diff.TotalSeconds;
+							totalWH += ws;
+						}
+						if (type == 0)
+						{
+							arrValue[rec.Time.Hour - 1] += ws;
+						}
+						else if (type == 1)
+						{
+							int idx = (int)rec.Time.DayOfWeek;
+							if (idx == 0)
+								idx = 6;
+							else
+								idx -= 1;
+							arrValue[idx] += ws;
+						}
+						else if (type == 2)
+						{
+							arrValue[rec.Time.Day - 1] += ws;
+						}
+						else if (type == 3)
+						{
+							arrValue[rec.Time.Month - 1] += ws;
+						}
+					}
+				}
+
+				pane.CurveList.Clear();
+				if (cbStatisticPieChart.Checked)
+				{
+					Dictionary<int, double> dictTmp = new Dictionary<int, double>();
+					for (int i = 0; i < arrValue.Length; i++)
+					{
+						dictTmp.Add(i, arrValue[i] * 100 / totalWH);
+					}
+					var pairs = dictTmp.OrderBy(i => i.Value);
+					Dictionary<int, double> dictTmpFinal = new Dictionary<int, double>();
+					for (int i = 0; i < 3; i++)
+					{
+						var pair = pairs.ElementAt(i);
+						dictTmpFinal.Add(pair.Key, pair.Value);
+						dictTmp.Remove(pair.Key);
+					}
+					double otherValue = 0;
+					foreach (var pair in dictTmp)
+					{
+						if (pair.Value > 20)
+						{
+							dictTmpFinal.Add(pair.Key, pair.Value);
+						}
+						else
+						{
+							otherValue += pair.Value;
+						}
+					}
+					foreach (var pair in dictTmpFinal)
+					{
+						if (pair.Value > 0)
+						{
+							Color c1 = pieChartColor[rand.Next(pieChartColor.Length)];
+							Color c2 = pieChartColor[rand.Next(pieChartColor.Length)];
+							float angle = (float)rand.NextDouble() * 180;
+							double displacement = CaclDisplacement(pair.Value);
+							pane.AddPieSlice(pair.Value, c1, c2, angle, displacement, arrLabel[pair.Key]);
+						}
+					}
+					if (otherValue > 0)
+					{
+						Color c1 = pieChartColor[rand.Next(pieChartColor.Length)];
+						Color c2 = pieChartColor[rand.Next(pieChartColor.Length)];
+						float angle = (float)rand.NextDouble() * 180;
+						double displacement = CaclDisplacement(otherValue);
+						pane.AddPieSlice(otherValue, c1, c2, angle, displacement, "Khác");
+					}
+				}
+				else
+				{
+					for (int i = 0; i < arrValue.Length; i++)
+					{
+						arrValue[i] /= 3600;
+					}
+					BarItem myBar = pane.AddBar("Điện năng tiêu thụ (WH)", null, arrValue, Color.Red);
+					myBar.Bar.Fill = new Fill(Color.Red, Color.White, Color.Red);
+				}
+
+				graphStatistic.AxisChange();
+				graphStatistic.Refresh();
+
+				totalWH /= 3600;
+				if (totalWH > 1000)
+				{
+					totalWH /= 1000;
+					txtStatisticPower.Text = totalWH.ToString("F2") + " kWH";
+				}
+				else
+				{
+					txtStatisticPower.Text = totalWH.ToString("F2") + " WH";
+				}
+
+				progDeviceStatistic.IsRunning = false;
+				lblStatus.Text = "Thống kê dữ liệu hoàn tất";
+			}
+		}
+
+		private static double CaclDisplacement(double value)
+		{
+			double displacement = 0;
+			if (value < 20)
+			{
+				displacement = 0.05;
+			}
+			else if (value < 40)
+			{
+				displacement = 0.04;
+			}
+			else if (value < 60)
+			{
+				displacement = 0.03;
+			}
+			else if (value < 80)
+			{
+				displacement = 0.02;
+			}
+			else
+			{
+				displacement = 0.01;
+			}
+			return displacement;
+		}
+
+		#endregion
+
 		#region "Device history function"
 
-		private void cbDeviceHistoryInit()
+		private void cbDeviceInit()
 		{
 			cbDeviceHistory.Items.Clear();
+			cbDeviceStatistic.Items.Clear();
 			foreach (Device dev in DeviceManager.DeviceList)
 			{
 				if (!dev.IsDeleted)
 				{
 					cbDeviceHistory.Items.Add(dev);
+					cbDeviceStatistic.Items.Add(dev);
 				}
 			}
 			cbDeviceHistory.SelectedIndex = 0;
 			cbHistoryY2.SelectedIndex = 0;
+			cbDeviceStatistic.SelectedIndex = 0;
+			cbStatisticType.SelectedIndex = 0;
 		}
 
 		private void GenerateHistoryGraph()
@@ -56,6 +325,7 @@ namespace EnergyMonitorApp
 				int y2val = cbHistoryY2.SelectedIndex;
 				lblStatus.Text = "Đang thống kê dữ liệu...";
 				progDeviceHistory.IsRunning = true;
+
 				DateTime beginTime = dtHistoryBegin.Value;
 				DateTime endTime = dtHistoryEnd.Value;
 				GraphPane pane = graphHistory.GraphPane;
@@ -322,6 +592,7 @@ namespace EnergyMonitorApp
 				}
 			}
 		}
+
 		private void btnUpdateHistory_Click(object sender, EventArgs e)
 		{
 			Device dev = (Device)cbDeviceHistory.SelectedItem;
@@ -350,7 +621,6 @@ namespace EnergyMonitorApp
 			}
 			new Thread(GenerateHistoryGraph).Start();
 		}
-
 
 		#endregion
 
@@ -544,7 +814,7 @@ namespace EnergyMonitorApp
 					}
 					if (cbDeviceHistory.Items.Count > 0)
 					{
-						cbDeviceHistoryInit();
+						cbDeviceInit();
 						cbDeviceHistory_SelectedIndexChanged(this, null);
 					}
 				}
@@ -727,6 +997,7 @@ namespace EnergyMonitorApp
 			if (cbDeviceHistory.Items.Count > 0)
 			{
 				cbDeviceHistory_SelectedIndexChanged(this, null);
+				cbDeviceStatistic_SelectedIndexChanged(this, null);
 			}
 			tabEnvironmentInit();
 

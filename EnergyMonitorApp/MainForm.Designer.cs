@@ -38,6 +38,22 @@
 			this.tabItem3 = new DevComponents.DotNetBar.TabItem(this.components);
 			this.tabControlPanel3 = new DevComponents.DotNetBar.TabControlPanel();
 			this.superTabControl1 = new DevComponents.DotNetBar.SuperTabControl();
+			this.superTabControlPanel4 = new DevComponents.DotNetBar.SuperTabControlPanel();
+			this.cbStatisticPieChart = new DevComponents.DotNetBar.Controls.CheckBoxX();
+			this.graphStatistic = new ZedGraph.ZedGraphControl();
+			this.txtStatisticPower = new System.Windows.Forms.TextBox();
+			this.labelX10 = new DevComponents.DotNetBar.LabelX();
+			this.cbStatisticType = new DevComponents.DotNetBar.Controls.ComboBoxEx();
+			this.labelX11 = new DevComponents.DotNetBar.LabelX();
+			this.progDeviceStatistic = new DevComponents.DotNetBar.Controls.CircularProgress();
+			this.btnUpdateStatistic = new DevComponents.DotNetBar.ButtonX();
+			this.labelX12 = new DevComponents.DotNetBar.LabelX();
+			this.dtStatisticEnd = new DevComponents.Editors.DateTimeAdv.DateTimeInput();
+			this.labelX13 = new DevComponents.DotNetBar.LabelX();
+			this.dtStatisticBegin = new DevComponents.Editors.DateTimeAdv.DateTimeInput();
+			this.cbDeviceStatistic = new EnergyMonitorApp.DeviceComboBox();
+			this.deviceImageList = new System.Windows.Forms.ImageList(this.components);
+			this.tabDeviceStatistic = new DevComponents.DotNetBar.SuperTabItem();
 			this.superTabControlPanel5 = new DevComponents.DotNetBar.SuperTabControlPanel();
 			this.graphEnvironment = new ZedGraph.ZedGraphControl();
 			this.txtAverageTemperature = new System.Windows.Forms.TextBox();
@@ -75,10 +91,7 @@
 			this.labelX3 = new DevComponents.DotNetBar.LabelX();
 			this.dtHistoryBegin = new DevComponents.Editors.DateTimeAdv.DateTimeInput();
 			this.cbDeviceHistory = new EnergyMonitorApp.DeviceComboBox();
-			this.deviceImageList = new System.Windows.Forms.ImageList(this.components);
 			this.tabDeviceHistory = new DevComponents.DotNetBar.SuperTabItem();
-			this.superTabControlPanel4 = new DevComponents.DotNetBar.SuperTabControlPanel();
-			this.tabDeviceStatistic = new DevComponents.DotNetBar.SuperTabItem();
 			this.superTabControlPanel2 = new DevComponents.DotNetBar.SuperTabControlPanel();
 			this.gridBlocks = new DevComponents.DotNetBar.SuperGrid.SuperGridControl();
 			this.colBlockID = new DevComponents.DotNetBar.SuperGrid.GridColumn();
@@ -97,6 +110,9 @@
 			this.deviceImageListCombo = new System.Windows.Forms.ImageList(this.components);
 			((System.ComponentModel.ISupportInitialize)(this.superTabControl1)).BeginInit();
 			this.superTabControl1.SuspendLayout();
+			this.superTabControlPanel4.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.dtStatisticEnd)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.dtStatisticBegin)).BeginInit();
 			this.superTabControlPanel5.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.dtEnvironmentEnd)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.dtEnvironmentBegin)).BeginInit();
@@ -180,10 +196,10 @@
 			this.superTabControl1.ControlBox.SubItems.AddRange(new DevComponents.DotNetBar.BaseItem[] {
             this.superTabControl1.ControlBox.MenuBox,
             this.superTabControl1.ControlBox.CloseBox});
-			this.superTabControl1.Controls.Add(this.superTabControlPanel5);
-			this.superTabControl1.Controls.Add(this.superTabControlPanel1);
-			this.superTabControl1.Controls.Add(this.superTabControlPanel3);
 			this.superTabControl1.Controls.Add(this.superTabControlPanel4);
+			this.superTabControl1.Controls.Add(this.superTabControlPanel1);
+			this.superTabControl1.Controls.Add(this.superTabControlPanel5);
+			this.superTabControl1.Controls.Add(this.superTabControlPanel3);
 			this.superTabControl1.Controls.Add(this.superTabControlPanel2);
 			this.superTabControl1.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
 			this.superTabControl1.ForeColor = System.Drawing.Color.Black;
@@ -203,6 +219,320 @@
             this.tabEnvironment});
 			this.superTabControl1.TabStyle = DevComponents.DotNetBar.eSuperTabStyle.Office2010BackstageBlue;
 			this.superTabControl1.Text = "superTabControl1";
+			// 
+			// superTabControlPanel4
+			// 
+			this.superTabControlPanel4.Controls.Add(this.cbStatisticPieChart);
+			this.superTabControlPanel4.Controls.Add(this.graphStatistic);
+			this.superTabControlPanel4.Controls.Add(this.txtStatisticPower);
+			this.superTabControlPanel4.Controls.Add(this.labelX10);
+			this.superTabControlPanel4.Controls.Add(this.cbStatisticType);
+			this.superTabControlPanel4.Controls.Add(this.labelX11);
+			this.superTabControlPanel4.Controls.Add(this.progDeviceStatistic);
+			this.superTabControlPanel4.Controls.Add(this.btnUpdateStatistic);
+			this.superTabControlPanel4.Controls.Add(this.labelX12);
+			this.superTabControlPanel4.Controls.Add(this.dtStatisticEnd);
+			this.superTabControlPanel4.Controls.Add(this.labelX13);
+			this.superTabControlPanel4.Controls.Add(this.dtStatisticBegin);
+			this.superTabControlPanel4.Controls.Add(this.cbDeviceStatistic);
+			this.superTabControlPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.superTabControlPanel4.Location = new System.Drawing.Point(0, 36);
+			this.superTabControlPanel4.Name = "superTabControlPanel4";
+			this.superTabControlPanel4.Size = new System.Drawing.Size(1090, 650);
+			this.superTabControlPanel4.TabIndex = 0;
+			this.superTabControlPanel4.TabItem = this.tabDeviceStatistic;
+			// 
+			// cbStatisticPieChart
+			// 
+			this.cbStatisticPieChart.BackColor = System.Drawing.Color.Transparent;
+			// 
+			// 
+			// 
+			this.cbStatisticPieChart.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.cbStatisticPieChart.Location = new System.Drawing.Point(13, 292);
+			this.cbStatisticPieChart.Name = "cbStatisticPieChart";
+			this.cbStatisticPieChart.Size = new System.Drawing.Size(206, 23);
+			this.cbStatisticPieChart.Style = DevComponents.DotNetBar.eDotNetBarStyle.StyleManagerControlled;
+			this.cbStatisticPieChart.TabIndex = 27;
+			this.cbStatisticPieChart.Text = "Biểu đồ quạt";
+			// 
+			// graphStatistic
+			// 
+			this.graphStatistic.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.graphStatistic.BackColor = System.Drawing.Color.WhiteSmoke;
+			this.graphStatistic.ForeColor = System.Drawing.Color.Black;
+			this.graphStatistic.Location = new System.Drawing.Point(228, 0);
+			this.graphStatistic.Margin = new System.Windows.Forms.Padding(4);
+			this.graphStatistic.Name = "graphStatistic";
+			this.graphStatistic.ScrollGrace = 0D;
+			this.graphStatistic.ScrollMaxX = 0D;
+			this.graphStatistic.ScrollMaxY = 0D;
+			this.graphStatistic.ScrollMaxY2 = 0D;
+			this.graphStatistic.ScrollMinX = 0D;
+			this.graphStatistic.ScrollMinY = 0D;
+			this.graphStatistic.ScrollMinY2 = 0D;
+			this.graphStatistic.Size = new System.Drawing.Size(862, 650);
+			this.graphStatistic.TabIndex = 26;
+			// 
+			// txtStatisticPower
+			// 
+			this.txtStatisticPower.BackColor = System.Drawing.Color.White;
+			this.txtStatisticPower.ForeColor = System.Drawing.Color.Black;
+			this.txtStatisticPower.Location = new System.Drawing.Point(12, 368);
+			this.txtStatisticPower.Name = "txtStatisticPower";
+			this.txtStatisticPower.ReadOnly = true;
+			this.txtStatisticPower.Size = new System.Drawing.Size(208, 26);
+			this.txtStatisticPower.TabIndex = 25;
+			// 
+			// labelX10
+			// 
+			this.labelX10.BackColor = System.Drawing.Color.Transparent;
+			// 
+			// 
+			// 
+			this.labelX10.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.labelX10.ForeColor = System.Drawing.Color.Black;
+			this.labelX10.Location = new System.Drawing.Point(11, 338);
+			this.labelX10.Name = "labelX10";
+			this.labelX10.Size = new System.Drawing.Size(208, 23);
+			this.labelX10.TabIndex = 24;
+			this.labelX10.Text = "Tiêu thụ:";
+			// 
+			// cbStatisticType
+			// 
+			this.cbStatisticType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cbStatisticType.ForeColor = System.Drawing.Color.Black;
+			this.cbStatisticType.FormattingEnabled = true;
+			this.cbStatisticType.Items.AddRange(new object[] {
+            "Giờ trong ngày (0h-23h)",
+            "Thứ trong tuần (thứ 2-CN)",
+            "Ngày trong tháng (ngày 1-30)",
+            "Tháng trong năm (tháng 1-12)"});
+			this.cbStatisticType.Location = new System.Drawing.Point(12, 258);
+			this.cbStatisticType.Name = "cbStatisticType";
+			this.cbStatisticType.Size = new System.Drawing.Size(207, 27);
+			this.cbStatisticType.Style = DevComponents.DotNetBar.eDotNetBarStyle.StyleManagerControlled;
+			this.cbStatisticType.TabIndex = 23;
+			// 
+			// labelX11
+			// 
+			this.labelX11.BackColor = System.Drawing.Color.Transparent;
+			// 
+			// 
+			// 
+			this.labelX11.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.labelX11.ForeColor = System.Drawing.Color.Black;
+			this.labelX11.Location = new System.Drawing.Point(12, 228);
+			this.labelX11.Name = "labelX11";
+			this.labelX11.Size = new System.Drawing.Size(208, 23);
+			this.labelX11.TabIndex = 22;
+			this.labelX11.Text = "Thống kê theo:";
+			// 
+			// progDeviceStatistic
+			// 
+			this.progDeviceStatistic.BackColor = System.Drawing.Color.Transparent;
+			// 
+			// 
+			// 
+			this.progDeviceStatistic.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.progDeviceStatistic.Location = new System.Drawing.Point(65, 526);
+			this.progDeviceStatistic.Name = "progDeviceStatistic";
+			this.progDeviceStatistic.ProgressBarType = DevComponents.DotNetBar.eCircularProgressType.Spoke;
+			this.progDeviceStatistic.Size = new System.Drawing.Size(100, 100);
+			this.progDeviceStatistic.Style = DevComponents.DotNetBar.eDotNetBarStyle.OfficeXP;
+			this.progDeviceStatistic.TabIndex = 21;
+			// 
+			// btnUpdateStatistic
+			// 
+			this.btnUpdateStatistic.AccessibleRole = System.Windows.Forms.AccessibleRole.PushButton;
+			this.btnUpdateStatistic.ColorTable = DevComponents.DotNetBar.eButtonColor.OrangeWithBackground;
+			this.btnUpdateStatistic.Font = new System.Drawing.Font("Segoe UI Black", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
+			this.btnUpdateStatistic.Location = new System.Drawing.Point(11, 422);
+			this.btnUpdateStatistic.Name = "btnUpdateStatistic";
+			this.btnUpdateStatistic.Size = new System.Drawing.Size(208, 98);
+			this.btnUpdateStatistic.Style = DevComponents.DotNetBar.eDotNetBarStyle.StyleManagerControlled;
+			this.btnUpdateStatistic.Symbol = "";
+			this.btnUpdateStatistic.SymbolSize = 35F;
+			this.btnUpdateStatistic.TabIndex = 20;
+			this.btnUpdateStatistic.Text = " Thống kê";
+			this.btnUpdateStatistic.Click += new System.EventHandler(this.btnUpdateStatistic_Click);
+			// 
+			// labelX12
+			// 
+			this.labelX12.BackColor = System.Drawing.Color.Transparent;
+			// 
+			// 
+			// 
+			this.labelX12.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.labelX12.ForeColor = System.Drawing.Color.Black;
+			this.labelX12.Location = new System.Drawing.Point(12, 158);
+			this.labelX12.Name = "labelX12";
+			this.labelX12.Size = new System.Drawing.Size(208, 23);
+			this.labelX12.TabIndex = 19;
+			this.labelX12.Text = "Thời gian kết thúc:";
+			// 
+			// dtStatisticEnd
+			// 
+			this.dtStatisticEnd.AutoOffFreeTextEntry = true;
+			this.dtStatisticEnd.BackColor = System.Drawing.Color.White;
+			// 
+			// 
+			// 
+			this.dtStatisticEnd.BackgroundStyle.Class = "DateTimeInputBackground";
+			this.dtStatisticEnd.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.dtStatisticEnd.ButtonDropDown.Shortcut = DevComponents.DotNetBar.eShortcut.AltDown;
+			this.dtStatisticEnd.ButtonDropDown.Visible = true;
+			this.dtStatisticEnd.CustomFormat = "HH:mm dd/MM/yyyy";
+			this.dtStatisticEnd.DateTimeSelectorVisibility = DevComponents.Editors.DateTimeAdv.eDateTimeSelectorVisibility.Both;
+			this.dtStatisticEnd.ForeColor = System.Drawing.Color.Black;
+			this.dtStatisticEnd.Format = DevComponents.Editors.eDateTimePickerFormat.Custom;
+			this.dtStatisticEnd.InputHorizontalAlignment = DevComponents.Editors.eHorizontalAlignment.Center;
+			this.dtStatisticEnd.IsPopupCalendarOpen = false;
+			this.dtStatisticEnd.Location = new System.Drawing.Point(11, 187);
+			// 
+			// 
+			// 
+			this.dtStatisticEnd.MonthCalendar.AnnuallyMarkedDates = new System.DateTime[0];
+			// 
+			// 
+			// 
+			this.dtStatisticEnd.MonthCalendar.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.dtStatisticEnd.MonthCalendar.CalendarDimensions = new System.Drawing.Size(1, 1);
+			// 
+			// 
+			// 
+			this.dtStatisticEnd.MonthCalendar.CommandsBackgroundStyle.BackColor2SchemePart = DevComponents.DotNetBar.eColorSchemePart.BarBackground2;
+			this.dtStatisticEnd.MonthCalendar.CommandsBackgroundStyle.BackColorGradientAngle = 90;
+			this.dtStatisticEnd.MonthCalendar.CommandsBackgroundStyle.BackColorSchemePart = DevComponents.DotNetBar.eColorSchemePart.BarBackground;
+			this.dtStatisticEnd.MonthCalendar.CommandsBackgroundStyle.BorderTop = DevComponents.DotNetBar.eStyleBorderType.Solid;
+			this.dtStatisticEnd.MonthCalendar.CommandsBackgroundStyle.BorderTopColorSchemePart = DevComponents.DotNetBar.eColorSchemePart.BarDockedBorder;
+			this.dtStatisticEnd.MonthCalendar.CommandsBackgroundStyle.BorderTopWidth = 1;
+			this.dtStatisticEnd.MonthCalendar.CommandsBackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.dtStatisticEnd.MonthCalendar.DayClickAutoClosePopup = false;
+			this.dtStatisticEnd.MonthCalendar.DisplayMonth = new System.DateTime(2015, 7, 1, 0, 0, 0, 0);
+			this.dtStatisticEnd.MonthCalendar.FirstDayOfWeek = System.DayOfWeek.Monday;
+			this.dtStatisticEnd.MonthCalendar.MarkedDates = new System.DateTime[0];
+			this.dtStatisticEnd.MonthCalendar.MonthlyMarkedDates = new System.DateTime[0];
+			// 
+			// 
+			// 
+			this.dtStatisticEnd.MonthCalendar.NavigationBackgroundStyle.BackColor2SchemePart = DevComponents.DotNetBar.eColorSchemePart.PanelBackground2;
+			this.dtStatisticEnd.MonthCalendar.NavigationBackgroundStyle.BackColorGradientAngle = 90;
+			this.dtStatisticEnd.MonthCalendar.NavigationBackgroundStyle.BackColorSchemePart = DevComponents.DotNetBar.eColorSchemePart.PanelBackground;
+			this.dtStatisticEnd.MonthCalendar.NavigationBackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.dtStatisticEnd.MonthCalendar.WeeklyMarkedDays = new System.DayOfWeek[0];
+			this.dtStatisticEnd.Name = "dtStatisticEnd";
+			this.dtStatisticEnd.Size = new System.Drawing.Size(209, 26);
+			this.dtStatisticEnd.Style = DevComponents.DotNetBar.eDotNetBarStyle.StyleManagerControlled;
+			this.dtStatisticEnd.TabIndex = 18;
+			this.dtStatisticEnd.TimeSelectorTimeFormat = DevComponents.Editors.DateTimeAdv.eTimeSelectorFormat.Time24H;
+			this.dtStatisticEnd.TimeSelectorType = DevComponents.Editors.DateTimeAdv.eTimeSelectorType.TouchStyle;
+			// 
+			// labelX13
+			// 
+			this.labelX13.BackColor = System.Drawing.Color.Transparent;
+			// 
+			// 
+			// 
+			this.labelX13.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.labelX13.ForeColor = System.Drawing.Color.Black;
+			this.labelX13.Location = new System.Drawing.Point(12, 91);
+			this.labelX13.Name = "labelX13";
+			this.labelX13.Size = new System.Drawing.Size(208, 23);
+			this.labelX13.TabIndex = 17;
+			this.labelX13.Text = "Thời gian bắt đầu:";
+			// 
+			// dtStatisticBegin
+			// 
+			this.dtStatisticBegin.AutoOffFreeTextEntry = true;
+			this.dtStatisticBegin.BackColor = System.Drawing.Color.White;
+			// 
+			// 
+			// 
+			this.dtStatisticBegin.BackgroundStyle.Class = "DateTimeInputBackground";
+			this.dtStatisticBegin.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.dtStatisticBegin.ButtonDropDown.Shortcut = DevComponents.DotNetBar.eShortcut.AltDown;
+			this.dtStatisticBegin.ButtonDropDown.Visible = true;
+			this.dtStatisticBegin.CustomFormat = "HH:mm dd/MM/yyyy";
+			this.dtStatisticBegin.DateTimeSelectorVisibility = DevComponents.Editors.DateTimeAdv.eDateTimeSelectorVisibility.Both;
+			this.dtStatisticBegin.ForeColor = System.Drawing.Color.Black;
+			this.dtStatisticBegin.Format = DevComponents.Editors.eDateTimePickerFormat.Custom;
+			this.dtStatisticBegin.InputHorizontalAlignment = DevComponents.Editors.eHorizontalAlignment.Center;
+			this.dtStatisticBegin.IsPopupCalendarOpen = false;
+			this.dtStatisticBegin.Location = new System.Drawing.Point(12, 120);
+			// 
+			// 
+			// 
+			this.dtStatisticBegin.MonthCalendar.AnnuallyMarkedDates = new System.DateTime[0];
+			// 
+			// 
+			// 
+			this.dtStatisticBegin.MonthCalendar.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.dtStatisticBegin.MonthCalendar.CalendarDimensions = new System.Drawing.Size(1, 1);
+			// 
+			// 
+			// 
+			this.dtStatisticBegin.MonthCalendar.CommandsBackgroundStyle.BackColor2SchemePart = DevComponents.DotNetBar.eColorSchemePart.BarBackground2;
+			this.dtStatisticBegin.MonthCalendar.CommandsBackgroundStyle.BackColorGradientAngle = 90;
+			this.dtStatisticBegin.MonthCalendar.CommandsBackgroundStyle.BackColorSchemePart = DevComponents.DotNetBar.eColorSchemePart.BarBackground;
+			this.dtStatisticBegin.MonthCalendar.CommandsBackgroundStyle.BorderTop = DevComponents.DotNetBar.eStyleBorderType.Solid;
+			this.dtStatisticBegin.MonthCalendar.CommandsBackgroundStyle.BorderTopColorSchemePart = DevComponents.DotNetBar.eColorSchemePart.BarDockedBorder;
+			this.dtStatisticBegin.MonthCalendar.CommandsBackgroundStyle.BorderTopWidth = 1;
+			this.dtStatisticBegin.MonthCalendar.CommandsBackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.dtStatisticBegin.MonthCalendar.DayClickAutoClosePopup = false;
+			this.dtStatisticBegin.MonthCalendar.DisplayMonth = new System.DateTime(2015, 7, 1, 0, 0, 0, 0);
+			this.dtStatisticBegin.MonthCalendar.FirstDayOfWeek = System.DayOfWeek.Monday;
+			this.dtStatisticBegin.MonthCalendar.MarkedDates = new System.DateTime[0];
+			this.dtStatisticBegin.MonthCalendar.MonthlyMarkedDates = new System.DateTime[0];
+			// 
+			// 
+			// 
+			this.dtStatisticBegin.MonthCalendar.NavigationBackgroundStyle.BackColor2SchemePart = DevComponents.DotNetBar.eColorSchemePart.PanelBackground2;
+			this.dtStatisticBegin.MonthCalendar.NavigationBackgroundStyle.BackColorGradientAngle = 90;
+			this.dtStatisticBegin.MonthCalendar.NavigationBackgroundStyle.BackColorSchemePart = DevComponents.DotNetBar.eColorSchemePart.PanelBackground;
+			this.dtStatisticBegin.MonthCalendar.NavigationBackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.dtStatisticBegin.MonthCalendar.WeeklyMarkedDays = new System.DayOfWeek[0];
+			this.dtStatisticBegin.Name = "dtStatisticBegin";
+			this.dtStatisticBegin.Size = new System.Drawing.Size(209, 26);
+			this.dtStatisticBegin.Style = DevComponents.DotNetBar.eDotNetBarStyle.StyleManagerControlled;
+			this.dtStatisticBegin.TabIndex = 16;
+			this.dtStatisticBegin.TimeSelectorTimeFormat = DevComponents.Editors.DateTimeAdv.eTimeSelectorFormat.Time24H;
+			this.dtStatisticBegin.TimeSelectorType = DevComponents.Editors.DateTimeAdv.eTimeSelectorType.TouchStyle;
+			// 
+			// cbDeviceStatistic
+			// 
+			this.cbDeviceStatistic.BackColor = System.Drawing.Color.WhiteSmoke;
+			this.cbDeviceStatistic.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+			this.cbDeviceStatistic.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cbDeviceStatistic.ForeColor = System.Drawing.Color.Black;
+			this.cbDeviceStatistic.FormattingEnabled = true;
+			this.cbDeviceStatistic.ImageList = this.deviceImageList;
+			this.cbDeviceStatistic.ItemHeight = 64;
+			this.cbDeviceStatistic.Location = new System.Drawing.Point(12, 15);
+			this.cbDeviceStatistic.Name = "cbDeviceStatistic";
+			this.cbDeviceStatistic.Size = new System.Drawing.Size(209, 70);
+			this.cbDeviceStatistic.TabIndex = 15;
+			this.cbDeviceStatistic.SelectedIndexChanged += new System.EventHandler(this.cbDeviceStatistic_SelectedIndexChanged);
+			// 
+			// deviceImageList
+			// 
+			this.deviceImageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("deviceImageList.ImageStream")));
+			this.deviceImageList.TransparentColor = System.Drawing.Color.Transparent;
+			this.deviceImageList.Images.SetKeyName(0, "air_conditioner.jpg");
+			this.deviceImageList.Images.SetKeyName(1, "electric_socket.jpg");
+			this.deviceImageList.Images.SetKeyName(2, "fan.jpg");
+			this.deviceImageList.Images.SetKeyName(3, "washing_machine.jpg");
+			this.deviceImageList.Images.SetKeyName(4, "water_heater.jpg");
+			// 
+			// tabDeviceStatistic
+			// 
+			this.tabDeviceStatistic.AttachedControl = this.superTabControlPanel4;
+			this.tabDeviceStatistic.Enabled = false;
+			this.tabDeviceStatistic.GlobalItem = false;
+			this.tabDeviceStatistic.Name = "tabDeviceStatistic";
+			this.tabDeviceStatistic.Text = "Thống kê thiết bị";
 			// 
 			// superTabControlPanel5
 			// 
@@ -226,7 +556,9 @@
 			this.graphEnvironment.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.graphEnvironment.Location = new System.Drawing.Point(238, 0);
+			this.graphEnvironment.BackColor = System.Drawing.Color.WhiteSmoke;
+			this.graphEnvironment.ForeColor = System.Drawing.Color.Black;
+			this.graphEnvironment.Location = new System.Drawing.Point(229, 0);
 			this.graphEnvironment.Margin = new System.Windows.Forms.Padding(4);
 			this.graphEnvironment.Name = "graphEnvironment";
 			this.graphEnvironment.ScrollGrace = 0D;
@@ -236,11 +568,13 @@
 			this.graphEnvironment.ScrollMinX = 0D;
 			this.graphEnvironment.ScrollMinY = 0D;
 			this.graphEnvironment.ScrollMinY2 = 0D;
-			this.graphEnvironment.Size = new System.Drawing.Size(852, 650);
+			this.graphEnvironment.Size = new System.Drawing.Size(861, 650);
 			this.graphEnvironment.TabIndex = 22;
 			// 
 			// txtAverageTemperature
 			// 
+			this.txtAverageTemperature.BackColor = System.Drawing.Color.White;
+			this.txtAverageTemperature.ForeColor = System.Drawing.Color.Black;
 			this.txtAverageTemperature.Location = new System.Drawing.Point(13, 207);
 			this.txtAverageTemperature.Name = "txtAverageTemperature";
 			this.txtAverageTemperature.ReadOnly = true;
@@ -558,7 +892,6 @@
 			// 
 			this.lbFileList.BackgroundStyle.Class = "ListBoxAdv";
 			this.lbFileList.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-			this.lbFileList.CheckStateMember = null;
 			this.lbFileList.ContainerControlProcessDialogKey = true;
 			this.lbFileList.DragDropSupport = true;
 			this.lbFileList.ForeColor = System.Drawing.Color.Black;
@@ -644,6 +977,8 @@
 			// 
 			// txtDeviceHistoryPower
 			// 
+			this.txtDeviceHistoryPower.BackColor = System.Drawing.Color.White;
+			this.txtDeviceHistoryPower.ForeColor = System.Drawing.Color.Black;
 			this.txtDeviceHistoryPower.Location = new System.Drawing.Point(10, 345);
 			this.txtDeviceHistoryPower.Name = "txtDeviceHistoryPower";
 			this.txtDeviceHistoryPower.ReadOnly = true;
@@ -899,16 +1234,6 @@
 			this.cbDeviceHistory.TabIndex = 1;
 			this.cbDeviceHistory.SelectedIndexChanged += new System.EventHandler(this.cbDeviceHistory_SelectedIndexChanged);
 			// 
-			// deviceImageList
-			// 
-			this.deviceImageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("deviceImageList.ImageStream")));
-			this.deviceImageList.TransparentColor = System.Drawing.Color.Transparent;
-			this.deviceImageList.Images.SetKeyName(0, "air_conditioner.jpg");
-			this.deviceImageList.Images.SetKeyName(1, "electric_socket.jpg");
-			this.deviceImageList.Images.SetKeyName(2, "fan.jpg");
-			this.deviceImageList.Images.SetKeyName(3, "washing_machine.jpg");
-			this.deviceImageList.Images.SetKeyName(4, "water_heater.jpg");
-			// 
 			// tabDeviceHistory
 			// 
 			this.tabDeviceHistory.AttachedControl = this.superTabControlPanel3;
@@ -916,23 +1241,6 @@
 			this.tabDeviceHistory.GlobalItem = false;
 			this.tabDeviceHistory.Name = "tabDeviceHistory";
 			this.tabDeviceHistory.Text = "Lịch sử thiết bị";
-			// 
-			// superTabControlPanel4
-			// 
-			this.superTabControlPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.superTabControlPanel4.Location = new System.Drawing.Point(0, 36);
-			this.superTabControlPanel4.Name = "superTabControlPanel4";
-			this.superTabControlPanel4.Size = new System.Drawing.Size(1090, 650);
-			this.superTabControlPanel4.TabIndex = 0;
-			this.superTabControlPanel4.TabItem = this.tabDeviceStatistic;
-			// 
-			// tabDeviceStatistic
-			// 
-			this.tabDeviceStatistic.AttachedControl = this.superTabControlPanel4;
-			this.tabDeviceStatistic.Enabled = false;
-			this.tabDeviceStatistic.GlobalItem = false;
-			this.tabDeviceStatistic.Name = "tabDeviceStatistic";
-			this.tabDeviceStatistic.Text = "Thống kê thiết bị";
 			// 
 			// superTabControlPanel2
 			// 
@@ -1104,6 +1412,10 @@
 			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
 			((System.ComponentModel.ISupportInitialize)(this.superTabControl1)).EndInit();
 			this.superTabControl1.ResumeLayout(false);
+			this.superTabControlPanel4.ResumeLayout(false);
+			this.superTabControlPanel4.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.dtStatisticEnd)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.dtStatisticBegin)).EndInit();
 			this.superTabControlPanel5.ResumeLayout(false);
 			this.superTabControlPanel5.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.dtEnvironmentEnd)).EndInit();
@@ -1184,5 +1496,18 @@
 		private DevComponents.DotNetBar.LabelX labelX9;
 		private DevComponents.Editors.DateTimeAdv.DateTimeInput dtEnvironmentBegin;
 		private ZedGraph.ZedGraphControl graphEnvironment;
+		private System.Windows.Forms.TextBox txtStatisticPower;
+		private DevComponents.DotNetBar.LabelX labelX10;
+		private DevComponents.DotNetBar.Controls.ComboBoxEx cbStatisticType;
+		private DevComponents.DotNetBar.LabelX labelX11;
+		private DevComponents.DotNetBar.Controls.CircularProgress progDeviceStatistic;
+		private DevComponents.DotNetBar.ButtonX btnUpdateStatistic;
+		private DevComponents.DotNetBar.LabelX labelX12;
+		private DevComponents.Editors.DateTimeAdv.DateTimeInput dtStatisticEnd;
+		private DevComponents.DotNetBar.LabelX labelX13;
+		private DevComponents.Editors.DateTimeAdv.DateTimeInput dtStatisticBegin;
+		private DeviceComboBox cbDeviceStatistic;
+		private ZedGraph.ZedGraphControl graphStatistic;
+		private DevComponents.DotNetBar.Controls.CheckBoxX cbStatisticPieChart;
 	}
 }
