@@ -20,6 +20,10 @@ namespace EnergyMonitorApp
 
 		public const double POWER_MIN = 1.5;
 		public const double I_MIN = 0.08;
+		public const double V_MIN = 200;
+		public const double V_MAX = 260;
+		public const int MAX_SECOND_RECORD_REALPOWER = 10;
+		public const int MAX_SECOND_RECORD_DETAILPOWER = 50;
 
 		public static string SerializeBase64(object o)
 		{

@@ -172,6 +172,7 @@ namespace EnergyMonitorApp
 							if (i < forTo)
 							{
 								TimeSpan diff = block.RealPowerList[i + 1].Time - rec.Time;
+								if (diff.TotalSeconds > G.MAX_SECOND_RECORD_REALPOWER) continue;
 								WH = rec.RealPower * diff.TotalSeconds;
 								totalWH += WH;
 							}
@@ -414,12 +415,17 @@ namespace EnergyMonitorApp
 						if (i < forTo)
 						{
 							TimeSpan diff = block.RealPowerList[i + 1].Time - rec.Time;
+							if (diff.TotalSeconds > G.MAX_SECOND_RECORD_REALPOWER) continue;
 							WH = rec.RealPower * diff.TotalSeconds;
 							totalWH += WH;
 						}
 						if (type == 0)
 						{
 							arrValue[rec.Time.Hour - 1] += WH;
+							if (WH > 100)
+							{
+
+							}
 						}
 						else if (type == 1)
 						{
@@ -642,11 +648,6 @@ namespace EnergyMonitorApp
 					{
 						Log_ClientRealPower rec = block.RealPowerList[i];
 						if (rec.Time < beginTime || rec.Time > endTime) continue;
-						if (i < forTo)
-						{
-							TimeSpan diff = block.RealPowerList[i + 1].Time - rec.Time;
-							wh += rec.RealPower * diff.TotalSeconds;
-						}
 						if (isFirst)
 						{
 							isFirst = false;
@@ -667,11 +668,28 @@ namespace EnergyMonitorApp
 						}
 						powerList_X.Add(rec.Time.ToOADate());
 						powerList_Y.Add(rec.RealPower);
+						if (i < forTo)
+						{
+							TimeSpan diff = block.RealPowerList[i + 1].Time - rec.Time;
+							if (diff.TotalSeconds > G.MAX_SECOND_RECORD_REALPOWER)
+							{
+								powerList_Y.Add(-1);
+								powerList_X.Add(powerList_X.Last());
+								powerList_Y.Add(0);
+								isFirst = true;
+							}
+							else
+							{
+								wh += rec.RealPower * diff.TotalSeconds;
+							}
+						}
 					}
 
 					isFirst = true;
-					foreach (Log_ClientDetailPower rec in block.DetailPowerList)
+					forTo = block.DetailPowerList.Count - 1;
+					for (int i = 0; i < block.DetailPowerList.Count; i++)
 					{
+						Log_ClientDetailPower rec = block.DetailPowerList[i];
 						if (rec.Time < beginTime || rec.Time > endTime) continue;
 						if (isFirst)
 						{
@@ -703,6 +721,17 @@ namespace EnergyMonitorApp
 						else if (y2val == 2)
 						{
 							subList_Y.Add(rec.I * rec.V);
+						}
+						if (i < forTo)
+						{
+							TimeSpan diff = block.DetailPowerList[i + 1].Time - rec.Time;
+							if (diff.TotalSeconds > G.MAX_SECOND_RECORD_DETAILPOWER)
+							{
+								subList_Y.Add(-1);
+								subList_X.Add(subList_X.Last());
+								subList_Y.Add(0);
+								isFirst = true;
+							}
 						}
 					}
 				}
@@ -1148,14 +1177,14 @@ namespace EnergyMonitorApp
 		{
 			if (updateDataThread == null || !updateDataThread.IsAlive)
 			{
-				updateDataThread = new Thread(doUpdateDate);
+				updateDataThread = new Thread(doUpdateData);
 				updateDataThread.IsBackground = true;
 				updateDataThread.Priority = ThreadPriority.Highest;
 				updateDataThread.Start();
 			}
 		}
 
-		private void doUpdateDate()
+		private void doUpdateData()
 		{
 			lbFileList.Visible = false;
 			progUpdateData.IsRunning = true;

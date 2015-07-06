@@ -88,6 +88,7 @@ namespace EnergyMonitorApp
 									log.SensorID = byte.Parse(data[3]);
 									log.SessionID = uint.Parse(data[4]);
 									log.V = float.Parse(data[5]);
+									if (log.V < G.V_MIN || log.V > G.V_MAX) log.V = 0;
 									log.I = Math.Abs(float.Parse(data[6]));
 									if (log.I < G.I_MIN) log.I = 0;
 									logEntry = log;
