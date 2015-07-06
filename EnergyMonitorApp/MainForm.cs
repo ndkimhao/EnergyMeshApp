@@ -104,6 +104,7 @@ namespace EnergyMonitorApp
 				DateTime endTime = dtStatisticEnd.Value;
 				graphStatistic.GraphPane = new GraphPane(graphStatistic.DisplayRectangle, "Title", "X Axis", "Y Axis");
 				GraphPane pane = graphStatistic.GraphPane;
+				pane.Fill = new Fill(Color.White, Color.LightGray, 45.0f);
 
 				pane.Title.Text = "Thống kê " + dev.Name + " theo " + cbStatisticType.SelectedItem;
 				pane.YAxis.Title.Text = "Điện năng tiêu thụ (WH)";
@@ -200,18 +201,18 @@ namespace EnergyMonitorApp
 					{
 						dictTmp.Add(i, arrValue[i] * 100 / totalWH);
 					}
-					var pairs = dictTmp.OrderBy(i => i.Value);
+					var pairs = dictTmp.OrderByDescending(i => i.Value);
 					Dictionary<int, double> dictTmpFinal = new Dictionary<int, double>();
 					for (int i = 0; i < 3; i++)
 					{
-						var pair = pairs.ElementAt(i);
+						var pair = pairs.ElementAt(0);
 						dictTmpFinal.Add(pair.Key, pair.Value);
 						dictTmp.Remove(pair.Key);
 					}
 					double otherValue = 0;
 					foreach (var pair in dictTmp)
 					{
-						if (pair.Value > 20)
+						if (pair.Value > 10)
 						{
 							dictTmpFinal.Add(pair.Key, pair.Value);
 						}
