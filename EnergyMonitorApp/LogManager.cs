@@ -21,6 +21,7 @@ namespace EnergyMonitorApp
 		public static void LoadLog()
 		{
 			LogEntryList.Clear();
+			PowerBlockList.Clear();
 			string[] files = Directory.GetFiles(@"logs\", "*.*", SearchOption.AllDirectories);
 			List<string> listFiles = files.ToList();
 			listFiles.Sort();

@@ -38,6 +38,7 @@ namespace EnergyMonitorApp
 					{
 						Log_ClientRealPower rec = RealPowerList[i];
 						TimeSpan diff = RealPowerList[i + 1].Time - rec.Time;
+						if (diff.TotalSeconds > G.MAX_SECOND_RECORD_REALPOWER) continue;
 						_WH += rec.RealPower * diff.TotalSeconds;
 					}
 					_WH /= 3600;
