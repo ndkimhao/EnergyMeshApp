@@ -9,7 +9,7 @@ namespace EnergyMonitorApp
 {
 	enum DeviceType
 	{
-		AirConditioner, ElectricSocket, Fan, WashingMachine, WaterHeater
+		AirConditioner, ElectricSocket, Fan, WashingMachine, WaterHeater, Line, Other
 	}
 
 	[Serializable()]
@@ -28,6 +28,8 @@ namespace EnergyMonitorApp
 			{DeviceType.Fan, "fan.jpg"},
 			{DeviceType.WashingMachine, "washing_machine.jpg"},
 			{DeviceType.WaterHeater, "water_heater.jpg"},
+			{DeviceType.Line, "line.jpg"},
+			{DeviceType.Other, "other.jpg"},
 		};
 		public string ImageKey
 		{

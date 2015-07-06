@@ -836,6 +836,8 @@ namespace EnergyMonitorApp
 			{"fan.jpg", "Quạt máy"},
 			{"washing_machine.jpg", "Máy giặt"},
 			{"water_heater.jpg", "Máy nước nóng"},
+			{"line.jpg", "Đường điện"},
+			{"other.jpg", "Khác"},
 		};
 		private void gridDevice_CellDoubleClick(object sender, GridCellDoubleClickEventArgs e)
 		{
