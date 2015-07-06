@@ -19,7 +19,7 @@ namespace EnergyMonitorApp
 			}
 		}
 
-		public static void deleteBlock(long ID)
+		public static void DeleteBlock(long ID)
 		{
 			for (int i = 0; i < NullDevice.BlockList.Count; )
 			{

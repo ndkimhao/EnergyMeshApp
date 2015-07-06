@@ -14,6 +14,69 @@ using System.Windows.Forms;
 namespace EnergyMonitorApp
 {
 
+	public sealed class DeviceListBox : ListBox
+	{
+		public ImageList ImageList { get; set; }
+
+		public DeviceListBox()
+		{
+			DrawMode = DrawMode.OwnerDrawFixed;
+		}
+
+		protected override void OnDrawItem(DrawItemEventArgs e)
+		{
+			e.DrawBackground();
+			e.DrawFocusRectangle();
+			if (e.Index >= 0 && e.Index < Items.Count)
+			{
+				Device dev = (Device)Items[e.Index];
+				Image image = ImageList.Images[dev.ImageKey];
+				image = ResizeImage(image, 48, 48);
+
+				Rectangle r = e.Bounds;
+				r.Size = image.Size;
+				r.X += 2;
+				r.Y += (e.Bounds.Height - r.Height) / 2;
+				e.Graphics.DrawImageUnscaled(image, r);
+
+				r = e.Bounds;
+				r.X += image.Width + 2;
+				r.Width -= image.Width + 2;
+				using (StringFormat sf = new StringFormat())
+				{
+					sf.LineAlignment = StringAlignment.Center;
+					e.Graphics.DrawString(dev.Name, Font, new SolidBrush(ForeColor), r, sf);
+				}
+			}
+			base.OnDrawItem(e);
+		}
+
+		private static Bitmap ResizeImage(Image image, int width, int height)
+		{
+			var destRect = new Rectangle(0, 0, width, height);
+			var destImage = new Bitmap(width, height);
+
+			destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+
+			using (var graphics = Graphics.FromImage(destImage))
+			{
+				graphics.CompositingMode = CompositingMode.SourceCopy;
+				graphics.CompositingQuality = CompositingQuality.HighQuality;
+				graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+				graphics.SmoothingMode = SmoothingMode.HighQuality;
+				graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+				using (var wrapMode = new ImageAttributes())
+				{
+					wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+					graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
+				}
+			}
+
+			return destImage;
+		}
+	}
+
 	public sealed class DeviceComboBox : ComboBox
 	{
 		public ImageList ImageList { get; set; }

@@ -28,9 +28,258 @@ namespace EnergyMonitorApp
 			Control.CheckForIllegalCrossThreadCalls = false;
 			gridDeviceInit();
 			gridBlockInit();
-			cbDeviceInit();
 			cbThemeInit();
 		}
+
+		#region "Device compare function"
+
+		private void lbDeviceCompare_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			var sItems = lbDeviceCompare.SelectedItems;
+			if (sItems.Count > 0)
+			{
+				DateTime beginTime = DateTime.MaxValue;
+				DateTime endTime = DateTime.MinValue;
+				foreach (Device dev in sItems)
+				{
+					if (dev.BeginTime < beginTime)
+					{
+						beginTime = dev.BeginTime;
+					}
+					if (dev.EndTime > endTime)
+					{
+						endTime = dev.EndTime;
+					}
+				}
+				dtCompareBegin.Enabled = dtCompareEnd.Enabled = btnUpdateCompare.Enabled = true;
+				dtCompareBegin.Value = dtCompareBegin.MinDate = dtCompareEnd.MinDate = beginTime;
+				dtCompareEnd.Value = dtCompareBegin.MaxDate = dtCompareEnd.MaxDate = endTime;
+			}
+			else
+			{
+				dtCompareBegin.Enabled = dtCompareEnd.Enabled = btnUpdateCompare.Enabled = false;
+				dtCompareBegin.Value = dtCompareBegin.MinDate = dtCompareEnd.MinDate = DateTime.Now;
+				dtCompareEnd.Value = dtCompareBegin.MaxDate = dtCompareEnd.MaxDate = DateTime.Now;
+			}
+		}
+
+		private void btnUpdateCompare_Click(object sender, EventArgs e)
+		{
+			var sItems = lbDeviceCompare.SelectedItems;
+			DateTime beginTime = dtCompareBegin.MinDate;
+			DateTime endTime = dtCompareEnd.MaxDate;
+			if (dtCompareBegin.Value >= dtCompareEnd.Value)
+			{
+				MessageBoxEx.Show(this, "<font size='18'><b>Ngày bắt đầu phải trước ngày kết thúc !</b></font>",
+						"<font size='15'><b>Thông báo</b></font>", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				dtCompareBegin.Value = beginTime;
+				dtCompareEnd.Value = endTime;
+			}
+			else
+			{
+				if (dtCompareBegin.Value < beginTime)
+				{
+					dtCompareBegin.Value = beginTime;
+				}
+				if (dtCompareEnd.Value > endTime)
+				{
+					dtCompareEnd.Value = endTime;
+				}
+			}
+			new Thread(GenerateCompareGraph).Start();
+		}
+
+		private readonly Color[] compareColor = new Color[] { Color.Red,Color.Blue,Color.Green,Color.Gold,Color.Gainsboro,
+		Color.Black,Color.CadetBlue,Color.Brown,Color.Gray,Color.Ivory,Color.Violet,Color.Tomato,Color.SteelBlue,Color.MistyRose };
+		private void GenerateCompareGraph()
+		{
+			var sItems = lbDeviceCompare.SelectedItems;
+			int sCount = sItems.Count;
+			if (sCount > 0)
+			{
+				lblStatus.Text = "Đang thống kê dữ liệu...";
+				progDeviceCompare.IsRunning = true;
+
+				DateTime beginTime = dtCompareBegin.Value;
+				DateTime endTime = dtCompareEnd.Value;
+				GraphPane pane = graphCompare.GraphPane;
+				pane.Fill = new Fill(Color.White, Color.LightGray, 45.0f);
+
+				pane.Title.Text = "Thống kê các thiết bị theo " + cbCompareType.SelectedItem;
+				pane.YAxis.Title.Text = "Điện năng tiêu thụ (WH)";
+				pane.XAxis.Title.Text = "Khoảng thời gian";
+				int type = cbCompareType.SelectedIndex;
+				string[] arrLabel = null;
+				double[][] arrValue = null;
+				if (type == 0)
+				{
+					arrLabel = new string[24];
+					arrValue = new double[sCount][];
+					for (int i = 0; i < 24; i++)
+					{
+						arrLabel[i] = i + "h";
+					}
+				}
+				else if (type == 1)
+				{
+					arrLabel = new string[7];
+					arrValue = new double[sCount][];
+					for (int i = 2; i <= 7; i++)
+					{
+						arrLabel[i - 2] = "Thứ " + i;
+					}
+					arrLabel[6] = "Chủ nhật";
+				}
+				else if (type == 2)
+				{
+					arrLabel = new string[31];
+					arrValue = new double[sCount][];
+					for (int i = 1; i <= 31; i++)
+					{
+						arrLabel[i - 1] = i.ToString();
+					}
+				}
+				else if (type == 3)
+				{
+					arrLabel = new string[12];
+					arrValue = new double[sCount][];
+					for (int i = 1; i <= 12; i++)
+					{
+						arrLabel[i - 1] = i.ToString();
+					}
+				}
+				for (int i = 0; i < sCount; i++)
+				{
+					arrValue[i] = new double[arrLabel.Length];
+				}
+				pane.XAxis.MajorTic.IsBetweenLabels = true;
+				pane.XAxis.Scale.TextLabels = arrLabel;
+				pane.XAxis.Type = AxisType.Text;
+				pane.BarSettings.Type = BarType.Stack;
+
+				double totalWH = 0;
+				double WH = 0;
+				for (int d = 0; d < sCount; d++)
+				{
+					foreach (long blockID in ((Device)sItems[d]).BlockList)
+					{
+						PowerBlock block = LogManager.PowerBlockList[blockID];
+						int forTo = block.RealPowerList.Count - 1;
+						for (int i = 0; i < block.RealPowerList.Count; i++)
+						{
+							Log_ClientRealPower rec = block.RealPowerList[i];
+							if (rec.Time < beginTime || rec.Time > endTime) continue;
+							if (i < forTo)
+							{
+								TimeSpan diff = block.RealPowerList[i + 1].Time - rec.Time;
+								WH = rec.RealPower * diff.TotalSeconds;
+								totalWH += WH;
+							}
+							if (type == 0)
+							{
+								arrValue[d][rec.Time.Hour - 1] += WH;
+							}
+							else if (type == 1)
+							{
+								int idx = (int)rec.Time.DayOfWeek;
+								if (idx == 0)
+									idx = 6;
+								else
+									idx -= 1;
+								arrValue[d][idx] += WH;
+							}
+							else if (type == 2)
+							{
+								arrValue[d][rec.Time.Day - 1] += WH;
+							}
+							else if (type == 3)
+							{
+								arrValue[d][rec.Time.Month - 1] += WH;
+							}
+						}
+					}
+				}
+				pane.CurveList.Clear();
+
+				if (cbComparePieChart.Checked)
+				{
+					double[] arrValue1D = new double[sCount];
+					double total = 0;
+					for (int i = 0; i < sCount; i++)
+					{
+						double tmp = 0;
+						for (int j = 0; j < arrLabel.Length; j++)
+						{
+							tmp += arrValue[i][j];
+						}
+						arrValue1D[i] = tmp;
+						total += tmp;
+					}
+					for (int i = 0; i < sCount; i++)
+					{
+						double val = arrValue1D[i];
+						if (val > 0)
+						{
+							Color c1 = pieChartColor[rand.Next(pieChartColor.Length)];
+							Color c2 = pieChartColor[rand.Next(pieChartColor.Length)];
+							float angle = (float)rand.NextDouble() * 180;
+							val = val * 100 / total;
+							double displacement = CaclDisplacement(val);
+							pane.AddPieSlice(val, c1, c2, angle, displacement, ((Device)sItems[i]).Name);
+						}
+					}
+				}
+				else
+				{
+					pane.XAxis.IsVisible = true;
+					pane.YAxis.IsVisible = true;
+					for (int i = 0; i < sCount; i++)
+					{
+						bool hasVal = false;
+						for (int j = 0; j < arrLabel.Length; j++)
+						{
+							if (arrValue[i][j] > 0)
+							{
+								arrValue[i][j] /= 3600;
+								hasVal = true;
+							}
+						}
+						if (hasVal)
+						{
+							BarItem myBar = pane.AddBar(((Device)sItems[i]).Name, null, arrValue[i], Color.Red);
+							Color c = compareColor[i];
+							myBar.Bar.Fill = new Fill(c, Color.White, c);
+						}
+					}
+				}
+
+				Graphics g = this.CreateGraphics();
+				pane.YAxis.ResetAutoScale(pane, g);
+				pane.Y2Axis.ResetAutoScale(pane, g);
+				pane.XAxis.ResetAutoScale(pane, g);
+				g.Dispose();
+				pane.ZoomStack.Clear();
+				pane.XAxis.Scale.Format = "HH:mm dd/MM/yy";
+
+				graphCompare.AxisChange();
+				graphCompare.Refresh();
+				totalWH /= 3600;
+				if (totalWH > 1000)
+				{
+					txtComparePower.Text = (totalWH / 1000).ToString("F2") + " kWH";
+				}
+				else
+				{
+					txtComparePower.Text = totalWH.ToString("F2") + " WH";
+				}
+				txtComparePrice.Text = (totalWH * 1622.05 / 1000).ToString("n0") + " đ";
+
+				progDeviceCompare.IsRunning = false;
+				lblStatus.Text = "Thống kê dữ liệu hoàn tất";
+			}
+		}
+
+		#endregion
 
 		#region "Device statistic function"
 
@@ -102,7 +351,6 @@ namespace EnergyMonitorApp
 
 				DateTime beginTime = dtStatisticBegin.Value;
 				DateTime endTime = dtStatisticEnd.Value;
-				graphStatistic.GraphPane = new GraphPane(graphStatistic.DisplayRectangle, "Title", "X Axis", "Y Axis");
 				GraphPane pane = graphStatistic.GraphPane;
 				pane.Fill = new Fill(Color.White, Color.LightGray, 45.0f);
 
@@ -154,7 +402,7 @@ namespace EnergyMonitorApp
 				pane.XAxis.Type = AxisType.Text;
 
 				double totalWH = 0;
-				double ws = 0;
+				double WH = 0;
 				foreach (long blockID in dev.BlockList)
 				{
 					PowerBlock block = LogManager.PowerBlockList[blockID];
@@ -166,12 +414,12 @@ namespace EnergyMonitorApp
 						if (i < forTo)
 						{
 							TimeSpan diff = block.RealPowerList[i + 1].Time - rec.Time;
-							ws = rec.RealPower * diff.TotalSeconds;
-							totalWH += ws;
+							WH = rec.RealPower * diff.TotalSeconds;
+							totalWH += WH;
 						}
 						if (type == 0)
 						{
-							arrValue[rec.Time.Hour - 1] += ws;
+							arrValue[rec.Time.Hour - 1] += WH;
 						}
 						else if (type == 1)
 						{
@@ -180,15 +428,15 @@ namespace EnergyMonitorApp
 								idx = 6;
 							else
 								idx -= 1;
-							arrValue[idx] += ws;
+							arrValue[idx] += WH;
 						}
 						else if (type == 2)
 						{
-							arrValue[rec.Time.Day - 1] += ws;
+							arrValue[rec.Time.Day - 1] += WH;
 						}
 						else if (type == 3)
 						{
-							arrValue[rec.Time.Month - 1] += ws;
+							arrValue[rec.Time.Month - 1] += WH;
 						}
 					}
 				}
@@ -243,6 +491,8 @@ namespace EnergyMonitorApp
 				}
 				else
 				{
+					pane.XAxis.IsVisible = true;
+					pane.YAxis.IsVisible = true;
 					for (int i = 0; i < arrValue.Length; i++)
 					{
 						arrValue[i] /= 3600;
@@ -251,19 +501,27 @@ namespace EnergyMonitorApp
 					myBar.Bar.Fill = new Fill(Color.Red, Color.White, Color.Red);
 				}
 
+				Graphics g = this.CreateGraphics();
+				pane.YAxis.ResetAutoScale(pane, g);
+				pane.Y2Axis.ResetAutoScale(pane, g);
+				pane.XAxis.ResetAutoScale(pane, g);
+				g.Dispose();
+				pane.ZoomStack.Clear();
+				pane.XAxis.Scale.Format = "HH:mm dd/MM/yy";
+
 				graphStatistic.AxisChange();
 				graphStatistic.Refresh();
 
 				totalWH /= 3600;
 				if (totalWH > 1000)
 				{
-					totalWH /= 1000;
-					txtStatisticPower.Text = totalWH.ToString("F2") + " kWH";
+					txtStatisticPower.Text = (totalWH / 1000).ToString("F2") + " kWH";
 				}
 				else
 				{
 					txtStatisticPower.Text = totalWH.ToString("F2") + " WH";
 				}
+				txtStatisticPrice.Text = (totalWH * 1622.05 / 1000).ToString("n0") + " đ";
 
 				progDeviceStatistic.IsRunning = false;
 				lblStatus.Text = "Thống kê dữ liệu hoàn tất";
@@ -300,22 +558,39 @@ namespace EnergyMonitorApp
 
 		#region "Device history function"
 
-		private void cbDeviceInit()
+		private void cbDeviceHisStatisCompareInit()
 		{
 			cbDeviceHistory.Items.Clear();
 			cbDeviceStatistic.Items.Clear();
+			lbDeviceCompare.Items.Clear();
 			foreach (Device dev in DeviceManager.DeviceList)
 			{
 				if (!dev.IsDeleted)
 				{
 					cbDeviceHistory.Items.Add(dev);
 					cbDeviceStatistic.Items.Add(dev);
+					lbDeviceCompare.Items.Add(dev);
 				}
 			}
 			cbDeviceHistory.SelectedIndex = 0;
 			cbHistoryY2.SelectedIndex = 0;
 			cbDeviceStatistic.SelectedIndex = 0;
 			cbStatisticType.SelectedIndex = 0;
+			cbCompareType.SelectedIndex = 0;
+			cbDeviceHisStatisCompareUpdate();
+		}
+
+		private void cbDeviceHisStatisCompareUpdate()
+		{
+			if (cbDeviceHistory.Items.Count > 0)
+			{
+				cbDeviceHistory_SelectedIndexChanged(this, null);
+				cbDeviceStatistic_SelectedIndexChanged(this, null);
+				lbDeviceCompare_SelectedIndexChanged(this, null);
+				cbStatisticType.SelectedIndex = 0;
+				cbCompareType.SelectedIndex = 0;
+				cbHistoryY2.SelectedIndex = 0;
+			}
 		}
 
 		private void GenerateHistoryGraph()
@@ -679,7 +954,7 @@ namespace EnergyMonitorApp
 				GridRow row = e.GridCell.GridRow;
 				PowerBlock block = (PowerBlock)row.Tag;
 				Device owner = DeviceManager.getBlockOwner(block.ID);
-				DeviceManager.deleteBlock(block.ID);
+				DeviceManager.DeleteBlock(block.ID);
 				int newDevID = (int)row.Cells[4].Value;
 				if (newDevID == -1)
 				{
@@ -705,7 +980,7 @@ namespace EnergyMonitorApp
 					if (newDevID == -2 || owner == null || owner.ID != newDevID) SetCellColor(row.Cells[0], Color.Gray);
 				}
 				DeviceManager.SaveDeviceList();
-				cbDeviceHistory_SelectedIndexChanged(this, null);
+				cbDeviceHisStatisCompareUpdate();
 			}
 		}
 
@@ -811,11 +1086,7 @@ namespace EnergyMonitorApp
 						row.RowDirty = false;
 						gridBlockInit();
 					}
-					if (cbDeviceHistory.Items.Count > 0)
-					{
-						cbDeviceInit();
-						cbDeviceHistory_SelectedIndexChanged(this, null);
-					}
+					cbDeviceHisStatisCompareInit();
 				}
 			}
 		}
@@ -894,7 +1165,7 @@ namespace EnergyMonitorApp
 			List<string> curLog = LogManager.GetAllLog().Select(str => str.Replace('\\', '/')).ToList();
 			List<string> listBoxItems = new List<string>();
 
-			/*// Get data from ftp server
+			// Get data from ftp server
 			try
 			{
 				string[] ftpList = NetHelper.ListLogsFTP();
@@ -955,7 +1226,7 @@ namespace EnergyMonitorApp
 			catch
 			{
 				lblStatus.Text = "Kết nối máy chủ HTTP lỗi";
-			}*/
+			}
 
 			// Local file
 			foreach (string path in curLog)
@@ -995,14 +1266,10 @@ namespace EnergyMonitorApp
 			progUpdateData.IsRunning = false;
 
 			updateBlockList();
-			if (cbDeviceHistory.Items.Count > 0)
-			{
-				cbDeviceHistory_SelectedIndexChanged(this, null);
-				cbDeviceStatistic_SelectedIndexChanged(this, null);
-			}
 			tabEnvironmentInit();
+			cbDeviceHisStatisCompareInit();
 
-			tabEnvironment.Enabled = tabDeviceStatistic.Enabled = tabDeviceHistory.Enabled = tabBlockManager.Enabled = true;
+			tabCompare.Enabled = tabEnvironment.Enabled = tabDeviceStatistic.Enabled = tabDeviceHistory.Enabled = tabBlockManager.Enabled = true;
 		}
 
 		private void btnAuthor_Click(object sender, EventArgs e)
@@ -1058,8 +1325,8 @@ namespace EnergyMonitorApp
 
 		private void tabEnvironmentInit()
 		{
-			minEnvironmentDT = DateTime.MaxValue;
-			maxEnvironmentDT = DateTime.MinValue;
+			DateTime minEnvironmentDT = DateTime.MaxValue;
+			DateTime maxEnvironmentDT = DateTime.MinValue;
 			foreach (LogRecord lrec in LogManager.LogEntryList)
 			{
 				ILogEnvironment rec = lrec as ILogEnvironment;
@@ -1079,8 +1346,6 @@ namespace EnergyMonitorApp
 			dtEnvironmentEnd.Value = dtEnvironmentBegin.MaxDate = dtEnvironmentEnd.MaxDate = maxEnvironmentDT;
 		}
 
-		private DateTime minEnvironmentDT;
-		private DateTime maxEnvironmentDT;
 		private readonly Dictionary<byte, Color> clientTemperatureColor = new Dictionary<byte, Color>()
 		{
 			{1, Color.Red},
@@ -1088,6 +1353,8 @@ namespace EnergyMonitorApp
 		};
 		private void btnUpdateEvironment_Click(object sender, EventArgs e)
 		{
+			DateTime minEnvironmentDT = dtEnvironmentBegin.MinDate;
+			DateTime maxEnvironmentDT = dtEnvironmentBegin.MaxDate;
 			if (dtEnvironmentBegin.Value >= dtEnvironmentEnd.Value)
 			{
 				MessageBoxEx.Show(this, "<font size='18'><b>Ngày bắt đầu phải trước ngày kết thúc !</b></font>",
