@@ -634,6 +634,7 @@ namespace EnergyMonitorApp
 				pane.XAxis.Scale.Format = "HH:mm dd/MM/yy";
 				pane.XAxis.Scale.FontSpec.Size = 8;
 
+				bool isFilter = cbHistoryFilter.Checked;
 				double wh = 0;
 				List<double> powerList_X = new List<double>();
 				List<double> powerList_Y = new List<double>();
@@ -654,7 +655,7 @@ namespace EnergyMonitorApp
 							double lastDt;
 							if (powerList_X.Count > 0 && Math.Abs((rec.Time - DateTime.FromOADate(lastDt = powerList_X.Last())).TotalSeconds) > 20)
 							{
-								powerList_Y.Add(-1);
+								if (isFilter) powerList_Y.Add(-1);
 								powerList_X.Add(lastDt);
 								powerList_Y.Add(0);
 								powerList_X.Add(rec.Time.ToOADate());
@@ -673,7 +674,7 @@ namespace EnergyMonitorApp
 							TimeSpan diff = block.RealPowerList[i + 1].Time - rec.Time;
 							if (diff.TotalSeconds > G.MAX_SECOND_RECORD_REALPOWER)
 							{
-								powerList_Y.Add(-1);
+								if (isFilter) powerList_Y.Add(-1);
 								powerList_X.Add(powerList_X.Last());
 								powerList_Y.Add(0);
 								isFirst = true;
@@ -697,7 +698,7 @@ namespace EnergyMonitorApp
 							double lastDt;
 							if (subList_X.Count > 0 && Math.Abs((rec.Time - DateTime.FromOADate(lastDt = subList_X.Last())).TotalSeconds) > 20)
 							{
-								subList_Y.Add(-1);
+								if (isFilter) subList_Y.Add(-1);
 								subList_X.Add(lastDt);
 								subList_Y.Add(0);
 								subList_X.Add(rec.Time.ToOADate());
@@ -727,7 +728,7 @@ namespace EnergyMonitorApp
 							TimeSpan diff = block.DetailPowerList[i + 1].Time - rec.Time;
 							if (diff.TotalSeconds > G.MAX_SECOND_RECORD_DETAILPOWER)
 							{
-								subList_Y.Add(-1);
+								if (isFilter) subList_Y.Add(-1);
 								subList_X.Add(subList_X.Last());
 								subList_Y.Add(0);
 								isFirst = true;
@@ -740,34 +741,38 @@ namespace EnergyMonitorApp
 				{
 					powerList_X.Add(powerList_X.Last());
 					powerList_Y.Add(0);
-					powerList_Y.Add(-1);
+					if (isFilter) powerList_Y.Add(-1);
 				}
 				if (subList_X.Count > 0)
 				{
 					subList_X.Add(subList_X.Last());
 					subList_Y.Add(0);
-					subList_Y.Add(-1);
+					if (isFilter) subList_Y.Add(-1);
 				}
 
 				pane.CurveList.Clear();
 				LineItem curve;
 
-				curve = pane.AddCurve("Công suất thực (P-W)", powerList_X.ToArray(), filterSignal(powerList_Y.ToArray(), 175, 5, 3), Color.Red, SymbolType.None);
+				curve = pane.AddCurve("Công suất thực (P-W)", powerList_X.ToArray(),
+					isFilter ? filterSignal(powerList_Y.ToArray(), 175, 5, 3) : powerList_Y.ToArray(), Color.Red, SymbolType.None);
 				curve.Line.Width = 2.0F;
 
 				if (y2val == 0)
 				{
-					curve = pane.AddCurve("Dòng điện (I-A)", subList_X.ToArray(), filterSignal(subList_Y.ToArray(), 50, 1, 2), Color.Blue, SymbolType.None);
+					curve = pane.AddCurve("Dòng điện (I-A)", subList_X.ToArray(),
+						isFilter ? filterSignal(subList_Y.ToArray(), 50, 1, 2) : subList_Y.ToArray(), Color.Blue, SymbolType.None);
 					curve.IsY2Axis = true;
 				}
 				else if (y2val == 1)
 				{
-					curve = pane.AddCurve("Điện áp (U-V)", subList_X.ToArray(), filterSignal(subList_Y.ToArray(), 5, 0, 0), Color.Blue, SymbolType.None);
+					curve = pane.AddCurve("Điện áp (U-V)", subList_X.ToArray(),
+						isFilter ? filterSignal(subList_Y.ToArray(), 5, 0, 0) : subList_Y.ToArray(), Color.Blue, SymbolType.None);
 					curve.IsY2Axis = true;
 				}
 				else if (y2val == 2)
 				{
-					curve = pane.AddCurve("Công suất biểu kiến (S-VA)", subList_X.ToArray(), filterSignal(subList_Y.ToArray(), 50, 1, 2), Color.Blue, SymbolType.None);
+					curve = pane.AddCurve("Công suất biểu kiến (S-VA)", subList_X.ToArray(),
+						isFilter ? filterSignal(subList_Y.ToArray(), 50, 1, 2) : subList_Y.ToArray(), Color.Blue, SymbolType.None);
 					curve.IsY2Axis = false;
 				}
 
