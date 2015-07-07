@@ -160,9 +160,10 @@ boolean a_inline Ethernet_setup() {
     Serial.print(F("Server is at "));
     Serial.println(Ethernet.localIP());
   }
-  
+
   return Ethernet.localIP()[0] == 192;
 }
+
 
 
 

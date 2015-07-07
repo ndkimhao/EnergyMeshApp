@@ -8,6 +8,11 @@ enum MessageType {
 };
 Mesh24 mesh24(CE_RF24, CS_RF24);
 
+const float I_MIN = 0.08;
+const float P_MIN = 1.5;
+const float U_MIN = 200;
+const float U_MAX = 260;
+
 void a_inline RF_loop() {
   Mesh24Message recvMessage;
   if (mesh24.read(recvMessage)) {
@@ -53,7 +58,7 @@ void a_inline RF_loop() {
         SD_logData(from);
         SD_logData(temp);
         SD_logEndRecord();
-        
+
         unsigned int sensorNum = getSensorNum(from, 0);
         LCD_newTemp(sensorNum, temp);
 
@@ -83,9 +88,11 @@ void a_inline RF_loop() {
         SD_logData(session);
         SD_logData(realPower);
         SD_logEndRecord();
-        
+
         unsigned int sensorNum = getSensorNum(from, sensorID);
-        LCD_newPower(sensorNum, realPower);
+        realPower = abs(realPower);
+        if(realPower > P_MIN)
+          LCD_newPower(sensorNum, realPower);
 
         if(DEBUG) {
           printTime();
@@ -112,7 +119,7 @@ void a_inline RF_loop() {
         recvMessage.readPayload(session);
         recvMessage.readPayload(V);
         recvMessage.readPayload(I);
-        
+
         float fV = V / 100.0;
         float fI = I / 100.0;
 
@@ -123,10 +130,14 @@ void a_inline RF_loop() {
         SD_logData(fV);
         SD_logData(fI);
         SD_logEndRecord();
-        
+
         unsigned int sensorNum = getSensorNum(from, sensorID);
-        LCD_newCurrent(sensorNum, fI);
-        LCD_newVoltage(sensorNum, fV);
+        fI = abs(fI);
+        fV = abs(fV);
+        if(fI > I_MIN)
+          LCD_newCurrent(sensorNum, fI);
+        if(fV > U_MIN && fV < U_MAX)
+          LCD_newVoltage(sensorNum, fV);
 
         if(DEBUG) {
           printTime();
@@ -190,6 +201,9 @@ boolean a_inline RF_setup() {
   }
   return mesh24.getRadio().isPVariant();
 }
+
+
+
 
 
 
