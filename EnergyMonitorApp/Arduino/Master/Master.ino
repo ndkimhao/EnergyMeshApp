@@ -11,8 +11,8 @@
 #include <Ethernet.h>
 #include <SD.h>
 #include <Bounce2.h>
-//#define a_inline inline __attribute__((always_inline))
-#define a_inline inline
+#define a_inline inline __attribute__((always_inline))
+//#define a_inline inline
 
 const boolean DEBUG = true;
 const byte DEBUG_LOGFILE_TIME = 0;

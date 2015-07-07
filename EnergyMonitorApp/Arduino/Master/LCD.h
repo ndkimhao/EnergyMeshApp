@@ -90,8 +90,8 @@ void a_inline LCD_doDraw() {
         lcd.drawStrP(curX, curY, (const u8g_pgm_uint8_t*)PSTR(" T o t a l :"));
       }
       else {
-        lcd.drawStrP(curX, curY, (const u8g_pgm_uint8_t*)PSTR(" S l a v e  I D : "));
-        curX += lcd.getStrWidthP((u8g_pgm_uint8_t*)PSTR(" S l a v e  I D : "));
+        lcd.drawStrP(curX, curY, (const u8g_pgm_uint8_t*)PSTR(" ID : "));
+        curX += lcd.getStrWidthP((u8g_pgm_uint8_t*)PSTR(" ID : "));
         char str[3];
         itoa(curSensor + 1, str, 10);
         lcd.drawStr(curX, curY, str);
@@ -239,6 +239,7 @@ const unsigned int sensorMap[NUM_SENSOR] PROGMEM = {
   0xFFFF, (2<<8 | 0), 0xFFFF, 0xFFFF,
 };
 unsigned int a_inline getSensorNum(byte slaveID, byte sensorID) {
+  if(lcdState == LCD_STANDBY) return 0;
   unsigned int tmp = slaveID << 8 | sensorID;
   for(unsigned int i = 0; i < NUM_SENSOR; i++) {
     if(pgm_read_word(&sensorMap[i]) == tmp) return i;
