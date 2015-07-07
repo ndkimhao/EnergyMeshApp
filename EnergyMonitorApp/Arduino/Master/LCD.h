@@ -93,11 +93,10 @@ void a_inline LCD_doDraw() {
         lcd.drawStrP(curX, curY, (const u8g_pgm_uint8_t*)PSTR(" ID : "));
         curX += lcd.getStrWidthP((u8g_pgm_uint8_t*)PSTR(" ID : "));
         char str[3];
-        itoa(curSensor + 1, str, 10);
+        itoa(curSensor, str, 10);
         lcd.drawStr(curX, curY, str);
       }
       curY += lineH;
-
 
       lcd.setFont(u8g_font_courB10);
       lcd.setFontPosTop();
@@ -337,11 +336,13 @@ void a_inline LCD_loop() {
     curSensor++;
     if(curSensor >= NUM_SENSOR) curSensor = 0;
     LCD_draw();
+    LCD_standByTimer.begin();
   }
   else if(prevSensor_debounce.fell()) {
     curSensor--;
     if(curSensor < 0) curSensor = NUM_SENSOR - 1;
     LCD_draw();
+    LCD_standByTimer.begin();
   }
   if(LCD_checkTimer.isDue()) {
     unsigned long curTime = millis();
