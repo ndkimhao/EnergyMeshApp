@@ -26,7 +26,7 @@ class Mesh24UptimeClass {
     Mesh24UptimeClass(): lastMillis(0), overflowCounter(0) {
     }
 
-    unsigned long getSeconds() {
+    unsigned long inline __attribute__((always_inline)) getSeconds() {
       unsigned long now = millis();
       if (now < lastMillis) {
         ++overflowCounter;
@@ -36,11 +36,11 @@ class Mesh24UptimeClass {
       return (lastMillis + overflowCounter * overflowMultiplier) / 1000;
     }
 
-    unsigned long getLastMillis() {
+    unsigned long inline __attribute__((always_inline)) getLastMillis() {
       return lastMillis;
     }
 
-    void setLastMillis(unsigned long millis) {
+    void inline __attribute__((always_inline)) setLastMillis(unsigned long millis) {
       lastMillis = millis;
     }
 

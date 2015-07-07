@@ -53,6 +53,9 @@ void a_inline RF_loop() {
         SD_logData(from);
         SD_logData(temp);
         SD_logEndRecord();
+        
+        unsigned int sensorNum = getSensorNum(from, 0);
+        LCD_newTemp(sensorNum, temp);
 
         if(DEBUG) {
           printTime();
@@ -80,6 +83,9 @@ void a_inline RF_loop() {
         SD_logData(session);
         SD_logData(realPower);
         SD_logEndRecord();
+        
+        unsigned int sensorNum = getSensorNum(from, sensorID);
+        LCD_newPower(sensorNum, realPower);
 
         if(DEBUG) {
           printTime();
@@ -106,14 +112,21 @@ void a_inline RF_loop() {
         recvMessage.readPayload(session);
         recvMessage.readPayload(V);
         recvMessage.readPayload(I);
+        
+        float fV = V / 100.0;
+        float fI = I / 100.0;
 
         SD_logBegin(Log_ClientDetailPower);
         SD_logData(from);
         SD_logData(sensorID);
         SD_logData(session);
-        SD_logData(V, 100);
-        SD_logData(I, 100);
+        SD_logData(fV);
+        SD_logData(fI);
         SD_logEndRecord();
+        
+        unsigned int sensorNum = getSensorNum(from, sensorID);
+        LCD_newCurrent(sensorNum, fI);
+        LCD_newVoltage(sensorNum, fV);
 
         if(DEBUG) {
           printTime();

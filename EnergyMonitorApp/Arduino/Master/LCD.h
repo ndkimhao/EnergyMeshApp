@@ -4,17 +4,36 @@ const byte LCD_NONE = 0;
 const byte LCD_STARTUP = 1;
 const byte LCD_CHECK = 2;
 const byte LCD_NORMAL = 3;
+const byte LCD_STANDBY = 4;
 byte lcdState = LCD_NONE;
 
-byte curBoard = 0;
-float LCD_powerVal[NUM_BOARD];
-float LCD_currentVal[NUM_BOARD];
-float LCD_voltageVal[NUM_BOARD];
-float LCD_tempVal[NUM_BOARD];
+const int NUM_SENSOR = 4;
+int curSensor = 0;
+const byte NEXT_SENSOR_PIN = 23;
+const byte PREV_SENSOR_PIN = 22;
+const byte STANDBY_PIN = 24;
+Bounce nextSensor_debounce = Bounce();
+Bounce prevSensor_debounce = Bounce();
+Bounce standby_debounce = Bounce();
+
+float LCD_powerVal[NUM_SENSOR] = {
+  -1};
+float LCD_currentVal[NUM_SENSOR] = {
+  -1};
+float LCD_voltageVal[NUM_SENSOR] = {
+  -1};
+float LCD_tempVal[NUM_SENSOR] = {
+  -1};
 char LCD_powerStr[10] = "\0";
 char LCD_currentStr[10] = "\0";
 char LCD_voltageStr[10] = "\0";
 char LCD_tempStr[10] = "\0";
+unsigned long LCD_lastTimeUpdate[NUM_SENSOR][4] = {
+  0};
+const unsigned long LCD_CHECK_TIME_POWER = 5000;
+const unsigned long LCD_CHECK_TIME_OTHER = 20000;
+Mesh24Timer LCD_checkTimer = Mesh24Timer(10000);
+Mesh24Timer LCD_standByTimer = Mesh24Timer(30000);
 
 const byte LCD_splash_width = 128;
 const byte LCD_splash_height = 64;
@@ -67,15 +86,14 @@ void a_inline LCD_doDraw() {
       byte lineH = lcd.getFontAscent() - lcd.getFontDescent();
       byte curY = 0, curX = 0;
 
-      if(curBoard == 0) {
-       // lcd.drawStrP(curX, curY, (const u8g_pgm_uint8_t*)PSTR(" T o t a l :"));
-       lcd.drawStrP(curX, curY, (const u8g_pgm_uint8_t*)PSTR(" S l a v e  I D : 09"));
+      if(curSensor == 0) {
+        lcd.drawStrP(curX, curY, (const u8g_pgm_uint8_t*)PSTR(" T o t a l :"));
       }
       else {
-        lcd.drawStrP(curX, curY, (const u8g_pgm_uint8_t*)PSTR(" S l a v e I D : "));
-        curX += lcd.getStrWidthP((u8g_pgm_uint8_t*)PSTR("Slave ID: "));
+        lcd.drawStrP(curX, curY, (const u8g_pgm_uint8_t*)PSTR(" S l a v e  I D : "));
+        curX += lcd.getStrWidthP((u8g_pgm_uint8_t*)PSTR(" S l a v e  I D : "));
         char str[3];
-        itoa(curBoard + 1, str, 10);
+        itoa(curSensor + 1, str, 10);
         lcd.drawStr(curX, curY, str);
       }
       curY += lineH;
@@ -120,34 +138,126 @@ void a_inline LCD_doDraw() {
   }
 }
 
+void totalNewVal();
 void a_inline LCD_newPower(byte bNum, float val) {
+  if(lcdState == LCD_STANDBY) return;
   LCD_powerVal[bNum] = val;
-  if(bNum == curBoard) LCD_draw();
+  LCD_lastTimeUpdate[bNum][0] = millis();
+  if(bNum > 0 && curSensor == 0) {
+    LCD_lastTimeUpdate[0][0] = millis();
+    totalNewVal();
+  }
+  if(bNum == curSensor) LCD_draw();
 }
 void a_inline LCD_newCurrent(byte bNum, float val) {
+  if(lcdState == LCD_STANDBY) return;
   LCD_currentVal[bNum] = val;
-  if(bNum == curBoard) LCD_draw();
+  LCD_lastTimeUpdate[bNum][1] = millis();
+  if(bNum > 0 && curSensor == 0) {
+    LCD_lastTimeUpdate[0][1] = millis();
+    totalNewVal();
+  }
+  if(bNum == curSensor) LCD_draw();
 }
 void a_inline LCD_newVoltage(byte bNum, float val) {
+  if(lcdState == LCD_STANDBY) return;
   LCD_voltageVal[bNum] = val;
-  if(bNum == curBoard) LCD_draw();
+  LCD_lastTimeUpdate[bNum][2] = millis();
+  if(bNum > 0 && curSensor == 0) {
+    LCD_lastTimeUpdate[0][2] = millis();
+    totalNewVal();
+  }
+  if(bNum == curSensor) LCD_draw();
 }
 void a_inline LCD_newTemp(byte bNum, float val) {
+  if(lcdState == LCD_STANDBY) return;
   LCD_tempVal[bNum] = val;
-  if(bNum == curBoard) LCD_draw();
+  LCD_lastTimeUpdate[bNum][3] = millis();
+  if(bNum > 0 && curSensor == 0) {
+    LCD_lastTimeUpdate[0][3] = millis();
+    totalNewVal();
+  }
+  if(bNum == curSensor) LCD_draw();
 }
 
-void a_inline LCD_check(byte check) {
+void totalNewVal() {
+  if(lcdState == LCD_STANDBY) return;
+  float val = 0, tmp;
+  for(byte i = 1; i < NUM_SENSOR; i++) {
+    tmp = LCD_powerVal[i];
+    if(tmp != -1) {
+      val += tmp;
+    }
+  }
+  if(val != 0)
+    LCD_newPower(0, val);
+  else
+    LCD_newPower(0, -1);
+
+  val = 0;
+  for(byte i = 1; i < NUM_SENSOR; i++) {
+    tmp = LCD_currentVal[i];
+    if(tmp != -1) {
+      val += tmp;
+    }
+  }
+  if(val != 0)
+    LCD_newCurrent(0, val);
+  else
+    LCD_newCurrent(0, -1);
+
+  byte cnt = 0;
+  val = 0;
+  for(byte i = 1; i < NUM_SENSOR; i++) {
+    tmp = LCD_voltageVal[i];
+    if(tmp != -1) {
+      val += tmp;
+      cnt++;
+    }
+  }
+  if(cnt != 0)
+    LCD_newVoltage(0, val / cnt);
+  else
+    LCD_newVoltage(0, -1);
+
+  cnt = 0;
+  val = 0;
+  for(byte i = 1; i < NUM_SENSOR; i++) {
+    tmp = LCD_tempVal[i];
+    if(tmp != -1) {
+      val += tmp;
+      cnt++;
+    }
+  }
+  if(cnt != 0)
+    LCD_newTemp(0, val / cnt);
+  else
+    LCD_newTemp(0, -1);
+}
+
+const unsigned int sensorMap[NUM_SENSOR] PROGMEM = {
+  0xFFFF, (2<<8 | 0), 0xFFFF, 0xFFFF,
+};
+unsigned int a_inline getSensorNum(byte slaveID, byte sensorID) {
+  unsigned int tmp = slaveID << 8 | sensorID;
+  for(unsigned int i = 0; i < NUM_SENSOR; i++) {
+    if(pgm_read_word(&sensorMap[i]) == tmp) return i;
+  }
+  return -1;
+}
+
+void a_inline LCD_newCheckState(byte check) {
   LCD_checkState |= 1<<check;
   LCD_draw();
 }
 
 void a_inline LCD_draw() {
+  if(lcdState == LCD_STANDBY) return;
   if(lcdState == LCD_NORMAL) {
-    float pVal = LCD_powerVal[curBoard];
-    float iVal = LCD_currentVal[curBoard];
-    float uVal = LCD_voltageVal[curBoard];
-    float tVal = LCD_tempVal[curBoard];
+    float pVal = LCD_powerVal[curSensor];
+    float iVal = LCD_currentVal[curSensor];
+    float uVal = LCD_voltageVal[curSensor];
+    float tVal = LCD_tempVal[curSensor];
     if(pVal != -1) {
       dtostrf(pVal, 4, 2, LCD_powerStr);
     }
@@ -177,26 +287,82 @@ void a_inline LCD_draw() {
   do {
     LCD_doDraw();
   }
-  while( lcd.nextPage() );
+  while(lcd.nextPage());
 }
 
 void a_inline LCD_switchState(byte newState) {
   switch(newState) {
   case LCD_NORMAL:
-    for(byte i = 0; i < NUM_BOARD; i++) {
+    for(byte i = 0; i < NUM_SENSOR; i++) {
       LCD_newPower(i, -1);
       LCD_newCurrent(i, -1);
       LCD_newVoltage(i, -1);
       LCD_newTemp(i, -1);
     }
-    curBoard = 0;
+    curSensor = 0;
     break;
+  case LCD_STANDBY:
+    lcd.firstPage();
+    do {
+      lcd.drawXBMP(0, 0, LCD_splash_width, LCD_splash_height, LCD_splash_bits);
+    }
+    while(lcd.nextPage());
+    lcdState = newState;
+    return;
   }
   lcdState = newState;
   LCD_draw();
 }
 
+void a_inline LCD_loop() {
+  standby_debounce.update();
+  if(standby_debounce.fell()) {
+    if(lcdState == LCD_STANDBY) {
+      LCD_switchState(LCD_NORMAL);
+      LCD_standByTimer.begin();
+    }
+    else {
+      LCD_switchState(LCD_STANDBY);
+      return;
+    }
+  }
+  if(LCD_standByTimer.isDue()) {
+    LCD_switchState(LCD_STANDBY);
+    return;
+  }
+  nextSensor_debounce.update();
+  prevSensor_debounce.update();
+  if(nextSensor_debounce.fell()) {
+    curSensor++;
+    if(curSensor >= NUM_SENSOR) curSensor = 0;
+    LCD_draw();
+  }
+  else if(prevSensor_debounce.fell()) {
+    curSensor--;
+    if(curSensor < 0) curSensor = NUM_SENSOR - 1;
+    LCD_draw();
+  }
+  if(LCD_checkTimer.isDue()) {
+    unsigned long curTime = millis();
+    for(byte i = 0; i < NUM_SENSOR; i++) {
+      if(curTime - LCD_lastTimeUpdate[i][0] > LCD_CHECK_TIME_POWER) LCD_newPower(i, -1);
+      if(curTime - LCD_lastTimeUpdate[i][1] > LCD_CHECK_TIME_OTHER) LCD_newCurrent(i, -1);
+      if(curTime - LCD_lastTimeUpdate[i][2] > LCD_CHECK_TIME_OTHER) LCD_newVoltage(i, -1);
+      if(curTime - LCD_lastTimeUpdate[i][3] > LCD_CHECK_TIME_OTHER) LCD_newTemp(i, -1);
+    }
+  }
+}
+
 void a_inline LCD_setup() {
+  pinMode(NEXT_SENSOR_PIN, INPUT_PULLUP);
+  pinMode(PREV_SENSOR_PIN, INPUT_PULLUP);
+  pinMode(STANDBY_PIN, INPUT_PULLUP);
+  nextSensor_debounce.attach(NEXT_SENSOR_PIN);
+  nextSensor_debounce.interval(5);
+  prevSensor_debounce.attach(PREV_SENSOR_PIN);
+  prevSensor_debounce.interval(5);
+  standby_debounce.attach(STANDBY_PIN);
+  standby_debounce.interval(5);
   LCD_switchState(LCD_STARTUP);
 }
 
@@ -288,6 +454,10 @@ const byte LCD_splash_bits[] U8G_PROGMEM = {
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00
 };
+
+
+
+
 
 
 

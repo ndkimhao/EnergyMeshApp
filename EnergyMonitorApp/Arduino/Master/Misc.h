@@ -4,7 +4,6 @@ const byte CE_RF24 = 49;
 const byte CS_RF24 = 53;
 
 const int RAM_SIZE = 8192;
-const int NUM_BOARD = 4;
 
 void a_inline printTime() {
   time_t t = now();

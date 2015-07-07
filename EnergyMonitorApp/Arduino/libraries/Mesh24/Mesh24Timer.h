@@ -26,21 +26,21 @@ class Mesh24Timer {
 	  this->enable = enable;
     }
 
-    void begin(unsigned long interval) {
+    void inline __attribute__((always_inline)) begin(unsigned long interval) {
       last = millis();
       this->interval = interval;
     }
 	
-	void begin() {
+	void inline __attribute__((always_inline)) begin() {
       last = millis();
 	  enable = true;
     }
 
-    void stop() {
+    void inline __attribute__((always_inline)) stop() {
       enable = false;
     }
 
-    bool isDue() {
+    bool inline __attribute__((always_inline)) isDue() {
       if (!enable || !interval) {
         return false;
       }
@@ -52,6 +52,10 @@ class Mesh24Timer {
       }
       return result;
     }
+	
+	unsigned long inline __attribute__((always_inline)) getInterval() {
+		return interval;
+	}
 
   private:
     unsigned long last;

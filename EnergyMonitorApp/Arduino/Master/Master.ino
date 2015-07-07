@@ -10,6 +10,7 @@
 #include <Wire.h>
 #include <Ethernet.h>
 #include <SD.h>
+#include <Bounce2.h>
 //#define a_inline inline __attribute__((always_inline))
 #define a_inline inline
 
@@ -20,9 +21,9 @@ const long DEBUG_BAUD = 115200;
 #include "Misc.h"
 #include "FTP.h"
 #include "SD.h"
+#include "LCD.h"
 #include "RF.h"
 #include "Ethernet.h"
-#include "LCD.h"
 
 void loop()
 {
@@ -30,37 +31,33 @@ void loop()
   Ethernet_loop();
   SD_checkUpload();
   SD_check();
+  LCD_loop();
 }
 
 void setup()
 {
-  if(DEBUG) Serial.println("Energy Monitor @ Kim Hao - 6/2015");
+  if(DEBUG) {
+    delay(500);
+    Serial.begin(DEBUG_BAUD);
+    Serial.println("Energy Monitor @ Kim Hao - 6/2015");
+  }
   LCD_setup();
   delay(2000);
   LCD_switchState(LCD_CHECK);
   if(DEBUG) {
-    delay(500);
-    Serial.begin(DEBUG_BAUD);
-    Serial.println(F("DEBUG ON"));
+    Serial.println(F("__DEBUG ON__"));
     Serial.print(F("Address: "));
     Serial.println(MASTER_ADDR);
   }
-  if(RTC_setup()) LCD_check(LCDCHECK_RTC);
+  if(RTC_setup()) LCD_newCheckState(LCDCHECK_RTC);
   IO_setup();
-  if(RF_setup()) LCD_check(LCDCHECK_RF);
-  if(SD_setup()) LCD_check(LCDCHECK_SD);
+  if(RF_setup()) LCD_newCheckState(LCDCHECK_RF);
+  if(SD_setup()) LCD_newCheckState(LCDCHECK_SD);
   SD_openLogFile();
-  if(Ethernet_setup()) LCD_check(LCDCHECK_ETHERNET);
+  if(Ethernet_setup()) LCD_newCheckState(LCDCHECK_ETHERNET);
   if(DEBUG) Serial.println(F("__ Setup completed __"));
   Mesh24Timer t(1000);
   SD_upload();
   while(!t.isDue());
   LCD_switchState(LCD_NORMAL);
 }
-s\
-
-
-
-
-
-
