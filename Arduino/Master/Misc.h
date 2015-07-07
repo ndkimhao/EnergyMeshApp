@@ -4,8 +4,9 @@ const byte CE_RF24 = 49;
 const byte CS_RF24 = 53;
 
 const int RAM_SIZE = 8192;
+const int NUM_BOARD = 4;
 
-void always_inline printTime() {
+void a_inline printTime() {
   time_t t = now();
   Serial.print(hour(t));
   Serial.print(':');
@@ -20,7 +21,7 @@ void always_inline printTime() {
   Serial.print(year(t));
 }
 
-void always_inline RTC_setup() {
+boolean a_inline RTC_setup() {
   if(DEBUG) Serial.println(F("__ RTC Setup __"));
   setSyncProvider(RTC.get);
   if(DEBUG) {
@@ -66,9 +67,10 @@ void always_inline RTC_setup() {
       if(Serial.available()) Serial.flush();
     }
   }
+  return timeStatus() == timeSet;
 }
 
-void always_inline IO_setup() {
+void a_inline IO_setup() {
   pinMode(CS_SD_CARD, OUTPUT);
   pinMode(CS_ETHERNET, OUTPUT);
   pinMode(CS_RF24, OUTPUT);
@@ -77,7 +79,7 @@ void always_inline IO_setup() {
   digitalWrite(CS_RF24, HIGH);
 }
 
-void always_inline itoa_rtl(char* str, int num, byte pos)
+void a_inline itoa_rtl(char* str, int num, byte pos)
 {
   if (num <= 0) return;
   if(num < 10) {
@@ -103,7 +105,7 @@ void always_inline itoa_rtl(char* str, int num, byte pos)
   }
 }
 
-unsigned int always_inline readVcc() {
+unsigned int a_inline readVcc() {
   unsigned int result;
   // Read 1.1V reference against AVcc
   ADMUX = _BV(REFS0) | _BV(MUX4) | _BV(MUX3) | _BV(MUX2) | _BV(MUX1);
@@ -150,6 +152,7 @@ int freeMemory()
   }
   return free_memory;
 }
+
 
 
 

@@ -9,7 +9,7 @@ EthernetServer server(80);
 const int HTTP_REQUEST_BUFF = 100;
 const int HTTP_RESPONE_BUFF = 512;
 const int REQUEST_TIME_OUT = 5000;
-void always_inline Ethernet_loop() {
+void a_inline Ethernet_loop() {
   EthernetClient client = server.available();
   if (client) {
     if(DEBUG) {
@@ -144,7 +144,7 @@ void always_inline Ethernet_loop() {
   }
 }
 
-void always_inline Ethernet_setup() {
+boolean a_inline Ethernet_setup() {
   if(DEBUG) {
     Serial.println(F("__ Ethernet Setup __"));
     int freeRam = freeMemory();
@@ -160,6 +160,8 @@ void always_inline Ethernet_setup() {
     Serial.print(F("Server is at "));
     Serial.println(Ethernet.localIP());
   }
+  
+  return Ethernet.localIP()[0] == 192;
 }
 
 

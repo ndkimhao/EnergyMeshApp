@@ -12,7 +12,7 @@ char logFileName[] = "/logs/0000/00/00/00.log";
 char logFileDir[]  = "/logs/0000/00/00/";
 byte logFileTime;
 
-void always_inline SD_openLogFile() {
+void a_inline SD_openLogFile() {
   time_t t = now();
   itoa_rtl(logFileName, year(t), 9);
   itoa_rtl(logFileName, month(t), 12);
@@ -73,7 +73,7 @@ void always_inline SD_openLogFile() {
   }
 }
 
-void always_inline SD_check() {
+void a_inline SD_check() {
   byte newTime = DEBUG_LOGFILE_TIME ? minute() : hour();
   if(logFileTime != newTime && (!DEBUG_LOGFILE_TIME || (newTime % DEBUG_LOGFILE_TIME) == 0)) {
     if(logFile) logFile.close();
@@ -133,7 +133,7 @@ boolean SD_findFileToUpload(File dir) {
   return false;
 }
 
-void always_inline SD_upload() {
+void a_inline SD_upload() {
   File dir = SD.open("/logs");
   if(dir) {
     SD_findFileToUpload(dir);
@@ -141,13 +141,13 @@ void always_inline SD_upload() {
   }
 }
 
-void always_inline SD_checkUpload() {
+void a_inline SD_checkUpload() {
   if(logFileUploadTimer.isDue()) {
     SD_upload();
   }
 }
 
-void always_inline SD_logBegin(byte logType) {
+void a_inline SD_logBegin(byte logType) {
   SD_check();
   time_t t = now();
   //                012345
@@ -160,18 +160,18 @@ void always_inline SD_logBegin(byte logType) {
 }
 
 template <class T>
-void always_inline SD_logData(T& data) {
+void a_inline SD_logData(T& data) {
   logFile.print(data);
   logFile.write(',');
 }
 
 template <class T>
-void always_inline SD_logData(T& data, int div) {
+void a_inline SD_logData(T& data, int div) {
   logFile.print((float)data / div);
   logFile.write(',');
 }
 
-void always_inline SD_logEndRecord() {
+void a_inline SD_logEndRecord() {
   logFile.write('\n');
   if(logFileFlushTimer.isDue()) {
     logFile.flush();
@@ -179,7 +179,7 @@ void always_inline SD_logEndRecord() {
   SD_check();
 }
 
-void always_inline SD_setup() {
+boolean a_inline SD_setup() {
   if(DEBUG) Serial.println(F("__ SD Setup __"));
   boolean result = SD.begin(CS_SD_CARD);
   if(DEBUG) {
@@ -206,6 +206,7 @@ void always_inline SD_setup() {
       Serial.println(F("Initialization failed"));
     }
   }
+  return result;
 }
 
 void printDirectory(EthernetClient client, File dir, int numTabs) {
@@ -232,7 +233,7 @@ void printDirectory(EthernetClient client, File dir, int numTabs) {
   }
 }
 
-void always_inline printDirectory(EthernetClient client, File dir) {
+void a_inline printDirectory(EthernetClient client, File dir) {
   client.println(F(">>BEGIN<<"));
   printDirectory(client, dir, 0);
   client.println(F(">>END<<"));

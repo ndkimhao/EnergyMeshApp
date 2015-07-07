@@ -1,5 +1,6 @@
 #include <digitalIOPerformance.h>
 #include <AESLib.h>
+#include <U8glib.h>
 #include <Mesh24.h>
 #include <RF24.h>
 #include <Mesh24Uptime.h>
@@ -9,8 +10,8 @@
 #include <Wire.h>
 #include <Ethernet.h>
 #include <SD.h>
-//#define always_inline inline __attribute__((always_inline))
-#define always_inline
+//#define a_inline inline __attribute__((always_inline))
+#define a_inline inline
 
 const boolean DEBUG = true;
 const byte DEBUG_LOGFILE_TIME = 0;
@@ -21,6 +22,7 @@ const long DEBUG_BAUD = 115200;
 #include "SD.h"
 #include "RF.h"
 #include "Ethernet.h"
+#include "LCD.h"
 
 void loop()
 {
@@ -32,6 +34,10 @@ void loop()
 
 void setup()
 {
+  if(DEBUG) Serial.println("Energy Monitor @ Kim Hao - 6/2015");
+  LCD_setup();
+  delay(2000);
+  LCD_switchState(LCD_CHECK);
   if(DEBUG) {
     delay(500);
     Serial.begin(DEBUG_BAUD);
@@ -39,26 +45,17 @@ void setup()
     Serial.print(F("Address: "));
     Serial.println(MASTER_ADDR);
   }
-  RTC_setup();
+  if(RTC_setup()) LCD_check(LCDCHECK_RTC);
   IO_setup();
-  RF_setup();
-  SD_setup();
+  if(RF_setup()) LCD_check(LCDCHECK_RF);
+  if(SD_setup()) LCD_check(LCDCHECK_SD);
   SD_openLogFile();
-  Ethernet_setup();
+  if(Ethernet_setup()) LCD_check(LCDCHECK_ETHERNET);
   if(DEBUG) Serial.println(F("__ Setup completed __"));
+  Mesh24Timer t(1000);
   SD_upload();
-  /*for(int i=0; i<10; i++) {
-    SD_upload();
-    if(DEBUG) {
-      int freeRam = freeMemory();
-      Serial.print(F("Free RAM: "));
-      Serial.print(freeRam);
-      Serial.print(F(" - Used RAM: "));
-      Serial.println(RAM_SIZE - freeRam);
-    }
-    Serial.println("\r\n");
-    delay(1000);
-  }*/
+  while(!t.isDue());
+  LCD_switchState(LCD_NORMAL);
 }
 
 

@@ -8,7 +8,7 @@ enum MessageType {
 };
 Mesh24 mesh24(CE_RF24, CS_RF24);
 
-void always_inline RF_loop() {
+void a_inline RF_loop() {
   Mesh24Message recvMessage;
   if (mesh24.read(recvMessage)) {
     byte from = recvMessage.getFrom();
@@ -161,7 +161,7 @@ void always_inline RF_loop() {
   }
 }
 
-void always_inline RF_setup() {
+boolean a_inline RF_setup() {
   if(DEBUG) Serial.println(F("__ RF Setup __"));
   mesh24.setAddr(MASTER_ADDR);
   mesh24.setChannel(RF_CHANNEL);
@@ -175,6 +175,7 @@ void always_inline RF_setup() {
       Serial.println(F("Setup RF24 fail"));
     }
   }
+  return mesh24.getRadio().isPVariant();
 }
 
 
