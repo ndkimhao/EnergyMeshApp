@@ -1,4 +1,4 @@
-unsigned int always_inline readVcc() {
+unsigned int a_inline readVcc() {
   unsigned int result;
   // Read 1.1V reference against AVcc
   ADMUX = _BV(REFS0) | _BV(MUX3) | _BV(MUX2) | _BV(MUX1);

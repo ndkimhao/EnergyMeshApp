@@ -8,7 +8,7 @@
 #include <DallasTemperature.h>
 #include <EmonLib.h>
 #include <avr/eeprom.h>
-#define always_inline inline __attribute__((always_inline))
+#define a_inline inline __attribute__((a_inline))
 #include "MiscFunc.h";
 
 const boolean DEBUG = true;
@@ -51,6 +51,7 @@ byte addr;
 
 void loop()
 {
+  mesh24.loop();
   if(sendTempTimer.isDue()) {
     ds18b20.requestTemperatures();
     convertTempTimer.begin();
@@ -254,7 +255,7 @@ void setup()
   }
 }
 
-void always_inline sendHeartbeat(unsigned int vcc, unsigned long uptime, unsigned int freeRam) {
+void a_inline sendHeartbeat(unsigned int vcc, unsigned long uptime, unsigned int freeRam) {
   Mesh24Message message(MASTER_ADDR, MessageHeartbeat);
   message.writePayload(vcc);
   message.writePayload(uptime);
@@ -262,13 +263,13 @@ void always_inline sendHeartbeat(unsigned int vcc, unsigned long uptime, unsigne
   mesh24.write(message);
 }
 
-void always_inline sendTemperature(float temp) {
+void a_inline sendTemperature(float temp) {
   Mesh24Message message(MASTER_ADDR, MessageTemperature);
   message.writePayload(temp);
   mesh24.write(message);
 }
 
-void always_inline sendRealPower(byte sensorID, unsigned long session, float realPower) {
+void a_inline sendRealPower(byte sensorID, unsigned long session, float realPower) {
   Mesh24Message message(MASTER_ADDR, MessageRealPower);
   message.writePayload(sensorID);
   message.writePayload(session);
@@ -276,7 +277,7 @@ void always_inline sendRealPower(byte sensorID, unsigned long session, float rea
   mesh24.write(message, false, true);
 }
 
-void always_inline sendDetailPower(byte sensorID, unsigned long session, float V, float I) {
+void a_inline sendDetailPower(byte sensorID, unsigned long session, float V, float I) {
   Mesh24Message message(MASTER_ADDR, MessageDetailPower);
   message.writePayload(sensorID);
   message.writePayload(session);
