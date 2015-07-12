@@ -1383,7 +1383,8 @@ namespace EnergyMonitorApp
 		private readonly Dictionary<byte, Color> clientTemperatureColor = new Dictionary<byte, Color>()
 		{
 			{1, Color.Red},
-			{2, Color.Blue}
+			{2, Color.Blue},
+			{3, Color.Green}
 		};
 		private void btnUpdateEvironment_Click(object sender, EventArgs e)
 		{
@@ -1459,7 +1460,7 @@ namespace EnergyMonitorApp
 			foreach (KeyValuePair<byte, List<double>> data in dictData_X)
 			{
 				LineItem curve = pane.AddCurve("Nhiệt độ mạch " + data.Key + " (\u00B0C)",
-					data.Value.ToArray(), lowPassFilter(dictData_Y[data.Key].ToArray(), 40, 0.8),
+					data.Value.ToArray(), dictData_Y[data.Key].ToArray(),
 					clientTemperatureColor[data.Key], SymbolType.None);
 			}
 
