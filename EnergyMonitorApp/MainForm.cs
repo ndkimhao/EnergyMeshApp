@@ -937,7 +937,7 @@ namespace EnergyMonitorApp
 
 		private readonly Dictionary<int, Color> sensorColorDict = new Dictionary<int, Color>()
 		{
-			{2 << 8 | 0, Color.Red}
+			{2 << 8 | 0, Color.Red}, {2 << 8 | 1, Color.Blue},{3 << 8 | 0, Color.Aqua}, {3 << 8 | 1, Color.Lime}
 		};
 		private void updateBlockList()
 		{

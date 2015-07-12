@@ -7,11 +7,11 @@ const byte LCD_NORMAL = 3;
 const byte LCD_STANDBY = 4;
 byte lcdState = LCD_NONE;
 
-const int NUM_SENSOR = 4;
+const int NUM_SENSOR = 5;
 int curSensor = 0;
-const byte NEXT_SENSOR_PIN = 23;
-const byte PREV_SENSOR_PIN = 22;
-const byte STANDBY_PIN = 24;
+const byte NEXT_SENSOR_PIN = 25;
+const byte PREV_SENSOR_PIN = 24;
+const byte STANDBY_PIN = 22;
 Bounce nextSensor_debounce = Bounce();
 Bounce prevSensor_debounce = Bounce();
 Bounce standby_debounce = Bounce();
@@ -30,8 +30,8 @@ char LCD_voltageStr[10] = "\0";
 char LCD_tempStr[10] = "\0";
 unsigned long LCD_lastTimeUpdate[NUM_SENSOR][4] = {
   0};
-const unsigned long LCD_CHECK_TIME_POWER = 5000;
-const unsigned long LCD_CHECK_TIME_OTHER = 20000;
+const unsigned long LCD_CHECK_TIME_POWER = 6000;
+const unsigned long LCD_CHECK_TIME_OTHER = 40000;
 Mesh24Timer LCD_checkTimer = Mesh24Timer(10000);
 Mesh24Timer LCD_standByTimer = Mesh24Timer(30000);
 
@@ -92,7 +92,7 @@ void a_inline LCD_doDraw() {
       else {
         lcd.drawStrP(curX, curY, (const u8g_pgm_uint8_t*)PSTR(" ID : "));
         curX += lcd.getStrWidthP((u8g_pgm_uint8_t*)PSTR(" ID : "));
-        char str[3];
+        char str[4];
         itoa(curSensor, str, 10);
         lcd.drawStr(curX, curY, str);
       }
@@ -235,7 +235,7 @@ void totalNewVal() {
 }
 
 const unsigned int sensorMap[NUM_SENSOR] PROGMEM = {
-  0xFFFF, (2<<8 | 0), 0xFFFF, 0xFFFF,
+  0xFFFF, (2<<8 | 0), (2<<8 | 1), (3<<8 | 0), (3<<8 | 1),
 };
 unsigned int a_inline getSensorNum(byte slaveID, byte sensorID) {
   if(lcdState == LCD_STANDBY) return 0;
@@ -243,7 +243,7 @@ unsigned int a_inline getSensorNum(byte slaveID, byte sensorID) {
   for(unsigned int i = 0; i < NUM_SENSOR; i++) {
     if(pgm_read_word(&sensorMap[i]) == tmp) return i;
   }
-  return -1;
+  return 0;
 }
 
 void a_inline LCD_newCheckState(byte check) {

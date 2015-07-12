@@ -56,8 +56,6 @@ void setup()
   SD_openLogFile();
   if(Ethernet_setup()) LCD_newCheckState(LCDCHECK_ETHERNET);
   if(DEBUG) Serial.println(F("__ Setup completed __"));
-  Mesh24Timer t(1000);
   SD_upload();
-  while(!t.isDue());
   LCD_switchState(LCD_NORMAL);
 }

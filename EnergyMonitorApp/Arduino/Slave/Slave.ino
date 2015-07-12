@@ -8,7 +8,7 @@
 #include <DallasTemperature.h>
 #include <EmonLib.h>
 #include <avr/eeprom.h>
-#define a_inline inline __attribute__((a_inline))
+#define a_inline inline __attribute__((always_inline))
 #include "MiscFunc.h";
 
 const boolean DEBUG = true;
@@ -25,8 +25,8 @@ Mesh24Timer sendHeartbeatTimer(100000);
 
 const byte V_PIN = 0;
 const byte CT0_LED_PIN = 3;
-const byte CT0_BUTTON_PIN = 6;
-const byte NUM_CT_PIN = 3;
+const byte CT0_BUTTON_PIN = 5;
+const byte NUM_CT_PIN = 2;
 byte ctSensorCount = 0;
 boolean ctSensorState[NUM_CT_PIN];
 unsigned long *CT_SESSION_EEPROM = (unsigned long*)400;
@@ -83,10 +83,11 @@ void loop()
       Serial.print(curEmonSensor);
       Serial.println(F(" failed"));
     }
-    while(!ctSensorState[curEmonSensor]) {
+    do {
       curEmonSensor++;
       if(curEmonSensor >= NUM_CT_PIN) curEmonSensor = 0;
     }
+    while(!ctSensorState[curEmonSensor]);
     sendPowerTimer.begin();
   }
   if(ctSensorCount > 0 && sendPowerDetailTimer.isDue()) {
@@ -109,10 +110,11 @@ void loop()
       Serial.print(curEmonSensor_detail);
       Serial.println(F(" failed"));
     }
-    while(!ctSensorState[curEmonSensor_detail]) {
+    do {
       curEmonSensor_detail++;
       if(curEmonSensor_detail >= NUM_CT_PIN) curEmonSensor_detail = 0;
     }
+    while(!ctSensorState[curEmonSensor_detail]);
     sendPowerDetailTimer.begin();
   }
   if(sendHeartbeatTimer.isDue()) {
@@ -174,9 +176,9 @@ void setup()
   if(DEBUG) {
     Serial.print(F("Reset session? "));
     /*for(byte i = 0; i < 5; i++) {
-     Serial.print(".");
-     delay(200);
-     }*/
+      Serial.print(".");
+      delay(200);
+    }*/
     Serial.println();
     if(Serial.available()) {
       if(Serial.read() == 'Y') {
@@ -210,8 +212,12 @@ void setup()
   }
   for(byte i = 0; i < NUM_CT_PIN; i++) {
     int pin = i + 1 + V_PIN;
-    int val = analogRead(pin);
-    boolean state = (val > 5);
+    unsigned int val = 0;
+    for(byte i = 0; i < 15; i++) {
+      val += analogRead(pin);
+    }
+    val /= 15;
+    boolean state = (val > 20);
     ctSensorState[i] = state;
     if(state) {
       ctSensorCount++;
@@ -285,6 +291,7 @@ void a_inline sendDetailPower(byte sensorID, unsigned long session, float V, flo
   message.writePayload((unsigned int)(I * 100));
   mesh24.write(message, false, true);
 }
+
 
 
 

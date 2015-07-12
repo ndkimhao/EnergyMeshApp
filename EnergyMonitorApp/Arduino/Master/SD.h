@@ -1,6 +1,6 @@
 File logFile;
 Mesh24Timer logFileFlushTimer(5000);
-Mesh24Timer logFileUploadTimer(60000);
+Mesh24Timer logFileUploadTimer(1200000);
 
 enum LogType {
   Log_MasterHeartbeat = 1, Log_ClientHeartbeat, Log_ClientTemperature, Log_ClientRealPower, Log_ClientDetailPower
