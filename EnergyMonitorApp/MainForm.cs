@@ -1440,7 +1440,21 @@ namespace EnergyMonitorApp
 						dictData_Y.Add(rec.ClientID, list_Y);
 					}
 					list_X.Add(rec.Time.ToOADate());
-					list_Y.Add(rec.Temperature);
+					if (rec.Temperature == 85)
+					{
+						if (list_Y.Count > 0)
+						{
+							list_Y.Add(list_Y.Last());
+						}
+						else
+						{
+							list_Y.Add(30);
+						}
+					}
+					else
+					{
+						list_Y.Add(rec.Temperature);
+					}
 				}
 			}
 			sum /= avgCount;
@@ -1460,7 +1474,7 @@ namespace EnergyMonitorApp
 			foreach (KeyValuePair<byte, List<double>> data in dictData_X)
 			{
 				LineItem curve = pane.AddCurve("Nhiệt độ mạch " + data.Key + " (\u00B0C)",
-					data.Value.ToArray(), dictData_Y[data.Key].ToArray(),
+					data.Value.ToArray(), _filterSignal(dictData_Y[data.Key].ToArray(), 5, 0, 0),
 					clientTemperatureColor[data.Key], SymbolType.None);
 			}
 
