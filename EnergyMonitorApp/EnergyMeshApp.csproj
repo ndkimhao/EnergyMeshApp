@@ -7,7 +7,7 @@
     <ProjectGuid>{E2CC40DF-B48A-44BB-8CDF-54410BCF56A1}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EnergyMonitorApp</RootNamespace>
+    <RootNamespace>EnergyMeshApp</RootNamespace>
     <AssemblyName>EnergyMonitorApp</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

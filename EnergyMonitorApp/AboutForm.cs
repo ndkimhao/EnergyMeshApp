@@ -7,7 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using DevComponents.DotNetBar;
 
-namespace EnergyMonitorApp
+namespace EnergyMeshApp
 {
 	public partial class AboutForm : DevComponents.DotNetBar.Metro.MetroForm
 	{

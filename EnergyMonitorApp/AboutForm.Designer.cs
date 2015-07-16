@@ -1,4 +1,4 @@
-﻿namespace EnergyMonitorApp
+﻿namespace EnergyMeshApp
 {
 	partial class AboutForm
 	{

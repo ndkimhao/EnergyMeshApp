@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using DevComponents.DotNetBar.Metro;
-using EnergyMonitorApp.Properties;
+using EnergyMeshApp.Properties;
 using System.IO;
 using System.Threading;
 using DevComponents.DotNetBar.SuperGrid;
@@ -17,7 +17,7 @@ using DevComponents.DotNetBar.Controls;
 using DevComponents.DotNetBar.Metro.ColorTables;
 using ZedGraph;
 
-namespace EnergyMonitorApp
+namespace EnergyMeshApp
 {
 	public partial class MainForm : MetroForm
 	{
