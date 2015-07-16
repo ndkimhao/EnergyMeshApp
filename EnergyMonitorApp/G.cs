@@ -25,6 +25,8 @@ namespace EnergyMonitorApp
 		public const int MAX_SECOND_RECORD_REALPOWER = 10;
 		public const int MAX_SECOND_RECORD_DETAILPOWER = 50;
 
+		public const double PRICE_PER_KWH = 1622.05;
+
 		public static string SerializeBase64(object o)
 		{
 			byte[] bytes;

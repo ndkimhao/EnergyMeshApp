@@ -267,16 +267,18 @@ namespace EnergyMonitorApp
 				totalWH /= 3600;
 				if (totalWH > 1000)
 				{
-					txtComparePower.Text = (totalWH / 1000).ToString("F2") + " kWH";
+					txtComparePower.Text = (totalWH / 1000).ToString("n2") + " kWH";
 				}
 				else
 				{
-					txtComparePower.Text = totalWH.ToString("F2") + " WH";
+					txtComparePower.Text = totalWH.ToString("n2") + " WH";
 				}
-				txtComparePrice.Text = (totalWH * 1622.05 / 1000).ToString("n0") + " đ";
+				txtComparePrice.Text = (totalWH *  G.PRICE_PER_KWH / 1000).ToString("n0") + " đ";
+
+				double yearPrice = (totalWH / 1000) / ((dtCompareEnd.Value - dtCompareBegin.Value).TotalDays / 365) * G.PRICE_PER_KWH;
 
 				progDeviceCompare.IsRunning = false;
-				lblStatus.Text = "Thống kê dữ liệu hoàn tất";
+				lblStatus.Text = string.Format("Thống kê dữ liệu hoàn tất. Chi phí ước tính _Hàng tháng {0:n0} đ _Hàng năm {1:n0} đ", yearPrice / 12, yearPrice);
 			}
 		}
 
@@ -521,16 +523,18 @@ namespace EnergyMonitorApp
 				totalWH /= 3600;
 				if (totalWH > 1000)
 				{
-					txtStatisticPower.Text = (totalWH / 1000).ToString("F2") + " kWH";
+					txtStatisticPower.Text = (totalWH / 1000).ToString("n2") + " kWH";
 				}
 				else
 				{
-					txtStatisticPower.Text = totalWH.ToString("F2") + " WH";
+					txtStatisticPower.Text = totalWH.ToString("n2") + " WH";
 				}
-				txtStatisticPrice.Text = (totalWH * 1622.05 / 1000).ToString("n0") + " đ";
+				txtStatisticPrice.Text = (totalWH *  G.PRICE_PER_KWH / 1000).ToString("n0") + " đ";
+
+				double yearPrice = (totalWH / 1000) / ((dtStatisticEnd.Value - dtStatisticBegin.Value).TotalDays / 365) * G.PRICE_PER_KWH;
 
 				progDeviceStatistic.IsRunning = false;
-				lblStatus.Text = "Thống kê dữ liệu hoàn tất";
+				lblStatus.Text = string.Format("Thống kê dữ liệu hoàn tất. Chi phí ước tính _Hàng tháng {0:n0} đ _Hàng năm {1:n0} đ", yearPrice / 12, yearPrice);
 			}
 		}
 
@@ -791,11 +795,11 @@ namespace EnergyMonitorApp
 				if (wh > 1000)
 				{
 					wh /= 1000;
-					txtDeviceHistoryPower.Text = wh.ToString("F2") + " kWH";
+					txtDeviceHistoryPower.Text = wh.ToString("n2") + " kWH";
 				}
 				else
 				{
-					txtDeviceHistoryPower.Text = wh.ToString("F2") + " WH";
+					txtDeviceHistoryPower.Text = wh.ToString("n2") + " WH";
 				}
 
 				progDeviceHistory.IsRunning = false;
@@ -948,7 +952,7 @@ namespace EnergyMonitorApp
 				string id = string.Format("{0}.{1}.{2}", block.ClientID, block.SensorID, block.SessionID);
 				string timeStr = block.BeginTime.ToString("HH:mm:ss dd/MM/yyyy") + "\r\n" +
 					block.EndTime.ToString("HH:mm:ss dd/MM/yyyy");
-				GridRow row = new GridRow(id, block.WH.ToString("F2") + " WH", timeStr, GetChartPoints(block), -1, "Nhập");
+				GridRow row = new GridRow(id, block.WH.ToString("n2") + " WH", timeStr, GetChartPoints(block), -1, "Nhập");
 				Device owner = DeviceManager.getBlockOwner(block.ID);
 				if (owner == null)
 				{
@@ -1030,7 +1034,7 @@ namespace EnergyMonitorApp
 			StringBuilder sb = new StringBuilder();
 			foreach (Log_ClientRealPower rec in block.RealPowerList)
 			{
-				sb.Append(rec.RealPower.ToString("F2"));
+				sb.Append(rec.RealPower.ToString("n2"));
 				sb.Append(' ');
 			}
 			return sb.ToString();
@@ -1458,7 +1462,7 @@ namespace EnergyMonitorApp
 				}
 			}
 			sum /= avgCount;
-			txtAverageTemperature.Text = sum.ToString("F2") + "\u00B0C";
+			txtAverageTemperature.Text = sum.ToString("n2") + "\u00B0C";
 
 			GraphPane pane = graphEnvironment.GraphPane;
 			pane.Title.Text = "Lịch sử môi trường";
