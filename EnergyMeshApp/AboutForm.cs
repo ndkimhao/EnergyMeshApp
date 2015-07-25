@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using DevComponents.DotNetBar;
+using System.IO;
 
 namespace EnergyMeshApp
 {
@@ -26,7 +27,10 @@ namespace EnergyMeshApp
 		{
 			if (e.Control && e.KeyCode == Keys.D)
 			{
-				Properties.Settings.Default.DeviceList = "";
+				if (Directory.Exists("config"))
+				{
+					Directory.Delete("config", true);
+				}
 				DeviceManager.LoadDeviceList();
 				Application.Exit();
 			}

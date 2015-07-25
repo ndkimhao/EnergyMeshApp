@@ -22,17 +22,5 @@ namespace EnergyMeshApp.Properties {
                 return defaultInstance;
             }
         }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string DeviceList {
-            get {
-                return ((string)(this["DeviceList"]));
-            }
-            set {
-                this["DeviceList"] = value;
-            }
-        }
     }
 }

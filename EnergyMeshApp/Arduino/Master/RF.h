@@ -16,6 +16,7 @@ const float U_MAX = 260;
 void a_inline RF_loop() {
   Mesh24Message recvMessage;
   if (mesh24.read(recvMessage)) {
+    digitalWrite(LED_RF_RX, HIGH);
     byte from = recvMessage.getFrom();
     switch(recvMessage.getType()) {
     case MessageHeartbeat:
@@ -157,6 +158,7 @@ void a_inline RF_loop() {
       }
       break;
     }
+    digitalWrite(LED_RF_RX, LOW);
   }
   if(logHeartbeatTimer.isDue()) {
     unsigned int vcc = readVcc();

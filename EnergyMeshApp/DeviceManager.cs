@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using EnergyMeshApp.Properties;
+using System.IO;
 
 namespace EnergyMeshApp
 {
@@ -84,8 +85,8 @@ namespace EnergyMeshApp
 
 		public static void LoadDeviceList()
 		{
-			string str = Settings.Default.DeviceList;
-			if (string.IsNullOrEmpty(str))
+			string data;
+			if (!File.Exists("config/device_list.dat"))
 			{
 				_NullDevice = new Device()
 				{
@@ -94,30 +95,29 @@ namespace EnergyMeshApp
 					BlockList = new List<long>()
 				};
 				DeviceList = new List<Device>();
-				SaveDeviceList();
-				str = Settings.Default.DeviceList;
+				data = SaveDeviceList();
 			}
-			try
+			else
 			{
-				DeviceList = (List<Device>)G.DeserializeBase64(str);
+				data = File.ReadAllText("config/device_list.dat");
 			}
-			catch (Exception)
-			{
-				SaveDeviceList();
-				str = Settings.Default.DeviceList;
-				DeviceList = (List<Device>)G.DeserializeBase64(str);
-			}
+			DeviceList = (List<Device>)G.DeserializeBase64(data);
 			DeviceList.Sort((dev1, dev2) => (dev1.ID.CompareTo(dev2.ID)));
 			_NullDevice = DeviceList[0];
 			DeviceList.RemoveAt(0);
 		}
 
-		public static void SaveDeviceList()
+		public static string SaveDeviceList()
 		{
 			DeviceList.Add(NullDevice);
-			Settings.Default.DeviceList = G.SerializeBase64(DeviceList);
+			string result = G.SerializeBase64(DeviceList);
 			DeviceList.Remove(NullDevice);
-			Settings.Default.Save();
+			if (!Directory.Exists("config"))
+			{
+				Directory.CreateDirectory("config");
+			}
+			File.WriteAllText("config/device_list.dat", result);
+			return result;
 		}
 	}
 }

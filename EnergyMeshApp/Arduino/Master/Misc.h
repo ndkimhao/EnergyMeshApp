@@ -2,6 +2,7 @@ const byte CS_SD_CARD = 4;
 const byte CS_ETHERNET = 10;
 const byte CE_RF24 = 49;
 const byte CS_RF24 = 53;
+const byte LED_RF_RX = 13;
 
 const int RAM_SIZE = 8192;
 
@@ -73,9 +74,11 @@ void a_inline IO_setup() {
   pinMode(CS_SD_CARD, OUTPUT);
   pinMode(CS_ETHERNET, OUTPUT);
   pinMode(CS_RF24, OUTPUT);
+  pinMode(LED_RF_RX, OUTPUT);
   digitalWrite(CS_SD_CARD, HIGH);
   digitalWrite(CS_ETHERNET, HIGH);
   digitalWrite(CS_RF24, HIGH);
+  digitalWrite(LED_RF_RX, LOW);
 }
 
 void a_inline itoa_rtl(char* str, int num, byte pos)
@@ -151,6 +154,7 @@ int freeMemory()
   }
   return free_memory;
 }
+
 
 
 
