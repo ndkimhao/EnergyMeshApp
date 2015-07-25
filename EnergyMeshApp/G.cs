@@ -11,6 +11,7 @@ namespace EnergyMeshApp
 	class G
 	{
 
+		public const bool REAL_DOWNLOAD_DATA = false;
 		public static readonly string FTP_SERVER = "127.0.0.1";
 		public static readonly string FTP_SERVER_URI = "ftp://" + FTP_SERVER + "/logs/";
 		public static readonly string FTP_USER = "house_1";

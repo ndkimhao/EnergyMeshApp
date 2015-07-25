@@ -16,6 +16,7 @@ using DevComponents.DotNetBar;
 using DevComponents.DotNetBar.Controls;
 using DevComponents.DotNetBar.Metro.ColorTables;
 using ZedGraph;
+using System.Reflection;
 
 namespace EnergyMeshApp
 {
@@ -26,6 +27,7 @@ namespace EnergyMeshApp
 		{
 			InitializeComponent();
 			Control.CheckForIllegalCrossThreadCalls = false;
+			setTitle();
 			gridDeviceInit();
 			gridBlockInit();
 			cbThemeInit();
@@ -273,7 +275,7 @@ namespace EnergyMeshApp
 				{
 					txtComparePower.Text = totalWH.ToString("n2") + " WH";
 				}
-				txtComparePrice.Text = (totalWH *  G.PRICE_PER_KWH / 1000).ToString("n0") + " đ";
+				txtComparePrice.Text = (totalWH * G.PRICE_PER_KWH / 1000).ToString("n0") + " đ";
 
 				double yearPrice = (totalWH / 1000) / ((dtCompareEnd.Value - dtCompareBegin.Value).TotalDays / 365) * G.PRICE_PER_KWH;
 
@@ -529,7 +531,7 @@ namespace EnergyMeshApp
 				{
 					txtStatisticPower.Text = totalWH.ToString("n2") + " WH";
 				}
-				txtStatisticPrice.Text = (totalWH *  G.PRICE_PER_KWH / 1000).ToString("n0") + " đ";
+				txtStatisticPrice.Text = (totalWH * G.PRICE_PER_KWH / 1000).ToString("n0") + " đ";
 
 				double yearPrice = (totalWH / 1000) / ((dtStatisticEnd.Value - dtStatisticBegin.Value).TotalDays / 365) * G.PRICE_PER_KWH;
 
@@ -984,6 +986,15 @@ namespace EnergyMeshApp
 			mc.LineChartStyle.LineColor = Color.Blue;
 		}
 
+		private bool isTimeOverlap(DateTime s, DateTime e, DateTime s1, DateTime e1)
+		{
+			if (s > s1 && s < e1)
+				return true;
+			if (s1 > s && s1 < e)
+				return true;
+			return false;
+		}
+
 		private void gridBlocks_CellClick(object sender, GridCellClickEventArgs e)
 		{
 			if (e.GridCell.ColumnIndex == 5)
@@ -1010,12 +1021,39 @@ namespace EnergyMeshApp
 					{
 						dev = DeviceManager.getByID(newDevID);
 					}
+					bool isValid = true;
 					if (!dev.BlockList.Exists(l => l == block.ID))
 					{
-						dev.BlockList.Add(block.ID);
-						dev.BlockList.Sort((l1, l2) => l1.CompareTo(l2));
+						if (dev != DeviceManager.NullDevice)
+						{
+							foreach (long l in dev.BlockList)
+							{
+								PowerBlock block1 = LogManager.PowerBlockList[l];
+								if (isTimeOverlap(block.BeginTime, block.EndTime, block1.BeginTime, block1.EndTime))
+								{
+									isValid = false;
+									MessageBoxEx.Show(this, "<font size='18'><b>Hai cảm biến không được đo cùng một thiết bị tại cùng thời điểm !</b></font>",
+										"<font size='15'><b>Thông báo</b></font>", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+									break;
+								}
+							}
+						}
+						if (isValid)
+						{
+							dev.BlockList.Add(block.ID);
+							dev.BlockList.Sort((l1, l2) => l1.CompareTo(l2));
+						}
 					}
-					if (newDevID == -2 || owner == null || owner.ID != newDevID) SetCellColor(row.Cells[0], Color.Gray);
+					if (isValid)
+					{
+						if (newDevID == -2 || owner == null || owner.ID != newDevID)
+							SetCellColor(row.Cells[0], Color.Gray);
+					}
+					else
+					{
+						e.GridCell.GridRow.RowDirty = false;
+						e.GridCell.GridRow.Cells[4].Value = -2;
+					}
 				}
 				DeviceManager.SaveDeviceList();
 				cbDeviceHisStatisCompareUpdate();
@@ -1184,6 +1222,12 @@ namespace EnergyMeshApp
 		Thread updateDataThread;
 		private void btnUpdateData_Click(object sender, EventArgs e)
 		{
+			if (gridDevice.PrimaryGrid.Rows.Count == 0)
+			{
+				MessageBoxEx.Show(this, "<font size='18'><b>Vui lòng thêm ít nhất một thiết bị !</b></font>",
+						"<font size='15'><b>Thông báo</b></font>", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				return;
+			}
 			if (updateDataThread == null || !updateDataThread.IsAlive)
 			{
 				updateDataThread = new Thread(doUpdateData);
@@ -1203,67 +1247,70 @@ namespace EnergyMeshApp
 			List<string> curLog = LogManager.GetAllLog().Select(str => str.Replace('\\', '/')).ToList();
 			List<string> listBoxItems = new List<string>();
 
-			// Get data from ftp server
-			try
+			if (G.REAL_DOWNLOAD_DATA)
 			{
-				string[] ftpList = NetHelper.ListLogsFTP();
-				foreach (string uri in ftpList)
+				// Get data from ftp server
+				try
 				{
-					string path = uri.Replace(G.FTP_SERVER_URI, "");
-					string realPath = "logs/" + path;
-					try
+					string[] ftpList = NetHelper.ListLogsFTP();
+					foreach (string uri in ftpList)
 					{
-						if (File.Exists(realPath))
+						string path = uri.Replace(G.FTP_SERVER_URI, "");
+						string realPath = "logs/" + path;
+						try
 						{
-							listBoxItems.Add(path + " (cũ)");
+							if (File.Exists(realPath))
+							{
+								listBoxItems.Add(path + " (cũ)");
+							}
+							else
+							{
+								listBoxItems.Add(path + " (mới)");
+								NetHelper.DownloadFTP(uri, realPath);
+							}
+							curLog.Remove(curLog.Find(str => realPath.Equals(str)));
 						}
-						else
+						catch
 						{
-							listBoxItems.Add(path + " (mới)");
-							NetHelper.DownloadFTP(uri, realPath);
+							lblStatus.Text = "Tải file từ máy chủ FTP lỗi: " + path;
 						}
-						curLog.Remove(curLog.Find(str => realPath.Equals(str)));
-					}
-					catch
-					{
-						lblStatus.Text = "Tải file từ máy chủ FTP lỗi: " + path;
 					}
 				}
-			}
-			catch
-			{
-				lblStatus.Text = "Kết nối máy chủ FTP lỗi";
-			}
+				catch
+				{
+					lblStatus.Text = "Kết nối máy chủ FTP lỗi";
+				}
 
-			// Get data directly from Master
-			try
-			{
-				string[] httpList = NetHelper.ListLogsHTTP();
-				foreach (string uri in httpList)
+				// Get data directly from Master
+				try
 				{
-					try
+					string[] httpList = NetHelper.ListLogsHTTP();
+					foreach (string uri in httpList)
 					{
-						string realPath = "logs/" + uri;
-						NetHelper.DownloadHTTP(uri, realPath);
-						if (File.Exists(realPath))
+						try
 						{
-							listBoxItems.Add(uri + " (cập nhật)");
+							string realPath = "logs/" + uri;
+							NetHelper.DownloadHTTP(uri, realPath);
+							if (File.Exists(realPath))
+							{
+								listBoxItems.Add(uri + " (cập nhật)");
+							}
+							else
+							{
+								listBoxItems.Add(uri + " (mới)");
+							}
+							curLog.Remove(curLog.Find(str => realPath.Equals(str)));
 						}
-						else
+						catch
 						{
-							listBoxItems.Add(uri + " (mới)");
+							lblStatus.Text = "Tải file từ máy chủ HTTP lỗi: " + uri;
 						}
-						curLog.Remove(curLog.Find(str => realPath.Equals(str)));
-					}
-					catch
-					{
-						lblStatus.Text = "Tải file từ máy chủ HTTP lỗi: " + uri;
 					}
 				}
-			}
-			catch
-			{
-				lblStatus.Text = "Kết nối máy chủ HTTP lỗi";
+				catch
+				{
+					lblStatus.Text = "Kết nối máy chủ HTTP lỗi";
+				}
 			}
 
 			// Local file
@@ -1359,7 +1406,7 @@ namespace EnergyMeshApp
 
 		#endregion\
 
-		#region "Evironment function"
+		#region "Environment function"
 
 		private void tabEnvironmentInit()
 		{
@@ -1441,9 +1488,31 @@ namespace EnergyMeshApp
 					if (!dictData_Y.TryGetValue(rec.ClientID, out list_Y))
 					{
 						list_Y = new List<double>();
+						list_Y.Add(0);
 						dictData_Y.Add(rec.ClientID, list_Y);
 					}
+					bool isSeparate = false;
+					if (list_X.Count > 0 &&
+						(rec.Time - DateTime.FromOADate(list_X.Last())).TotalHours > 1)
+					{
+						isSeparate = true;
+					}
+					if (list_X.Count == 1)
+					{
+						list_X.Add(list_X.Last());
+					}
+					if (isSeparate)
+					{
+						list_X.Add(list_X.Last());
+						list_X.Add(rec.Time.ToOADate());
+					}
 					list_X.Add(rec.Time.ToOADate());
+					if (isSeparate)
+					{
+						list_Y.Add(0);
+						list_Y.Add(-1);
+						list_Y.Add(0);
+					}
 					if (rec.Temperature == 85)
 					{
 						if (list_Y.Count > 0)
@@ -1477,18 +1546,23 @@ namespace EnergyMeshApp
 			pane.CurveList.Clear();
 			foreach (KeyValuePair<byte, List<double>> data in dictData_X)
 			{
+				data.Value.Add(data.Value.Last());
+				dictData_Y[data.Key].Add(0);
+				dictData_Y[data.Key].Add(-1);
 				LineItem curve = pane.AddCurve("Nhiệt độ mạch " + data.Key + " (\u00B0C)",
-					data.Value.ToArray(), _filterSignal(dictData_Y[data.Key].ToArray(), 5, 0, 0),
+					data.Value.ToArray(), filterSignal(dictData_Y[data.Key].ToArray(), 5, 0, 0),
 					clientTemperatureColor[data.Key], SymbolType.None);
 			}
 
 			Graphics g = this.CreateGraphics();
 			pane.YAxis.ResetAutoScale(pane, g);
-			pane.Y2Axis.ResetAutoScale(pane, g);
 			pane.XAxis.ResetAutoScale(pane, g);
 			g.Dispose();
 			pane.ZoomStack.Clear();
 			pane.XAxis.Scale.Format = "HH:mm dd/MM/yy";
+
+			pane.YAxis.Scale.Min = dictData_Y.Min(pair => pair.Value.FindAll(l => l > 0).Min());
+			pane.YAxis.Scale.Max = dictData_Y.Max(pair => pair.Value.FindAll(l => l > 0).Max());
 
 			graphEnvironment.AxisChange();
 			graphEnvironment.Refresh();
@@ -1537,6 +1611,20 @@ namespace EnergyMeshApp
 			for (int i = 0; i <= range; i++)
 				coefficients[i] = Math.Pow(decay, i);
 			return coefficients;
+		}
+
+		#endregion
+
+		#region "Misc function"
+
+		private void setTitle()
+		{
+			var version = Assembly.GetExecutingAssembly().GetName().Version;
+			DateTime buildDate = new DateTime(2000, 1, 1)
+				.AddDays(version.Build)
+				.AddSeconds(version.Revision * 2);
+			this.TitleText = string.Format("[ Energy Mesh - KH @ 2015 ] ----- [ Version {0} - Build time: {1} ]",
+				version, buildDate.ToString("HH:mm dd/MM/yy"));
 		}
 
 		#endregion

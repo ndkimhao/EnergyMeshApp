@@ -377,7 +377,6 @@
 			// 
 			this.lbFileList.BackgroundStyle.Class = "ListBoxAdv";
 			this.lbFileList.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-			this.lbFileList.CheckStateMember = null;
 			this.lbFileList.ContainerControlProcessDialogKey = true;
 			this.lbFileList.DragDropSupport = true;
 			this.lbFileList.ForeColor = System.Drawing.Color.Black;
@@ -1767,7 +1766,7 @@
             this.cbTheme,
             this.cpCanvasColor,
             this.cpBaseColor});
-			this.btnAuthor.Text = "Kim Hảo @ 2015";
+			this.btnAuthor.Text = "Nguyễn Dương Kim Hảo @ 2015";
 			this.btnAuthor.Click += new System.EventHandler(this.btnAuthor_Click);
 			// 
 			// cbTheme
