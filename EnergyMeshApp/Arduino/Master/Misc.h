@@ -55,13 +55,18 @@ boolean a_inline RTC_setup() {
         else
           tm.Year = year();
 
-        t = makeTime(tm);
-        RTC.set(t);
-        setTime(t);
-
-        Serial.println();
-        Serial.print(F("RTC set to: "));
-        printTime();
+        if(tm.Year > 2020) {
+          Serial.println();
+          Serial.print(F("Invalid year. Time not set"));
+        } else {
+          t = makeTime(tm);
+          RTC.set(t);
+          setTime(t);
+  
+          Serial.println();
+          Serial.print(F("RTC set to: "));
+          printTime();
+        }
       }
       Serial.println();
       if(Serial.available()) Serial.flush();

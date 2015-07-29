@@ -6,7 +6,11 @@ IPAddress gateway(192, 168, 1, 100);
 IPAddress subnet(255, 255, 255, 0);
 EthernetServer server(80);
 
+// "EnergyMesh:kh2015"
+const char authorizeData[] PROGMEM = "RW5lcmd5TWVzaDpraDIwMTU=";
+
 const int HTTP_REQUEST_BUFF = 100;
+const int HTTP_AUTHORIZE_BUFF = 50;
 const int HTTP_RESPONE_BUFF = 512;
 const int REQUEST_TIME_OUT = 5000;
 void a_inline Ethernet_loop() {
@@ -44,30 +48,93 @@ void a_inline Ethernet_loop() {
       }
     }
 
+    boolean isEndHeader = false;
     if(completeState == 1) {
+      char* authStr = PSTR("Authorization: Basic ");
+      const byte authStrLen = 21;
+      index = 0;
       byte charCount = 0;
-      boolean isStop = false;
-      while(client.connected() && (millis() - startTime) < REQUEST_TIME_OUT) {
-        while(client.available()) {
+      byte authStrIndex = 0;
+      while (client.connected() && (millis() - startTime) < REQUEST_TIME_OUT) {
+        if (client.available()) {
           char c = client.read();
           if(c == '\n' || c == '\r') {
             charCount++;
             if(charCount >= 4) {
-              completeState++;
-              isStop = true;
+              isEndHeader = true;
               break;
             }
           }
           else {
             charCount = 0;
           }
+          if(c == (char)pgm_read_byte(&authStr[authStrIndex])) {
+            authStrIndex++;
+            if(authStrIndex == authStrLen) {
+              completeState++;
+              break;
+            }
+          }
+          else {
+            authStrIndex = 0;
+          }
         }
-        if(isStop) break;
+      }
+    }
+
+    {
+      char clientAuthorize[HTTP_AUTHORIZE_BUFF];
+      if(completeState == 2) {
+        index = 0;
+        while (client.connected() && (millis() - startTime) < REQUEST_TIME_OUT) {
+          char c = client.read();
+          if (c != '\n' && c != '\r') {
+            clientAuthorize[index] = c;
+            if(index < HTTP_AUTHORIZE_BUFF-1) index++;
+          }
+          else {
+            clientAuthorize[index] = '\0';
+            completeState++;
+            break;
+          }
+        }
+      }
+      if(completeState == 3) {
+        if(strcmp_P(clientAuthorize, authorizeData) == 0) {
+          completeState++;
+          if(DEBUG) Serial.println(F("Authorize successfully"));
+        }
+      }
+    }
+
+    if(completeState <= 3) {
+      if(DEBUG) Serial.println(F("Authorize failed"));
+      client.println(F("HTTP/1.1 401 Unauthorized"));
+      client.println(F("WWW-Authenticate: Basic realm=\"EnergyMesh-KimHao\""));
+      client.println(F("Content-Type: text/html\r\n"));
+      client.println(F("<h2>401 Not Authorized</h2>"));
+    }
+
+    if(completeState == 4 && isEndHeader) completeState++;
+    if(completeState == 4) {
+      byte charCount = 0;
+      while(client.connected() && (millis() - startTime) < REQUEST_TIME_OUT) {
+        char c = client.read();
+        if(c == '\n' || c == '\r') {
+          charCount++;
+          if(charCount >= 4) {
+            completeState++;
+            break;
+          }
+        }
+        else {
+          charCount = 0;
+        }
       }
     }
 
     char* fileName = NULL;
-    if(completeState == 2) {
+    if(completeState == 5) {
       if(strstr_P(clientRequest, PSTR("GET "))) {
         completeState++;
         fileName = clientRequest + 4;
@@ -80,14 +147,63 @@ void a_inline Ethernet_loop() {
       }
     }
 
-    if(completeState == 3) {
+    if(completeState == 6) {
       if(DEBUG) {
         Serial.print(F("Request received. Filename: "));
         Serial.print(fileName);
       }
 
-      File file = SD.open(fileName, FILE_READ);
-      if(file) {
+      File file;
+      boolean isReqPowerInfo = false;
+      boolean isReqInfo = false;
+      if(strcmp_P(fileName, PSTR("/realtime/data-power.json")) == 0) {
+        isReqPowerInfo = true;
+      }
+      else if(strcmp_P(fileName, PSTR("/realtime/data.json")) == 0) {
+        isReqInfo = true;
+      }
+      else {
+        file = SD.open(fileName, FILE_READ);
+      }
+      if(isReqPowerInfo) {
+        client.println(F("HTTP/1.1 200 OK"));
+        client.println(F("Content-Type: application/json\r\n"));
+        client.print(F("["));
+        const byte commaTo = NUM_SENSOR - 1;
+        for(byte i = 0; i < NUM_SENSOR; i++) {
+          client.print(LCD_powerVal[i]);
+          if(i < commaTo) {
+            client.print(F(","));
+          }
+        }
+        client.print(F("]"));
+        if(DEBUG) Serial.println(F(". Served realtime power data"));
+      }
+      else if (isReqInfo) {
+        client.println(F("HTTP/1.1 200 OK"));
+        client.println(F("Content-Type: application/json\r\n"));
+        client.print(F("["));
+        const byte commaTo = NUM_SENSOR - 1;
+        for(byte i = 0; i < NUM_SENSOR; i++) {
+          client.print(F("{\"power\":"));
+          client.print(LCD_powerVal[i]);
+          client.print(F(",\"current\":"));
+          client.print(LCD_currentVal[i]);
+          client.print(F(",\"voltage\":"));
+          client.print(LCD_voltageVal[i]);
+          client.print(F(",\"temp\":"));
+          client.print(LCD_tempVal[i]);
+          if(i < commaTo) {
+            client.print(F("},"));
+          }
+          else {
+            client.print(F("}"));
+          }
+        }
+        client.print(F("]"));
+        if(DEBUG) Serial.println(F(". Served realtime data"));
+      }
+      else if(file) {
         if(file.isDirectory()) {
           client.println(F("HTTP/1.1 200 OK"));
           client.println(F("Content-Type: text/html\r\n"));
@@ -118,7 +234,7 @@ void a_inline Ethernet_loop() {
       else {
         client.println(F("HTTP/1.1 404 Not Found"));
         client.println(F("Content-Type: text/html\r\n"));
-        client.println(F("<h2>File Not Found !</h2>"));
+        client.println(F("<h2>404 File Not Found !</h2>"));
         if(DEBUG) Serial.println(F(". File Not Found"));
       }
 
@@ -163,6 +279,16 @@ boolean a_inline Ethernet_setup() {
 
   return Ethernet.localIP()[0] == 192;
 }
+
+
+
+
+
+
+
+
+
+
 
 
 

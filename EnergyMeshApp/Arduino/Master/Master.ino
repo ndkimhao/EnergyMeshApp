@@ -39,7 +39,7 @@ void setup()
   if(DEBUG) {
     delay(500);
     Serial.begin(DEBUG_BAUD);
-    Serial.println("Energy Monitor @ Kim Hao - 6/2015");
+    Serial.println("Energy Mesh @ Kim Hao - 6/2015");
   }
   LCD_setup();
   delay(2000);
@@ -58,4 +58,5 @@ void setup()
   if(DEBUG) Serial.println(F("__ Setup completed __"));
   SD_upload();
   LCD_switchState(LCD_NORMAL);
+  if(DEBUG) Serial.println(F("__ System is ready __"));
 }

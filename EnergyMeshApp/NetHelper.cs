@@ -18,6 +18,7 @@ namespace EnergyMeshApp
 
 			WebRequest request = WebRequest.Create(G.HTTP_SERVER_URI + uri);
 			request.Timeout = G.CONNECT_TIMEOUT;
+			request.Credentials = new NetworkCredential(G.HTTP_USER, G.HTTP_PASS);
 			HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 			if (response.StatusCode == HttpStatusCode.OK)
 			{
@@ -70,6 +71,7 @@ namespace EnergyMeshApp
 			List<string> files = new List<string>();
 			WebRequest request = WebRequest.Create(G.HTTP_SERVER_URI);
 			request.Timeout = G.CONNECT_TIMEOUT;
+			request.Credentials = new NetworkCredential(G.HTTP_USER, G.HTTP_PASS);
 			HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 			if (response.StatusCode == HttpStatusCode.OK)
 			{

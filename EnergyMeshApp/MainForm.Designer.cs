@@ -377,6 +377,7 @@
 			// 
 			this.lbFileList.BackgroundStyle.Class = "ListBoxAdv";
 			this.lbFileList.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+			this.lbFileList.CheckStateMember = null;
 			this.lbFileList.ContainerControlProcessDialogKey = true;
 			this.lbFileList.DragDropSupport = true;
 			this.lbFileList.ForeColor = System.Drawing.Color.Black;
@@ -1814,6 +1815,7 @@
 			this.DoubleBuffered = true;
 			this.ForeColor = System.Drawing.Color.Black;
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "MainForm";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Energy Mesh @ KH - 2015";

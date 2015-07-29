@@ -1337,7 +1337,7 @@ namespace EnergyMeshApp
 			}
 
 			DateTime updatedDate = LogManager.GetUpdatedLog();
-			TimeSpan diff = DateTime.Now - updatedDate;
+			TimeSpan diff = (DateTime.Now - updatedDate).Duration();
 			string strDate = updatedDate.ToString("HH:mm:ss dd/MM/yyyy");
 			string strDiff = diff.Days == 0 ? string.Format("{0:00} giờ {1:00} phút {2:00} giây",
 				diff.Hours, diff.Minutes, diff.Seconds) :

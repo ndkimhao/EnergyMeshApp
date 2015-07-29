@@ -11,11 +11,13 @@ namespace EnergyMeshApp
 	class G
 	{
 
-		public const bool REAL_DOWNLOAD_DATA = false;
+		public const bool REAL_DOWNLOAD_DATA = true;
 		public static readonly string FTP_SERVER = "127.0.0.1";
 		public static readonly string FTP_SERVER_URI = "ftp://" + FTP_SERVER + "/logs/";
 		public static readonly string FTP_USER = "house_1";
 		public static readonly string FTP_PASS = "123456";
+		public static readonly string HTTP_USER = "EnergyMesh";
+		public static readonly string HTTP_PASS = "kh2015";
 		public const int CONNECT_TIMEOUT = 500;
 		public static readonly string HTTP_SERVER_URI = "http://192.168.1.128/logs/";
 

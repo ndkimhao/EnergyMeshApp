@@ -293,6 +293,7 @@ void a_inline LCD_draw() {
 void a_inline LCD_switchState(byte newState) {
   switch(newState) {
   case LCD_NORMAL:
+    curSensor = -1;
     for(byte i = 0; i < NUM_SENSOR; i++) {
       LCD_newPower(i, -1);
       LCD_newCurrent(i, -1);
@@ -300,6 +301,7 @@ void a_inline LCD_switchState(byte newState) {
       LCD_newTemp(i, -1);
     }
     curSensor = 0;
+    totalNewVal();
     break;
   case LCD_STANDBY:
     lcd.firstPage();
